@@ -1,0 +1,13 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["import", "promise", "typescript", "oxc"],
+  "options": {
+    "typeAware": true,
+    "typeCheck": true,
+    "maxWarnings": 10
+  },
+  "categories": {
+    "correctness": "warn",
+    "perf": "warn"
+  }
+}

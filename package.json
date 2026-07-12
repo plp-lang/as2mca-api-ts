@@ -1,0 +1,70 @@
+{
+  "name": "as2mca-api",
+  "version": "0.1.0",
+  "description": "Aplication Server 2MCA API HTTP Client",
+  "keywords": [
+    "2mca",
+    "api",
+    "cbs",
+    "client"
+  ],
+  "homepage": "https://github.com/plp-lang/as2mca-api-ts",
+  "bugs": {
+    "url": "https://github.com/plp-lang/as2mca-api-ts/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Falldot",
+    "email": "fe.offep@gmail.com",
+    "url": "https://github.com/Falldot"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/plp-lang/as2mca-api-ts.git"
+  },
+  "publisher": "Falldot",
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "browser": "./dist/browser/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "bun": "./dist/index.js",
+      "node": {
+        "import": "./dist/index.js",
+        "require": "./dist/index.cjs"
+      },
+      "browser": "./dist/browser/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "fmt": "oxfmt --check",
+    "fmt:fix": "oxfmt",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix --fix-suggestions",
+    "build": "bun run build:esm && bun run build:cjs && bun run build:browser && bun run build:types",
+    "build:esm": "bun build ./src/index.ts --outfile ./dist/index.js --target bun --format esm",
+    "build:cjs": "bun build ./src/index.ts --outfile ./dist/index.cjs --target node --format cjs",
+    "build:browser": "bun build ./src/index.ts --outdir ./dist/browser --target browser --minify --external none",
+    "build:types": "tsc --emitDeclarationOnly --declaration --declarationMap --outDir dist --noEmit false"
+  },
+  "dependencies": {
+    "fast-xml-builder": "^1.2.1",
+    "fast-xml-parser": "^5.9.3",
+    "fetch-cookie": "^3.2.0",
+    "tough-cookie": "^6.0.2"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.14",
+    "oxfmt": "^0.57.0",
+    "oxlint": "^1.72.0",
+    "oxlint-tsgolint": "^0.24.0",
+    "typescript": "^7.0.2"
+  }
+}
