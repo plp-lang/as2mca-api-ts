@@ -6,6 +6,7 @@ import { ApiError, HttpError, UnexpectedResponseError, XmlDeserializeError, XmlS
 import type { HttpAdapter } from "./http-adapter";
 import { FetchHttpAdapter } from "./fetch-http-adapter";
 import type {
+  BackwardReference,
   CoreInfo,
   NetworkInformationSet,
   ObjectClassAndArchiveKey,
@@ -508,7 +509,7 @@ export class Client {
    * @param objectId - Идентификатор экземпляра.
    * @param baseClassId - Короткое имя базового ТБП (например, "DOCUMENT").
    *
-   * @returns Объект ObjectClassAndArchiveKey.
+   * @returns Объект {@link ObjectClassAndArchiveKey}.
    *
    * @throws {ApiError} Если сессия уже неактивна или невалидна.
    * @throws {HttpError} При сетевых проблемах.
@@ -529,6 +530,41 @@ export class Client {
       },
     });
     return { classId: res["@ClassID"], archiveKey: res["@ArchiveKey"] };
+  }
+
+  /**
+   * Возвращает список обратных ссылок на указанный экземпляр.
+   *
+   * @param sessionId - Идентификатор сессии.
+   * @param objectId - Идентификатор экземпляра.
+   * @param classId - Короткое имя ТБП.
+   *
+   * @returns Массив {@link BackwardReference}.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async objectBackwardReferencesGet(
+    sessionId: string,
+    objectId: number,
+    classId: string,
+  ): Promise<BackwardReference[]> {
+    const refs = await this.api("BackwardReferences", {
+      ObjectBackwardReferencesGet: {
+        "@SessionID": sessionId,
+        "@ObjectID": objectId,
+        "@ClassID": classId,
+      },
+    });
+    return normalizeArray(refs.BackwardReference).map((r) => ({
+      classId: r["@ClassID"],
+      className: r["@ClassName"],
+      qual: r["@Qual"],
+      qualName: r["@QualName"],
+    }));
   }
 
   //====================================================================================================================

@@ -71,3 +71,17 @@ export interface ObjectClassAndArchiveKey {
   /** Ключ архива. */
   archiveKey: string;
 }
+
+/**
+ * Обратная ссылка на экземпляр.
+ */
+export interface BackwardReference {
+  /** Короткое имя ТБП, который ссылается. */
+  classId: string;
+  /** Полное имя ТБП. */
+  className: string;
+  /** Квалификатор. */
+  qual: string;
+  /** Имя квалификатора. */
+  qualName: string;
+}
