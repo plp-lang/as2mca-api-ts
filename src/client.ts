@@ -7,7 +7,7 @@ import type { Request, RequestBody } from "./requests";
 import type { Response, ResponseBody, ResponseKey, ResponseValue } from "./responses";
 import type { HttpAdapter } from "./http-adapter";
 import { FetchHttpAdapter } from "./fetch-http-adapter";
-import type { SessionInfo } from "./models";
+import type { CoreInfo, SessionInfo, Setting } from "./models";
 
 /**
  * Клиент для взаимодействия с API сервера приложений.
@@ -119,6 +119,150 @@ export class Client {
   }
 
   //====================================================================================================================
+  // Информация о системе
+  //====================================================================================================================
+
+  /**
+   * Возвращает версию протокола API, поддерживаемую сервером.
+   * 
+   * @returns Строка с версией, например "9.54".
+   * 
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * 
+   * @example
+   * ```typescript
+   * const version = await client.protocolInfoGet();
+   * console.log("Protocol version: ", version);
+   * ```
+   */
+  public async protocolInfoGet(): Promise<string> {
+    const { '@Version': version } = await this.api('ProtocolInfo', { ProtocolInfoGet: {} });
+    return version;
+  }
+
+  /**
+   * Возвращает версию базы данных, используемой сервером.
+   * 
+   * @param sessionId - Идентификатор сессии.
+   * 
+   * @returns Строка, например "12.2.0.1".
+   * 
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * 
+   * @example
+   * ```typescript
+   * const version = await client.systemServerVersionGet(sessionId);
+   * console.log("Server version: ", version);
+   * ```
+   */
+  public async systemServerVersionGet(sessionId: string): Promise<string> {
+    const { '@Version': version } = await this.api('ServerInfo', {
+      SystemServerVersionGet: { '@SessionID': sessionId },
+    });
+    return version;
+  }
+
+  /**
+   * Возвращает подробную информацию о ядре системы.
+   * 
+   * @param sessionId - Идентификатор сессии.
+   * 
+   * @returns Объект {@link CoreInfo}.
+   * 
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * 
+   * @example
+   * ```typescript
+   * const core = await client.systemCoreInfoGet(sessionId);
+   * console.log("Core version: ", core.version);
+   * ```
+   */
+  public async systemCoreInfoGet(sessionId: string): Promise<CoreInfo> {
+    const core = await this.api('CoreInfo', {
+      SystemCoreInfoGet: { '@SessionID': sessionId },
+    });
+    return {
+      auditor: core["@Auditor"],
+      owner: core["@Owner"],
+      version: core["@Version"],
+      build: core["@Build"],
+      revision: core["@Revision"],
+      asVersion: core["@ASVersion"],
+      asWarDate: core["@ASWARDate"],
+    }
+  }
+
+  /**
+   * Получает все системные настройки в формате ключ значение.
+   * 
+   * @param sessionId - Идентификатор сессии.
+   * 
+   * @returns Массив настроек {@link Setting}.
+   * 
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async systemSettingsGet(sessionId: string): Promise<Setting[]> {
+    const settings = await this.api('Settings', {
+      SystemSettingsGet: { '@SessionID': sessionId },
+    });
+    return normalizeArray(settings.Setting).map((v) => ({ name: v["@Name"], value: v["@Value"] }));
+  }
+
+  /**
+   * Получает значение конкретной системной настройки по её имени.
+   * 
+   * @param sessionId - Идентификатор сессии.
+   * @param name - Имя настройки (например, "SHOW_SYSTEM_MENU").
+   * 
+   * @returns - Значение или undefined, если настройка не найдена или пуста.
+   * 
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async systemSettingGet(sessionId: string, name: string): Promise<string | undefined> {
+    const setting = await this.api('Setting', {
+      SystemSettingGet: { '@SessionID': sessionId, '@Name': name },
+    });
+    return setting['@Value'];
+  }
+
+  /**
+   * Возвращает относительный URL для эндпоинта авторизации.
+   * 
+   * @returns Строка, например "/platform2mca/authbasic".
+   * 
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async authenticationUrlGet(): Promise<string> {
+    const { '@URL': url } = await this.api('AuthenticationURL', { AuthenticationURLGet: {} } as RequestBody);
+    return url;
+  }
+
+
+  //====================================================================================================================
   // Private
   //====================================================================================================================
 
@@ -126,7 +270,7 @@ export class Client {
     ignoreAttributes: false,
     attributeNamePrefix: "@",
     parseTagValue: true,
-    parseAttributeValue: true,
+    parseAttributeValue: false,
   });
 
   private readonly builder = new XMLBuilder({
@@ -228,4 +372,14 @@ export class Client {
       throw new XmlDeserializeError((cause as Error).message, { cause });
     }
   }
+}
+
+/**
+ * Нормализует значение, которое может быть одним элементом или массивом, в массив.
+ * @param value - Значение (один элемент, массив или undefined).
+ * @returns Массив элементов (пустой, если value = undefined).
+ */
+const normalizeArray = <T>(value: T | T[] | undefined): T[] => {
+  if (value === undefined) return [];
+  return Array.isArray(value) ? value : [value];
 }

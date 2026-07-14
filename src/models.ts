@@ -7,3 +7,33 @@ export interface SessionInfo {
   /** Имя отладочного канала. */
   debug_pipe_name: string;
 }
+
+/**
+ * Информация о ядре системы.
+ */
+export interface CoreInfo {
+  /** Код аудитора (например, "AUD"). */
+  auditor: string;
+  /** Владелец (например, "IBS"). */
+  owner: string;
+  /** Версия ТЯ (например, "7.6"). */
+  version: string;
+  /** Номер сборки. */
+  build: string;
+  /** Ревизия. */
+  revision: string;
+  /** Версия сервера приложений. */
+  asVersion: string;
+  /** Дата сборки сервера приложений. */
+  asWarDate: string;
+}
+
+/**
+ * Cистемная настройка (ключ-значение).
+ */
+export interface Setting {
+  /** Имя настройки. */
+  name: string;
+  /** Значение настройки (может отсутствовать). */
+  value: string | undefined;
+}
