@@ -43,4 +43,24 @@ describe("Сессия и информация о пользователе", () 
     const isCheck = await client.userBelongsGroupCheck(sessionId, "ADMIN_GRP");
     expect(isCheck).toBeTrue();
   });
+
+  test("networkInformationSet", async () => {
+    const { client, sessionId } = ctx;
+
+    await client.networkInformationSet(sessionId, {
+      clientUser: "john",
+      clientName: "my-host",
+      moduleName: "MyApp/1.0",
+      clientIP: "192.168.1.100",
+    });
+  });
+
+  test("systemNetAddressSet", async () => {
+    const { client, sessionId } = ctx;
+
+    await client.systemNetAddressSet(sessionId, {
+      IPAddress: "192.168.1.100",
+      MACAddress: "00:11:22:33:44:55",
+    });
+  });
 });

@@ -5,7 +5,7 @@ import { ApiError, HttpError, UnexpectedResponseError, XmlDeserializeError, XmlS
 
 import type { HttpAdapter } from "./http-adapter";
 import { FetchHttpAdapter } from "./fetch-http-adapter";
-import type { CoreInfo, SessionInfo, Setting, UserInfo } from "./models";
+import type { CoreInfo, NetworkInformationSet, SessionInfo, Setting, SystemNetAddressSet, UserInfo } from "./models";
 import type {
   Response,
   Request,
@@ -211,6 +211,52 @@ export class Client {
       UserBelongsGroupCheck: { "@SessionID": sessionId, "@GroupID": groupId },
     });
     return value === "true" || value === "1";
+  }
+
+  /**
+   * Устанавливает сетевую информацию для текущей сессии.
+   *
+   * @param sessionId - Идентификатор сессии.
+   * @param params - Параметры NetworkInformationSet.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async networkInformationSet(sessionId: string, params: NetworkInformationSet): Promise<void> {
+    await this.api("Done", {
+      NetworkInformationSet: {
+        "@SessionID": sessionId,
+        "@ClientName": params.clientName,
+        "@ClientIP": params.clientIP,
+        "@ClientUser": params.clientUser,
+        "@ModuleName": params.moduleName,
+      },
+    });
+  }
+
+  /**
+   * Устанавливает MAC и IP‑адрес клиента для текущей сессии.
+   *
+   * @param sessionId - Идентификатор сессии.
+   * @param params - Параметры SystemNetAddressSet.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async systemNetAddressSet(sessionId: string, params: SystemNetAddressSet): Promise<void> {
+    await this.api("Done", {
+      SystemNetAddressSet: {
+        "@SessionID": sessionId,
+        "@MACAddress": params.MACAddress,
+        "@IPAddress": params.IPAddress,
+      },
+    });
   }
 
   //====================================================================================================================
