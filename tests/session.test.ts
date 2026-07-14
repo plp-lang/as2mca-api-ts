@@ -36,4 +36,11 @@ describe("Сессия и информация о пользователе", () 
     const value = await client.userProfilePropertyGet(session_id, "SESSIONS_PER_USER");
     expect(value).toBe("UNLIMITED");
   });
+
+  test("userBelongsGroupCheck", async () => {
+    const { client, session_id } = ctx;
+
+    const isCheck = await client.userBelongsGroupCheck(session_id, "ADMIN_GRP");
+    expect(isCheck).toBeTrue();
+  });
 });

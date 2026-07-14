@@ -227,7 +227,7 @@ export interface UserProfileProperty {
  */
 export interface CheckResult {
   /** true, если условие выполнено. */
-  "@Value": boolean;
+  "@Value": string;
 }
 
 //======================================================================================================================

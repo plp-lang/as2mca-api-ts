@@ -192,6 +192,27 @@ export class Client {
     return result["@Value"];
   }
 
+  /**
+   * Проверяет, входит ли пользователь в указанную группу.
+   *
+   * @param sessionId - Идентификатор сессии.
+   * @param groupId - Идентификатор группы (например, "ADMIN_GRP").
+   *
+   * @returns true, если пользователь является членом группы.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async userBelongsGroupCheck(sessionId: string, groupId: string): Promise<boolean> {
+    const { "@Value": value } = await this.api("CheckResult", {
+      UserBelongsGroupCheck: { "@SessionID": sessionId, "@GroupID": groupId },
+    });
+    return value === "true" || value === "1";
+  }
+
   //====================================================================================================================
   // Информация о системе
   //====================================================================================================================
