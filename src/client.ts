@@ -171,6 +171,27 @@ export class Client {
     };
   }
 
+  /**
+   * Получает значение свойства профиля пользователя по его имени.
+   *
+   * @param sessionId - Идентификатор сессии.
+   * @param propertyName - Имя свойства (например, "SESSIONS_PER_USER").
+   *
+   * @returns Значение свойства в виде строки.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async userProfilePropertyGet(sessionId: string, propertyName: string): Promise<string> {
+    const result = await this.api("UserProfileProperty", {
+      UserProfilePropertyGet: { "@SessionID": sessionId, "@PropertyName": propertyName },
+    });
+    return result["@Value"];
+  }
+
   //====================================================================================================================
   // Информация о системе
   //====================================================================================================================

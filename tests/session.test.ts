@@ -29,4 +29,11 @@ describe("Сессия и информация о пользователе", () 
     expect(userInfo.shortName).toBeString();
     expect(userInfo.properties).toBeString();
   });
+
+  test("userProfilePropertyGet", async () => {
+    const { client, session_id } = ctx;
+
+    const value = await client.userProfilePropertyGet(session_id, "SESSIONS_PER_USER");
+    expect(value).toBe("UNLIMITED");
+  });
 });
