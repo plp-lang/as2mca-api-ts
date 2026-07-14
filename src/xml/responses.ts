@@ -24,7 +24,8 @@ export type ResponseBody =
   | { Setting: Setting }
   | { NovoAllowedCheckResult: NovoAllowedCheckResult }
   | { OptionInfo: OptionInfo }
-  | { User: UserContent }
+  | { User: UserInfo }
+  | { User: UserPrivileged }
   | { UserProfileProperty: UserProfileProperty }
   | { CheckResult: CheckResult }
   | { AuthenticationURL: AuthenticationURL }
@@ -210,13 +211,8 @@ export interface UserInfo {
  */
 export interface UserPrivileged {
   /** true, если пользователь привилегированный. */
-  "@IsPrivileged": boolean;
+  "@IsPrivileged": string;
 }
-
-/**
- * Объединённый тип для содержимого тега <User>.
- */
-export type UserContent = UserInfo | UserPrivileged;
 
 /**
  * Значение свойства профиля пользователя.

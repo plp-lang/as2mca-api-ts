@@ -6,7 +6,7 @@ import { ApiError, HttpError, UnexpectedResponseError, XmlDeserializeError, XmlS
 import type { HttpAdapter } from "./http-adapter";
 import { FetchHttpAdapter } from "./fetch-http-adapter";
 import type { CoreInfo, SessionInfo, Setting } from "./models";
-import type { Response, Request, RequestBody, ResponseBody, ResponseKey, ResponseValue } from "./xml";
+import type { Response, Request, RequestBody, ResponseBody, ResponseKey, ResponseValue, UserPrivileged } from "./xml";
 
 /**
  * Клиент для взаимодействия с API сервера приложений.
@@ -28,7 +28,7 @@ export class Client {
   }
 
   //====================================================================================================================
-  // Сессия
+  // Сессия и информация о пользователе
   //====================================================================================================================
 
   /**
@@ -115,6 +115,27 @@ export class Client {
         "@SessionID": session_id,
       },
     });
+  }
+
+  /**
+   * Проверяет, является ли текущий пользователь привилегированным.
+   *
+   * @param sessionId - Идентификатор сессии.
+   *
+   * @returns true, если пользователь имеет привилегии.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async systemUserPrivilegedGet(sessionId: string): Promise<boolean> {
+    const user = await this.api("User", {
+      SystemUserPrivilegedGet: { "@SessionID": sessionId },
+    });
+    const isPrivileged = (user as UserPrivileged)["@IsPrivileged"];
+    return isPrivileged === "true" || isPrivileged === "1";
   }
 
   //====================================================================================================================
@@ -282,10 +303,10 @@ export class Client {
 
   /**
    * Проверяет, включена ли указанная системная опция.
-   * 
+   *
    * @param sessionId - Идентификатор сессии.
    * @param optionName - Имя опции (например, "NAV_SKIN_INTERFACE").
-   * 
+   *
    * @returns true, если опция включена.
    *
    * @throws {ApiError} Если сессия уже неактивна или невалидна.
@@ -295,12 +316,11 @@ export class Client {
    * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
    */
   public async systemOptionEnabledCheck(sessionId: string, optionName: string): Promise<boolean> {
-    const result = await this.api('OptionInfo', {
-      SystemOptionEnabledCheck: { '@SessionID': sessionId, '@OptionName': optionName },
+    const result = await this.api("OptionInfo", {
+      SystemOptionEnabledCheck: { "@SessionID": sessionId, "@OptionName": optionName },
     });
-    return result['@Enabled'] === "true";
+    return result["@Enabled"] === "true";
   }
-
 
   //====================================================================================================================
   // Private

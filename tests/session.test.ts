@@ -1,10 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import { context } from "./ctx";
 
-describe("Сессия", () => {
+describe("Сессия и информация о пользователе", () => {
   const ctx = context();
 
-  test("`session_id` and `debug_pipe_name`", () => {
+  test("sessionInit", () => {
     const { debug_pipe_name, session_id } = ctx;
 
     expect(session_id).toBeDefined();
@@ -12,5 +12,12 @@ describe("Сессия", () => {
 
     expect(debug_pipe_name).toBeDefined();
     expect(debug_pipe_name).toMatch(/^debug\$\d{10}$/);
+  });
+
+  test("systemUserPrivilegedGet", async () => {
+    const { client, session_id } = ctx;
+
+    const isPrivileged = await client.systemUserPrivilegedGet(session_id);
+    expect(isPrivileged).toBeTrue();
   });
 });
