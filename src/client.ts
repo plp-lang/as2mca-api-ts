@@ -5,7 +5,15 @@ import { ApiError, HttpError, UnexpectedResponseError, XmlDeserializeError, XmlS
 
 import type { HttpAdapter } from "./http-adapter";
 import { FetchHttpAdapter } from "./fetch-http-adapter";
-import type { CoreInfo, NetworkInformationSet, SessionInfo, Setting, SystemNetAddressSet, UserInfo } from "./models";
+import type {
+  CoreInfo,
+  NetworkInformationSet,
+  ObjectClassAndArchiveKey,
+  SessionInfo,
+  Setting,
+  SystemNetAddressSet,
+  UserInfo,
+} from "./models";
 import type {
   Response,
   Request,
@@ -487,6 +495,40 @@ export class Client {
       DebugTextGet: { "@SessionID": sessionId, "@Direction": direction },
     });
     return result["@Value"];
+  }
+
+  //====================================================================================================================
+  // ТБП и типы
+  //====================================================================================================================
+
+  /**
+   * Возвращает короткое имя ТБП и ключ архива для указанного экземпляра.
+   *
+   * @param sessionId - Идентификатор сессии.
+   * @param objectId - Идентификатор экземпляра.
+   * @param baseClassId - Короткое имя базового ТБП (например, "DOCUMENT").
+   *
+   * @returns Объект ObjectClassAndArchiveKey.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async objectClassAndArchiveKeyGet(
+    sessionId: string,
+    objectId: number,
+    baseClassId: string,
+  ): Promise<ObjectClassAndArchiveKey> {
+    const res = await this.api("ObjectClassAndArchiveKey", {
+      ObjectClassAndArchiveKeyGet: {
+        "@SessionID": sessionId,
+        "@ObjectID": objectId,
+        "@BaseClassID": baseClassId,
+      },
+    });
+    return { classId: res["@ClassID"], archiveKey: res["@ArchiveKey"] };
   }
 
   //====================================================================================================================
