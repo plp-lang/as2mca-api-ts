@@ -20,4 +20,13 @@ describe("Сессия и информация о пользователе", () 
     const isPrivileged = await client.systemUserPrivilegedGet(session_id);
     expect(isPrivileged).toBeTrue();
   });
+
+  test("userInfoGet", async () => {
+    const { client, session_id } = ctx;
+
+    const userInfo = await client.userInfoGet(session_id);
+    expect(userInfo.name).toBeString();
+    expect(userInfo.shortName).toBeString();
+    expect(userInfo.properties).toBeString();
+  });
 });

@@ -5,8 +5,17 @@ import { ApiError, HttpError, UnexpectedResponseError, XmlDeserializeError, XmlS
 
 import type { HttpAdapter } from "./http-adapter";
 import { FetchHttpAdapter } from "./fetch-http-adapter";
-import type { CoreInfo, SessionInfo, Setting } from "./models";
-import type { Response, Request, RequestBody, ResponseBody, ResponseKey, ResponseValue, UserPrivileged } from "./xml";
+import type { CoreInfo, SessionInfo, Setting, UserInfo } from "./models";
+import type {
+  Response,
+  Request,
+  RequestBody,
+  ResponseBody,
+  ResponseKey,
+  ResponseValue,
+  UserPrivileged,
+  UserInfo as UserInfoXML,
+} from "./xml";
 
 /**
  * Клиент для взаимодействия с API сервера приложений.
@@ -136,6 +145,30 @@ export class Client {
     });
     const isPrivileged = (user as UserPrivileged)["@IsPrivileged"];
     return isPrivileged === "true" || isPrivileged === "1";
+  }
+
+  /**
+   * Возвращает детальную информацию о пользователе.
+   *
+   * @param sessionId - Идентификатор сессии.
+   *
+   * @returns Объект {@link UserInfo}.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async userInfoGet(sessionId: string): Promise<UserInfo> {
+    const user = (await this.api("User", {
+      UserInfoGet: { "@SessionID": sessionId },
+    })) as UserInfoXML;
+    return {
+      name: user["@Name"],
+      shortName: user["@ShortName"],
+      properties: user["@Properties"],
+    };
   }
 
   //====================================================================================================================
