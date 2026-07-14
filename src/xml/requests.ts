@@ -62,7 +62,7 @@ export type RequestBody =
   | { ObjectsUnlock: ObjectsUnlock };
 
 //======================================================================================================================
-// Сессия и авторизация
+// Сессия и информация о пользователе
 //======================================================================================================================
 
 /**
@@ -88,6 +88,70 @@ export interface Disconnect {
  * Запрос на получение URL для авторизации.
  */
 export type AuthenticationURLGet = Record<never, never>; // Пустой объект
+
+/**
+ * Запрос базовой информации о пользователе.
+ */
+export interface UserInfoGet {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+}
+
+/**
+ * Запрос проверки привилегий пользователя.
+ */
+export interface SystemUserPrivilegedGet {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+}
+
+/**
+ * Запрос свойства профиля пользователя.
+ */
+export interface UserProfilePropertyGet {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+  /** Имя свойства (например, "SESSIONS_PER_USER"). */
+  "@PropertyName": string;
+}
+
+/**
+ * Запрос проверки вхождения пользователя в группу.
+ */
+export interface UserBelongsGroupCheck {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+  /** Идентификатор группы (например, "ADMIN_GRP"). */
+  "@GroupID": string;
+}
+
+/**
+ * Установка информации о сетевом окружении клиента.
+ */
+export interface NetworkInformationSet {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+  /** Hostname устройства пользователя. */
+  "@ClientName": string;
+  /** Локальный IP‑адрес. */
+  "@ClientIP": string;
+  /** Имя пользователя ОС (например, из `whoami`). */
+  "@ClientUser": string;
+  /** Название клиентского приложения (например, "ЦФТ - Навигатор 6.0"). */
+  "@ModuleName": string;
+}
+
+/**
+ * Установка MAC и IP адресов клиента.
+ */
+export interface SystemNetAddressSet {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+  /** MAC‑адрес устройства (например, "aa:bb:cc:dd:ee:ff"). */
+  "@MACAddress": string;
+  /** Локальный IP‑адрес. */
+  "@IPAddress": string;
+}
 
 //======================================================================================================================
 // Информация о системе
@@ -148,74 +212,6 @@ export interface SystemOptionEnabledCheck {
   "@SessionID": string;
   /** Имя опции (например, "NAV_SKIN_INTERFACE"). */
   "@OptionName": string;
-}
-
-/**
- * Установка информации о сетевом окружении клиента.
- */
-export interface NetworkInformationSet {
-  /** Идентификатор сессии. */
-  "@SessionID": string;
-  /** Hostname устройства пользователя. */
-  "@ClientName": string;
-  /** Локальный IP‑адрес. */
-  "@ClientIP": string;
-  /** Имя пользователя ОС (например, из `whoami`). */
-  "@ClientUser": string;
-  /** Название клиентского приложения (например, "ЦФТ - Навигатор 6.0"). */
-  "@ModuleName": string;
-}
-
-/**
- * Установка MAC и IP адресов клиента.
- */
-export interface SystemNetAddressSet {
-  /** Идентификатор сессии. */
-  "@SessionID": string;
-  /** MAC‑адрес устройства (например, "aa:bb:cc:dd:ee:ff"). */
-  "@MACAddress": string;
-  /** Локальный IP‑адрес. */
-  "@IPAddress": string;
-}
-
-//======================================================================================================================
-// Информация о пользователе
-//======================================================================================================================
-
-/**
- * Запрос базовой информации о пользователе.
- */
-export interface UserInfoGet {
-  /** Идентификатор сессии. */
-  "@SessionID": string;
-}
-
-/**
- * Запрос проверки привилегий пользователя.
- */
-export interface SystemUserPrivilegedGet {
-  /** Идентификатор сессии. */
-  "@SessionID": string;
-}
-
-/**
- * Запрос свойства профиля пользователя.
- */
-export interface UserProfilePropertyGet {
-  /** Идентификатор сессии. */
-  "@SessionID": string;
-  /** Имя свойства (например, "SESSIONS_PER_USER"). */
-  "@PropertyName": string;
-}
-
-/**
- * Запрос проверки вхождения пользователя в группу.
- */
-export interface UserBelongsGroupCheck {
-  /** Идентификатор сессии. */
-  "@SessionID": string;
-  /** Идентификатор группы (например, "ADMIN_GRP"). */
-  "@GroupID": string;
 }
 
 //======================================================================================================================

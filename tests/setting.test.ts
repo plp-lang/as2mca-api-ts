@@ -12,16 +12,16 @@ describe("Информация о системе", () => {
   });
 
   test("systemServerVersionGet", async () => {
-    const { client, session_id } = ctx;
+    const { client, sessionId } = ctx;
 
-    const version = await client.systemServerVersionGet(session_id);
+    const version = await client.systemServerVersionGet(sessionId);
     expect(version).toBeString();
   });
 
   test("systemSettingsGet", async () => {
-    const { client, session_id } = ctx;
+    const { client, sessionId } = ctx;
 
-    const settings = await client.systemSettingsGet(session_id);
+    const settings = await client.systemSettingsGet(sessionId);
     expect(settings).toBeArray();
     settings.forEach(({ name, value }) => {
       expect(name).toBeString();
@@ -30,9 +30,9 @@ describe("Информация о системе", () => {
   });
 
   test("systemSettingGet", async () => {
-    const { client, session_id } = ctx;
+    const { client, sessionId } = ctx;
 
-    const res = await client.systemSettingGet(session_id, "SHOW_SYSTEM_MENU");
+    const res = await client.systemSettingGet(sessionId, "SHOW_SYSTEM_MENU");
     expect(res).toBe("YES");
   });
 
@@ -44,16 +44,16 @@ describe("Информация о системе", () => {
   });
 
   test("novoAllowedCheck", async () => {
-    const { client, session_id } = ctx;
+    const { client, sessionId } = ctx;
 
-    const isCheck = await client.novoAllowedCheck(session_id);
+    const isCheck = await client.novoAllowedCheck(sessionId);
     expect(isCheck).toBeTrue();
   });
 
   test("systemOptionEnabledCheck", async () => {
-    const { client, session_id } = ctx;
+    const { client, sessionId } = ctx;
 
-    const isEnabled = await client.systemOptionEnabledCheck(session_id, "NAV_SKIN_INTERFACE");
+    const isEnabled = await client.systemOptionEnabledCheck(sessionId, "NAV_SKIN_INTERFACE");
     expect(isEnabled).toBeTrue();
   });
 });

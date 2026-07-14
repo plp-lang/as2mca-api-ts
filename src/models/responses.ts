@@ -7,9 +7,9 @@
  */
 export interface SessionInfo {
   /** Идентификатор сессии. */
-  session_id: string;
+  sessionId: string;
   /** Имя отладочного канала. */
-  debug_pipe_name: string;
+  debugPipeName: string;
 }
 
 /**

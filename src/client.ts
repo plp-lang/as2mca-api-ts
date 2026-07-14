@@ -30,7 +30,7 @@ export class Client {
   private readonly httpAdapter: HttpAdapter;
 
   constructor(
-    private readonly base_url: string,
+    private readonly baseUrl: string,
     httpAdapter?: HttpAdapter,
   ) {
     this.httpAdapter = httpAdapter ?? new FetchHttpAdapter();
@@ -87,17 +87,17 @@ export class Client {
    *
    * @example
    * ```typescript
-   * const session = await client.session_init();
-   * console.log('Session ID: ', session.session_id);
+   * const session = await client.sessionInit();
+   * console.log('Session ID: ', session.sessionId);
    * ```
    */
-  public async session_init(aliveActiveSession?: boolean): Promise<SessionInfo> {
-    const { "@ID": session_id, "@DebugPipeName": debug_pipe_name } = await this.api("Session", {
+  public async sessionInit(aliveActiveSession?: boolean): Promise<SessionInfo> {
+    const { "@ID": sessionId, "@DebugPipeName": debugPipeName } = await this.api("Session", {
       SessionInit: {
         "@AliveActiveSession": aliveActiveSession,
       },
     });
-    return { session_id, debug_pipe_name };
+    return { sessionId, debugPipeName };
   }
 
   /**
@@ -105,7 +105,7 @@ export class Client {
    *
    * После вызова все последующие запросы с этим `session_id` будут отклонены.
    *
-   * @param session_id - Идентификатор сессии, полученный из {@link SessionInfo.session_id}.
+   * @param sessionId - Идентификатор сессии, полученный из {@link SessionInfo.session_id}.
    *
    * @throws {ApiError} Если сессия уже неактивна или невалидна.
    * @throws {HttpError} При сетевых проблемах.
@@ -115,13 +115,13 @@ export class Client {
    *
    * @example
    * ```typescript
-   * await client.session_deinit(session.session_id);
+   * await client.sessionDeinit(session.sessionId);
    * ```
    */
-  public async session_deinit(session_id: string): Promise<void> {
+  public async sessionDeinit(sessionId: string): Promise<void> {
     await this.api("Done", {
       Disconnect: {
-        "@SessionID": session_id,
+        "@SessionID": sessionId,
       },
     });
   }
@@ -398,6 +398,52 @@ export class Client {
   }
 
   //====================================================================================================================
+  // Отладка
+  //====================================================================================================================
+
+  /**
+   * Получает текст из отладочного канала по его имени.
+   *
+   * @param sessionId - Идентификатор сессии.
+   * @param pipeName - Имя канала.
+   *
+   * @returns Текст, сгенерированный сервером для этого канала.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async pipeTextGet(sessionId: string, pipeName: string): Promise<string> {
+    const result = await this.api("PipeText", {
+      PipeTextGet: { "@SessionID": sessionId, "@PipeName": pipeName },
+    });
+    return result["@Value"];
+  }
+
+  /**
+   * Получает отладочный текст.
+   *
+   * @param sessionId - Идентификатор сессии.
+   * @param direction - Направление отладки.
+   *
+   * @returns Отладочная информация в виде строки.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async debugTextGet(sessionId: string, direction: string): Promise<string> {
+    const result = await this.api("DebugText", {
+      DebugTextGet: { "@SessionID": sessionId, "@Direction": direction },
+    });
+    return result["@Value"];
+  }
+
+  //====================================================================================================================
   // Private
   //====================================================================================================================
 
@@ -430,7 +476,7 @@ export class Client {
    * @throws {XmlDeserializeError} При ошибке парсинга ответа.
    */
   private async api<K extends Exclude<ResponseKey, "Error">>(
-    expected_key: K,
+    expectedKey: K,
     obj: RequestBody,
   ): Promise<ResponseValue<K>> {
     const url = this.endpoint("api");
@@ -453,8 +499,8 @@ export class Client {
       throw new ApiError(message, details);
     }
 
-    if (expected_key in root) {
-      return (root as Record<K, any>)[expected_key] as ResponseValue<K>;
+    if (expectedKey in root) {
+      return (root as Record<K, any>)[expectedKey] as ResponseValue<K>;
     }
 
     throw new UnexpectedResponseError(body);
@@ -462,17 +508,22 @@ export class Client {
 
   /**
    * Формирует полный URL для заданного относительного пути.
+   *
    * @param path - Относительный путь (например, 'authbasic' или 'api').
+   *
    * @returns Полный URL в виде строки.
    */
   private endpoint(path: string): string {
-    return new URL(path, this.base_url).toString();
+    return new URL(path, this.baseUrl).toString();
   }
 
   /**
    * Сериализует объект запроса в XML.
+   *
    * @param obj - Объект запроса (без обёртки Request).
+   *
    * @returns XML-строка с заголовком.
+   *
    * @throws {XmlSerializeError} При ошибке построения XML.
    */
   private serialization(obj: RequestBody): string {
@@ -492,8 +543,11 @@ export class Client {
 
   /**
    * Десериализует XML-ответ в объект.
+   *
    * @param text - XML-строка.
+   *
    * @returns Корневой объект ответа (содержимое тега <Response>).
+   *
    * @throws {XmlDeserializeError} При ошибке парсинга или отсутствии тега <Response>.
    */
   private deserialization(text: string): ResponseBody {
@@ -511,7 +565,9 @@ export class Client {
 
 /**
  * Нормализует значение, которое может быть одним элементом или массивом, в массив.
+ *
  * @param value - Значение (один элемент, массив или undefined).
+ *
  * @returns Массив элементов (пустой, если value = undefined).
  */
 const normalizeArray = <T>(value: T | T[] | undefined): T[] => {

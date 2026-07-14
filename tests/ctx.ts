@@ -4,8 +4,8 @@ import { Client } from "../src";
 
 export interface Context {
   client: Client;
-  session_id: string;
-  debug_pipe_name: string;
+  sessionId: string;
+  debugPipeName: string;
 }
 
 export function context() {
@@ -18,15 +18,15 @@ export function context() {
 
     const client = new Client(url);
     await client.authbasic(username, password);
-    const { session_id, debug_pipe_name } = await client.session_init();
+    const { sessionId, debugPipeName } = await client.sessionInit();
 
     ctx.client = client;
-    ctx.session_id = session_id;
-    ctx.debug_pipe_name = debug_pipe_name;
+    ctx.sessionId = sessionId;
+    ctx.debugPipeName = debugPipeName;
   });
 
   afterEach(async () => {
-    await ctx.client.session_deinit(ctx.session_id);
+    await ctx.client.sessionDeinit(ctx.sessionId);
   });
 
   return ctx;
