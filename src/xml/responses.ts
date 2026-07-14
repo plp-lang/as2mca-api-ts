@@ -186,7 +186,7 @@ export interface NovoAllowedCheckResult {
  */
 export interface OptionInfo {
   /** true, если опция включена. */
-  "@Enabled": boolean;
+  "@Enabled": string;
 }
 
 //======================================================================================================================

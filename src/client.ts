@@ -280,6 +280,28 @@ export class Client {
     return val === "true" || val === "1";
   }
 
+  /**
+   * Проверяет, включена ли указанная системная опция.
+   * 
+   * @param sessionId - Идентификатор сессии.
+   * @param optionName - Имя опции (например, "NAV_SKIN_INTERFACE").
+   * 
+   * @returns true, если опция включена.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async systemOptionEnabledCheck(sessionId: string, optionName: string): Promise<boolean> {
+    const result = await this.api('OptionInfo', {
+      SystemOptionEnabledCheck: { '@SessionID': sessionId, '@OptionName': optionName },
+    });
+    return result['@Enabled'] === "true";
+  }
+
+
   //====================================================================================================================
   // Private
   //====================================================================================================================

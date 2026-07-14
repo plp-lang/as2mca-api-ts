@@ -49,4 +49,11 @@ describe("Информация о системе", () => {
     const isCheck = await client.novoAllowedCheck(session_id);
     expect(isCheck).toBeTrue();
   });
+
+  test("systemOptionEnabledCheck", async () => {
+    const { client, session_id } = ctx;
+
+    const isEnabled = await client.systemOptionEnabledCheck(session_id, "NAV_SKIN_INTERFACE");
+    expect(isEnabled).toBeTrue();
+  });
 });
