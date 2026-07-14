@@ -42,4 +42,11 @@ describe("Информация о системе", () => {
     const url = await client.authenticationUrlGet();
     expect(url).toBeString();
   });
+
+  test("novoAllowedCheck", async () => {
+    const { client, session_id } = ctx;
+
+    const isCheck = await client.novoAllowedCheck(session_id);
+    expect(isCheck).toBeTrue();
+  });
 });

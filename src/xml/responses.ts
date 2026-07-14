@@ -177,8 +177,8 @@ export interface Setting {
  * Результат проверки доступности NOVO.
  */
 export interface NovoAllowedCheckResult {
-  /** true, если NOVO доступен. */
-  "@Value": boolean; // десериализуется из строки "true"/"false" или "1"/"0"
+  /** Строка "true"/"false" или "1"/"0" */
+  "@Value": string;
 }
 
 /**

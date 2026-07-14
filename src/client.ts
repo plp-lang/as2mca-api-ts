@@ -260,6 +260,26 @@ export class Client {
     return url;
   }
 
+  /**
+   * Проверяет, разрешено ли использование функционала NOVO для текущей сессии.
+   *
+   * @param sessionId - Идентификатор сессии.
+   *
+   * @returns true, если NOVO доступен.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async novoAllowedCheck(sessionId: string): Promise<boolean> {
+    const { "@Value": val } = await this.api("NovoAllowedCheckResult", {
+      NovoAllowedCheck: { "@SessionID": sessionId },
+    });
+    return val === "true" || val === "1";
+  }
+
   //====================================================================================================================
   // Private
   //====================================================================================================================

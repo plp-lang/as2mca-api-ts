@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { context } from "./ctx";
 
-describe("Session", () => {
+describe("Сессия", () => {
   const ctx = context();
 
   test("`session_id` and `debug_pipe_name`", () => {
