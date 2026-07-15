@@ -8,6 +8,7 @@ import { FetchHttpAdapter } from "./fetch-http-adapter";
 import type {
   BackwardReference,
   ChildClass,
+  Class,
   CoreInfo,
   NetworkInformationSet,
   ObjectClassAndArchiveKey,
@@ -156,7 +157,7 @@ export class Client {
       SystemUserPrivilegedGet: { "@SessionID": sessionId },
     });
     const isPrivileged = (user as UserPrivileged)["@IsPrivileged"];
-    return isPrivileged === "true" || isPrivileged === "1";
+    return normalizeBool(isPrivileged);
   }
 
   /**
@@ -222,7 +223,7 @@ export class Client {
     const { "@Value": value } = await this.api("CheckResult", {
       UserBelongsGroupCheck: { "@SessionID": sessionId, "@GroupID": groupId },
     });
-    return value === "true" || value === "1";
+    return normalizeBool(value);
   }
 
   /**
@@ -337,7 +338,7 @@ export class Client {
     const { "@Value": isCheck } = await this.api('CheckResult', {
       ClassNeedCollectionIDCheck: { '@SessionID': sessionId, '@ClassID': classId },
     });
-    return isCheck === "true" || isCheck === "1";
+    return normalizeBool(isCheck);
   }
 
   /**
@@ -360,6 +361,46 @@ export class Client {
     });
     return normalizeArray(children.ChildClass).map((v) => ({ id: v["@ID"] }));
   }
+
+  /**
+   * Получает детальную информацию о нескольких ТБП/типах.
+   * 
+   * @param sessionId - Идентификатор сессии.
+   * @param classInfo - Массив объектов с полем classId (короткие имена).
+   * 
+   * @returns Массив {@link Class}.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async classesGet(sessionId: string, classes: string[]): Promise<Class[]> {
+    const res = await this.api('Classes', {
+      ClassesGet: {
+        '@SessionID': sessionId,
+        ClassInfo: classes.map(v => ({ '@ClassID': v })),
+      },
+    });
+    return normalizeArray(res.Class).map((v) => ({
+      id: v["@ID"],
+      name: v["@Name"],
+      baseClassId: v["@BaseClassID"],
+      entityId: v["@EntityID"],
+      isKernelType: normalizeBool(v["@IsKernelType"]),
+      classInterface: v["@ClassInterface"],
+      flags: v["@Flags"],
+      menuCaption: v["@MenuCaption"],
+      isAccessible: normalizeBool(v["@IsAccessible"]),
+      padLength: v["@PadLength"],
+      dataSize: v["@DataSize"],
+      dataPrecision: v["@DataPrecision"],
+      properties: v["@Properties"],
+      groupId: v["@GroupID"],
+    }));
+  }
+
 
   //====================================================================================================================
   // Информация о системе
@@ -521,7 +562,7 @@ export class Client {
     const { "@Value": val } = await this.api("NovoAllowedCheckResult", {
       NovoAllowedCheck: { "@SessionID": sessionId },
     });
-    return val === "true" || val === "1";
+    return normalizeBool(val);
   }
 
   /**
@@ -542,7 +583,7 @@ export class Client {
     const result = await this.api("OptionInfo", {
       SystemOptionEnabledCheck: { "@SessionID": sessionId, "@OptionName": optionName },
     });
-    return result["@Enabled"] === "true";
+    return normalizeBool(result["@Enabled"]);
   }
 
   //====================================================================================================================
@@ -790,4 +831,12 @@ export class Client {
 const normalizeArray = <T>(value: T | T[] | undefined): T[] => {
   if (value === undefined) return [];
   return Array.isArray(value) ? value : [value];
+};
+
+/**
+ * Нормализует значение, которое может быть строкой "true" или "1", в boolean.
+ */
+const normalizeBool = (value: string | undefined): boolean => {
+  if (value === undefined) return false;
+  return value === "true" || value === "1"
 };

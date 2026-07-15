@@ -121,3 +121,39 @@ export interface ChildClass {
   /** Короткое имя дочернего ТБП. */
   id: string;
 }
+
+/**
+ * Описание ТБП (класса).
+ */
+export interface Class {
+  /** Короткое имя ТБП. */
+  id: string;
+  /** Полное имя. */
+  name: string;
+  /** Базовый ТБП. */
+  baseClassId: BaseClassID;
+  /** Идентификатор сущности. */
+  entityId: string;
+  /** Является типом ядра. */
+  isKernelType: boolean;
+  /** Интерфейс класса. */
+  classInterface: string;
+  /** Флаги (строка из 25 символов). */
+  flags: string;
+  /** Заголовок в меню (опционально). */
+  menuCaption?: string;
+  /** Доступность (опционально). */
+  isAccessible?: boolean;
+  /** Длина отступа (опционально). */
+  padLength?: string;
+  /** Размер данных (опционально). */
+  dataSize?: string;
+  /** Точность данных (опционально). */
+  dataPrecision?: string;
+  /** Свойства (опционально). */
+  properties?: string;
+  /** Идентификатор группы (опционально). */
+  groupId?: string;
+}
+
+export type BaseClassID = "STRUCTURE";

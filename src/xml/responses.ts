@@ -819,21 +819,21 @@ export interface Class {
   /** Идентификатор сущности. */
   "@EntityID": string;
   /** Является типом ядра (0/1). */
-  "@IsKernelType": number;
+  "@IsKernelType": string;
   /** Интерфейс класса. */
   "@ClassInterface": string;
   /** Флаги (строка из 25 символов). */
   "@Flags": string;
   /** Заголовок в меню (опционально). */
   "@MenuCaption"?: string;
-  /** Доступность (опционально). */
-  "@IsAccessible"?: number;
+  /** Доступность (0/1) (опционально). */
+  "@IsAccessible"?: string;
   /** Длина отступа (опционально). */
-  "@PadLength"?: number;
+  "@PadLength"?: string;
   /** Размер данных (опционально). */
-  "@DataSize"?: number;
+  "@DataSize"?: string;
   /** Точность данных (опционально). */
-  "@DataPrecision"?: number;
+  "@DataPrecision"?: string;
   /** Свойства (опционально). */
   "@Properties"?: string;
   /** Идентификатор группы (опционально). */
