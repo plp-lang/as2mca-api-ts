@@ -12,6 +12,7 @@ import type {
   ObjectClassAndArchiveKey,
   SessionInfo,
   Setting,
+  State,
   SystemNetAddressSet,
   Transition,
   UserInfo,
@@ -296,6 +297,26 @@ export class Client {
     }));
   }
 
+  /**
+   * Возвращает список состояний для указанного ТБП.
+   * 
+   * @param sessionId - Идентификатор сессии.
+   * @param classId - Короткое имя ТБП.
+   * 
+   * @returns Массив {@link State}.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async classStatesGet(sessionId: string, classId: string): Promise<State[]> {
+    const states = await this.api('States', {
+      ClassStatesGet: { '@SessionID': sessionId, '@ClassID': classId },
+    });
+    return normalizeArray(states.State).map((v) => ({ id: v["@ID"], name: v["@Name"], indexUse: v["@IndexUse"] }));
+  }
 
   //====================================================================================================================
   // Информация о системе

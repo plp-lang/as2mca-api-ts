@@ -39,4 +39,17 @@ describe("ТБП и типы", () => {
       expect(finalStateID).toBeString();
     });
   });
+
+  test("classStatesGet", async () => {
+    const { client, sessionId } = ctx;
+
+    const trans = await client.classStatesGet(sessionId, "VZ_CARDS");
+    expect(trans).toBeArray();
+    expect(trans.length).toBeGreaterThan(1);
+    trans.forEach(({ id, name, indexUse }): void => {
+      expect(id).toBeString();
+      expect(name).toBeString();
+      expect(indexUse).toBeString();
+    });
+  });
 });

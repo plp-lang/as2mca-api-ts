@@ -101,3 +101,15 @@ export interface Transition {
   /** ID конечного состояния. */
   finalStateID: string;
 }
+
+/**
+ * Состояние ТБП.
+ */
+export interface State {
+  /** Идентификатор состояния. */
+  id: string;
+  /** Название состояния. */
+  name: string;
+  /** Индекс использования. */
+  indexUse: string;
+}

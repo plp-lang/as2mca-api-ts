@@ -315,7 +315,7 @@ export interface State {
   /** Название состояния. */
   "@Name": string;
   /** Индекс использования. */
-  "@IndexUse": number;
+  "@IndexUse": string;
 }
 
 /**
