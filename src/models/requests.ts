@@ -20,7 +20,7 @@ export interface NetworkInformationSet {
  * Установка MAC и IP адресов клиента.
  */
 export interface SystemNetAddressSet {
-  /** MAC‑адрес устройства (например, "aa:bb:cc:dd:ee:ff"). */
+  /** MAC‑адрес устройства (например, "aabbccddeeff"). */
   MACAddress: string;
   /** Локальный IP‑адрес. */
   IPAddress: string;

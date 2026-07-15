@@ -13,6 +13,7 @@ import type {
   SessionInfo,
   Setting,
   SystemNetAddressSet,
+  Transition,
   UserInfo,
 } from "./models";
 import type {
@@ -250,7 +251,7 @@ export class Client {
    * Устанавливает MAC и IP‑адрес клиента для текущей сессии.
    *
    * @param sessionId - Идентификатор сессии.
-   * @param params - Параметры SystemNetAddressSet.
+   * @param params - Параметры {@link SystemNetAddressSet}.
    *
    * @throws {ApiError} Если сессия уже неактивна или невалидна.
    * @throws {HttpError} При сетевых проблемах.
@@ -267,6 +268,34 @@ export class Client {
       },
     });
   }
+
+  /**
+   * Возвращает информацию о возможных переходах между состояниями для указанного ТБП.
+   * 
+   * @param sessionId - Идентификатор сессии.
+   * @param classId - Короткое имя ТБП.
+   * 
+   * @returns Массив {@link Transition}.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async classTransitionsGet(sessionId: string, classId: string): Promise<Transition[]> {
+    const transitions = await this.api('Transitions', {
+      ClassTransitionsGet: { '@SessionID': sessionId, '@ClassID': classId },
+    });
+    return normalizeArray(transitions.Transition).map((v) => ({
+      id: v["@ID"],
+      name: v["@Name"],
+      methodShortName: v["@MethodShortName"],
+      initialStateID: v["@InitialStateID"],
+      finalStateID: v["@FinalStateID"],
+    }));
+  }
+
 
   //====================================================================================================================
   // Информация о системе

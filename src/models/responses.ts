@@ -67,9 +67,9 @@ export interface Setting {
  */
 export interface ObjectClassAndArchiveKey {
   /** Короткое имя текущего ТБП экземпляра. */
-  classId: string;
+  classId: string | undefined;
   /** Ключ архива. */
-  archiveKey: string;
+  archiveKey: string | undefined;
 }
 
 /**
@@ -84,4 +84,20 @@ export interface BackwardReference {
   qual: string;
   /** Имя квалификатора. */
   qualName: string;
+}
+
+/**
+ * Переход состояний ТБП.
+ */
+export interface Transition {
+  /** Идентификатор перехода. */
+  id: string;
+  /** Название перехода. */
+  name: string;
+  /** Короткое имя операции (может отсутствовать). */
+  methodShortName?: string;
+  /** ID начального состояния. */
+  initialStateID: string;
+  /** ID конечного состояния. */
+  finalStateID: string;
 }

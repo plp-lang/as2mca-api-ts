@@ -60,7 +60,7 @@ describe("Сессия и информация о пользователе", () 
 
     await client.systemNetAddressSet(sessionId, {
       IPAddress: "192.168.1.100",
-      MACAddress: "00:11:22:33:44:55",
+      MACAddress: "aabbccddeeff",
     });
   });
 });

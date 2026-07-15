@@ -255,9 +255,9 @@ export interface DebugText {
  */
 export interface ObjectClassAndArchiveKey {
   /** Короткое имя текущего ТБП экземпляра. */
-  "@ClassID": string;
+  "@ClassID"?: string;
   /** Ключ архива. */
-  "@ArchiveKey": string;
+  "@ArchiveKey"?: string;
 }
 
 /**
@@ -287,7 +287,7 @@ export interface BackwardReferences {
  */
 export interface Transition {
   /** Идентификатор перехода. */
-  "@ID": number;
+  "@ID": string;
   /** Название перехода. */
   "@Name": string;
   /** Короткое имя операции (может отсутствовать). */
