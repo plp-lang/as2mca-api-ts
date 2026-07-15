@@ -10,6 +10,7 @@ import type {
   ChildClass,
   Class,
   CoreInfo,
+  Method,
   NetworkInformationSet,
   ObjectClassAndArchiveKey,
   SessionInfo,
@@ -736,6 +737,46 @@ export class Client {
           properties: v["@Properties"],
           groupId: v["@GroupID"],
         };
+  }
+
+  //====================================================================================================================
+  // Операции
+  //====================================================================================================================
+
+  /**
+   * Возвращает список операций, доступных для указанного ТБП.
+   *
+   * @param sessionId - Идентификатор сессии.
+   * @param classId - Короткое имя ТБП.
+   *
+   * @returns Массив Method.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async classMethodsGet(sessionId: string, classId: string): Promise<Method[]> {
+    const methods = await this.api("Methods", {
+      ClassMethodsGet: { "@SessionID": sessionId, "@ClassID": classId },
+    });
+    return normalizeArray(methods.Method).map((v) => ({
+      id: v["@ID"],
+      name: v["@Name"],
+      shortName: v["@ShortName"],
+      type: v["@Type"],
+      formClassId: v["@FormClassID"],
+      properties: v["@Properties"],
+      distance: v["@Distance"],
+      callableShortName: v["@CallableShortName"],
+      scriptId: v["@ScriptID"],
+      resultClassId: v["@ResultClassID"],
+      userDriven: normalizeBool(v["@UserDriven"]),
+      formId: v["@FormID"],
+      reportType: v["@ReportType"],
+      reportTemplate: v["@ReportTemplate"],
+    }));
   }
 
   //====================================================================================================================

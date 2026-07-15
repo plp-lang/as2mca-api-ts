@@ -351,7 +351,7 @@ export interface ChildClasses {
  */
 export interface Method {
   /** Идентификатор операции. */
-  "@ID": number;
+  "@ID": string;
   /** Полное наименование. */
   "@Name": string;
   /** Короткое имя. */
@@ -362,7 +362,7 @@ export interface Method {
   "@FormClassID": string;
   /** Свойства. */
   "@Properties": string;
-  "@Distance": number;
+  "@Distance": string;
   /** Короткое имя вызываемого объекта. */
   "@CallableShortName": string;
   /** Идентификатор клиент-скрипта (опционально). */
@@ -370,9 +370,9 @@ export interface Method {
   /** Короткое имя возвращаемого типа (опционально). */
   "@ResultClassID"?: string;
   /** Вызывается пользователем (опционально). */
-  "@UserDriven"?: number;
+  "@UserDriven"?: string;
   /** Идентификатор формы (опционально). */
-  "@FormID"?: number;
+  "@FormID"?: string;
   /** Тип отчёта (опционально). */
   "@ReportType"?: string;
   /** Шаблон отчёта (опционально). */
@@ -389,7 +389,7 @@ export interface Method {
  * `S` — групповая операция.
  * `Y` — деструктор.
  */
-export type MethodType = "C" | "G" | "M" | "R" | "S" | "Y";
+export type MethodType = "C" | "G" | "M" | "R" | "S" | "Y" | "O";
 
 /**
  * Список операций.
