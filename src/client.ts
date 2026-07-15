@@ -7,6 +7,7 @@ import type { HttpAdapter } from "./http-adapter";
 import { FetchHttpAdapter } from "./fetch-http-adapter";
 import type {
   BackwardReference,
+  ChildClass,
   CoreInfo,
   NetworkInformationSet,
   ObjectClassAndArchiveKey,
@@ -339,6 +340,26 @@ export class Client {
     return isCheck === "true" || isCheck === "1";
   }
 
+  /**
+   * Возвращает список дочерних ТБП для указанного ТБП.
+   * 
+   * @param sessionId - Идентификатор сессии.
+   * @param classId - Короткое имя родительского ТБП.
+   * 
+   * @returns Массив {@link ChildClass}.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async classChildrenGet(sessionId: string, classId: string): Promise<ChildClass[]> {
+    const children = await this.api('ChildClasses', {
+      ClassChildrenGet: { '@SessionID': sessionId, '@ClassID': classId },
+    });
+    return normalizeArray(children.ChildClass).map((v) => ({ id: v["@ID"] }));
+  }
 
   //====================================================================================================================
   // Информация о системе

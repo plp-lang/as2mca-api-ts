@@ -113,3 +113,11 @@ export interface State {
   /** Индекс использования. */
   indexUse: string;
 }
+
+/**
+ * Дочерний ТБП.
+ */
+export interface ChildClass {
+  /** Короткое имя дочернего ТБП. */
+  id: string;
+}

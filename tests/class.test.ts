@@ -59,4 +59,15 @@ describe("ТБП и типы", () => {
     const isNeed = await client.classNeedCollectionIdCheck(sessionId, "DOCUMENT");
     expect(isNeed).toBeFalse();
   });
+
+  test("classChildrenGet", async () => {
+    const { client, sessionId } = ctx;
+
+    const childs = await client.classChildrenGet(sessionId, "DOCUMENT");
+    expect(childs).toBeArray();
+    expect(childs.length).toBeGreaterThan(1);
+    childs.forEach(({ id }) => {
+      expect(id).toBeString();
+    });
+  });
 });
