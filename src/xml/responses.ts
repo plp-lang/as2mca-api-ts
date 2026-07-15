@@ -64,17 +64,17 @@ export type ResponseKey = KeysOfUnion<ResponseBody>;
 /**
  * Вспомогательный тип: извлекает тип значения из ResponseBody по ключу K
  */
-export type ResponseValue<K extends ResponseKey> = Extract<ResponseBody, Record<K, any>>[K];
+export type ResponseValue<K extends ResponseKey> = K extends any ? Extract<ResponseBody, Record<K, any>>[K] : never;
 
 /**
  * Ответ "Not Found" (пустой).
  */
-export type NotFound = Record<string, never>;
+export type NotFound = "";
 
 /**
  * Пустой ответ, подтверждающий успешное выполнение действия (например, отключение сессии).
  */
-export type Done = Record<string, never>;
+export type Done = "";
 
 /**
  * Структура ошибки API.

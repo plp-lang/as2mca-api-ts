@@ -16,7 +16,7 @@ describe("ТБП и типы", () => {
     const { client, sessionId } = ctx;
 
     const refs = await client.objectBackwardReferencesGet(sessionId, 0, "DOCUMENT");
-    expect(refs).toBeArray()
+    expect(refs).toBeArray();
     refs.forEach(({ classId, className, qual, qualName }): void => {
       expect(classId).toBeString();
       expect(className).toBeString();
@@ -34,7 +34,7 @@ describe("ТБП и типы", () => {
     trans.forEach(({ id, name, methodShortName, initialStateID, finalStateID }): void => {
       expect(id).toBeString();
       expect(name).toBeString();
-      expect(methodShortName === undefined || typeof methodShortName === "string").toBe(true);;
+      expect(methodShortName === undefined || typeof methodShortName === "string").toBe(true);
       expect(initialStateID).toBeString();
       expect(finalStateID).toBeString();
     });
@@ -93,5 +93,28 @@ describe("ТБП и типы", () => {
       expect(cl.properties === undefined || typeof cl.properties === "string").toBe(true);
       expect(cl.groupId === undefined || typeof cl.groupId === "string").toBe(true);
     });
+  });
+
+  test("classGet", async () => {
+    const { client, sessionId } = ctx;
+
+    const cl = await client.classGet(sessionId, "DOCUMENT");
+    expect(cl).toBeDefined();
+    if (cl !== undefined) {
+      expect(cl.id).toBeString();
+      expect(cl.name).toBeString();
+      expect(cl.baseClassId).toBe("STRUCTURE");
+      expect(cl.entityId).toBeString();
+      expect(cl.isKernelType).toBeBoolean();
+      expect(cl.classInterface).toBeString();
+      expect(cl.flags).toBeString();
+      expect(cl.menuCaption === undefined || typeof cl.menuCaption === "string").toBe(true);
+      expect(cl.isAccessible === undefined || typeof cl.isAccessible === "boolean").toBe(true);
+      expect(cl.padLength === undefined || typeof cl.padLength === "string").toBe(true);
+      expect(cl.dataSize === undefined || typeof cl.dataSize === "string").toBe(true);
+      expect(cl.dataPrecision === undefined || typeof cl.dataPrecision === "string").toBe(true);
+      expect(cl.properties === undefined || typeof cl.properties === "string").toBe(true);
+      expect(cl.groupId === undefined || typeof cl.groupId === "string").toBe(true);
+    }
   });
 });

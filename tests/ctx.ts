@@ -17,27 +17,29 @@ await configure({
   },
   loggers: [
     { category: ["logtape", "meta"], sinks: ["console"], lowestLevel: "warning" },
-    { category: "as2mca-api", sinks: ["console"], lowestLevel: Bun.env["AS2MCA_API_LOG_LEVEL"] as any ?? "info" },
+    { category: "as2mca-api", sinks: ["console"], lowestLevel: (Bun.env["AS2MCA_API_LOG_LEVEL"] as any) ?? "info" },
   ],
 });
 
-
 export class TestHttpAdapter implements HttpAdapter {
-  private readonly httpAdapter: HttpAdapter = new FetchHttpAdapter()
+  private readonly httpAdapter: HttpAdapter = new FetchHttpAdapter();
   private readonly log = getLogger(["as2mca-api"]);
 
   async authbasic(url: string, headers?: Record<string, string>): Promise<HttpAuthBasicResponse> {
     this.log.trace("-> started processing request, url: {url}", { url });
     const res = await this.httpAdapter.authbasic(url, headers);
-    this.log.trace("<- finished processing request, url: {url}, status: {status}, response: {statusText}", { url, ...res });
-    return res
+    this.log.trace("<- finished processing request, url: {url}, status: {status}, response: {statusText}", {
+      url,
+      ...res,
+    });
+    return res;
   }
 
   async api(url: string, body: string, headers?: Record<string, string>): Promise<HttpApiResponse> {
     this.log.trace("-> started processing request, url: {url}", { url });
     const res = await this.httpAdapter.api(url, body, headers);
     this.log.trace("<- finished processing request, url: {url}, status: {status}, response: {body}", { url, ...res });
-    return res
+    return res;
   }
 }
 

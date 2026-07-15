@@ -272,136 +272,6 @@ export class Client {
     });
   }
 
-  /**
-   * Возвращает информацию о возможных переходах между состояниями для указанного ТБП.
-   * 
-   * @param sessionId - Идентификатор сессии.
-   * @param classId - Короткое имя ТБП.
-   * 
-   * @returns Массив {@link Transition}.
-   *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
-   */
-  public async classTransitionsGet(sessionId: string, classId: string): Promise<Transition[]> {
-    const transitions = await this.api('Transitions', {
-      ClassTransitionsGet: { '@SessionID': sessionId, '@ClassID': classId },
-    });
-    return normalizeArray(transitions.Transition).map((v) => ({
-      id: v["@ID"],
-      name: v["@Name"],
-      methodShortName: v["@MethodShortName"],
-      initialStateID: v["@InitialStateID"],
-      finalStateID: v["@FinalStateID"],
-    }));
-  }
-
-  /**
-   * Возвращает список состояний для указанного ТБП.
-   * 
-   * @param sessionId - Идентификатор сессии.
-   * @param classId - Короткое имя ТБП.
-   * 
-   * @returns Массив {@link State}.
-   *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
-   */
-  public async classStatesGet(sessionId: string, classId: string): Promise<State[]> {
-    const states = await this.api('States', {
-      ClassStatesGet: { '@SessionID': sessionId, '@ClassID': classId },
-    });
-    return normalizeArray(states.State).map((v) => ({ id: v["@ID"], name: v["@Name"], indexUse: v["@IndexUse"] }));
-  }
-
-  /**
-   * Проверяет, требуется ли указывать `collectionid` для данного ТБП.
-   * 
-   * @param sessionId - Идентификатор сессии.
-   * @param classId - Короткое имя ТБП.
-   * 
-   * @returns true, если `collectionid` обязателен.
-   *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
-   */
-  public async classNeedCollectionIdCheck(sessionId: string, classId: string): Promise<boolean> {
-    const { "@Value": isCheck } = await this.api('CheckResult', {
-      ClassNeedCollectionIDCheck: { '@SessionID': sessionId, '@ClassID': classId },
-    });
-    return normalizeBool(isCheck);
-  }
-
-  /**
-   * Возвращает список дочерних ТБП для указанного ТБП.
-   * 
-   * @param sessionId - Идентификатор сессии.
-   * @param classId - Короткое имя родительского ТБП.
-   * 
-   * @returns Массив {@link ChildClass}.
-   *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
-   */
-  public async classChildrenGet(sessionId: string, classId: string): Promise<ChildClass[]> {
-    const children = await this.api('ChildClasses', {
-      ClassChildrenGet: { '@SessionID': sessionId, '@ClassID': classId },
-    });
-    return normalizeArray(children.ChildClass).map((v) => ({ id: v["@ID"] }));
-  }
-
-  /**
-   * Получает детальную информацию о нескольких ТБП/типах.
-   * 
-   * @param sessionId - Идентификатор сессии.
-   * @param classInfo - Массив объектов с полем classId (короткие имена).
-   * 
-   * @returns Массив {@link Class}.
-   *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
-   */
-  public async classesGet(sessionId: string, classes: string[]): Promise<Class[]> {
-    const res = await this.api('Classes', {
-      ClassesGet: {
-        '@SessionID': sessionId,
-        ClassInfo: classes.map(v => ({ '@ClassID': v })),
-      },
-    });
-    return normalizeArray(res.Class).map((v) => ({
-      id: v["@ID"],
-      name: v["@Name"],
-      baseClassId: v["@BaseClassID"],
-      entityId: v["@EntityID"],
-      isKernelType: normalizeBool(v["@IsKernelType"]),
-      classInterface: v["@ClassInterface"],
-      flags: v["@Flags"],
-      menuCaption: v["@MenuCaption"],
-      isAccessible: normalizeBool(v["@IsAccessible"]),
-      padLength: v["@PadLength"],
-      dataSize: v["@DataSize"],
-      dataPrecision: v["@DataPrecision"],
-      properties: v["@Properties"],
-      groupId: v["@GroupID"],
-    }));
-  }
-
-
   //====================================================================================================================
   // Информация о системе
   //====================================================================================================================
@@ -701,6 +571,173 @@ export class Client {
     }));
   }
 
+  /**
+   * Возвращает информацию о возможных переходах между состояниями для указанного ТБП.
+   *
+   * @param sessionId - Идентификатор сессии.
+   * @param classId - Короткое имя ТБП.
+   *
+   * @returns Массив {@link Transition}.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async classTransitionsGet(sessionId: string, classId: string): Promise<Transition[]> {
+    const transitions = await this.api("Transitions", {
+      ClassTransitionsGet: { "@SessionID": sessionId, "@ClassID": classId },
+    });
+    return normalizeArray(transitions.Transition).map((v) => ({
+      id: v["@ID"],
+      name: v["@Name"],
+      methodShortName: v["@MethodShortName"],
+      initialStateID: v["@InitialStateID"],
+      finalStateID: v["@FinalStateID"],
+    }));
+  }
+
+  /**
+   * Возвращает список состояний для указанного ТБП.
+   *
+   * @param sessionId - Идентификатор сессии.
+   * @param classId - Короткое имя ТБП.
+   *
+   * @returns Массив {@link State}.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async classStatesGet(sessionId: string, classId: string): Promise<State[]> {
+    const states = await this.api("States", {
+      ClassStatesGet: { "@SessionID": sessionId, "@ClassID": classId },
+    });
+    return normalizeArray(states.State).map((v) => ({ id: v["@ID"], name: v["@Name"], indexUse: v["@IndexUse"] }));
+  }
+
+  /**
+   * Проверяет, требуется ли указывать `collectionid` для данного ТБП.
+   *
+   * @param sessionId - Идентификатор сессии.
+   * @param classId - Короткое имя ТБП.
+   *
+   * @returns true, если `collectionid` обязателен.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async classNeedCollectionIdCheck(sessionId: string, classId: string): Promise<boolean> {
+    const { "@Value": isCheck } = await this.api("CheckResult", {
+      ClassNeedCollectionIDCheck: { "@SessionID": sessionId, "@ClassID": classId },
+    });
+    return normalizeBool(isCheck);
+  }
+
+  /**
+   * Возвращает список дочерних ТБП для указанного ТБП.
+   *
+   * @param sessionId - Идентификатор сессии.
+   * @param classId - Короткое имя родительского ТБП.
+   *
+   * @returns Массив {@link ChildClass}.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async classChildrenGet(sessionId: string, classId: string): Promise<ChildClass[]> {
+    const children = await this.api("ChildClasses", {
+      ClassChildrenGet: { "@SessionID": sessionId, "@ClassID": classId },
+    });
+    return normalizeArray(children.ChildClass).map((v) => ({ id: v["@ID"] }));
+  }
+
+  /**
+   * Получает детальную информацию о нескольких ТБП/типах.
+   *
+   * @param sessionId - Идентификатор сессии.
+   * @param classInfo - Массив объектов с полем classId (короткие имена).
+   *
+   * @returns Массив {@link Class}.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async classesGet(sessionId: string, classes: string[]): Promise<Class[]> {
+    const res = await this.api("Classes", {
+      ClassesGet: {
+        "@SessionID": sessionId,
+        ClassInfo: classes.map((v) => ({ "@ClassID": v })),
+      },
+    });
+    return normalizeArray(res.Class).map((v) => ({
+      id: v["@ID"],
+      name: v["@Name"],
+      baseClassId: v["@BaseClassID"],
+      entityId: v["@EntityID"],
+      isKernelType: normalizeBool(v["@IsKernelType"]),
+      classInterface: v["@ClassInterface"],
+      flags: v["@Flags"],
+      menuCaption: v["@MenuCaption"],
+      isAccessible: normalizeBool(v["@IsAccessible"]),
+      padLength: v["@PadLength"],
+      dataSize: v["@DataSize"],
+      dataPrecision: v["@DataPrecision"],
+      properties: v["@Properties"],
+      groupId: v["@GroupID"],
+    }));
+  }
+
+  /**
+   * Возвращает детальную информацию о конкретном ТБП.
+   *
+   * @param sessionId - Идентификатор сессии.
+   * @param classId - Короткое имя ТБП.
+   *
+   * @returns Объект {@link Class} или undefined, если ТБП не найден.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async classGet(sessionId: string, classId: string): Promise<Class | undefined> {
+    const v = await this.api(["Class", "NotFound"], {
+      ClassGet: { "@SessionID": sessionId, "@ClassID": classId },
+    });
+    return v === ""
+      ? undefined
+      : {
+          id: v["@ID"],
+          name: v["@Name"],
+          baseClassId: v["@BaseClassID"],
+          entityId: v["@EntityID"],
+          isKernelType: normalizeBool(v["@IsKernelType"]),
+          classInterface: v["@ClassInterface"],
+          flags: v["@Flags"],
+          menuCaption: v["@MenuCaption"],
+          isAccessible: normalizeBool(v["@IsAccessible"]),
+          padLength: v["@PadLength"],
+          dataSize: v["@DataSize"],
+          dataPrecision: v["@DataPrecision"],
+          properties: v["@Properties"],
+          groupId: v["@GroupID"],
+        };
+  }
+
   //====================================================================================================================
   // Private
   //====================================================================================================================
@@ -708,7 +745,7 @@ export class Client {
   private readonly parser = new XMLParser({
     ignoreAttributes: false,
     attributeNamePrefix: "@",
-    parseTagValue: true,
+    parseTagValue: false,
     parseAttributeValue: false,
   });
 
@@ -734,7 +771,7 @@ export class Client {
    * @throws {XmlDeserializeError} При ошибке парсинга ответа.
    */
   private async api<K extends Exclude<ResponseKey, "Error">>(
-    expectedKey: K,
+    expectedKey: K | K[],
     obj: RequestBody,
   ): Promise<ResponseValue<K>> {
     const url = this.endpoint("api");
@@ -757,8 +794,10 @@ export class Client {
       throw new ApiError(message, details);
     }
 
-    if (expectedKey in root) {
-      return (root as Record<K, any>)[expectedKey] as ResponseValue<K>;
+    const keys = Array.isArray(expectedKey) ? expectedKey : [expectedKey];
+    const foundKey = keys.find((k) => k in root);
+    if (foundKey) {
+      return (root as Record<string, any>)[foundKey] as ResponseValue<K>;
     }
 
     throw new UnexpectedResponseError(body);
@@ -838,5 +877,5 @@ const normalizeArray = <T>(value: T | T[] | undefined): T[] => {
  */
 const normalizeBool = (value: string | undefined): boolean => {
   if (value === undefined) return false;
-  return value === "true" || value === "1"
+  return value === "true" || value === "1";
 };
