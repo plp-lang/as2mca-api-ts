@@ -318,6 +318,28 @@ export class Client {
     return normalizeArray(states.State).map((v) => ({ id: v["@ID"], name: v["@Name"], indexUse: v["@IndexUse"] }));
   }
 
+  /**
+   * Проверяет, требуется ли указывать `collectionid` для данного ТБП.
+   * 
+   * @param sessionId - Идентификатор сессии.
+   * @param classId - Короткое имя ТБП.
+   * 
+   * @returns true, если `collectionid` обязателен.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async classNeedCollectionIdCheck(sessionId: string, classId: string): Promise<boolean> {
+    const { "@Value": isCheck } = await this.api('CheckResult', {
+      ClassNeedCollectionIDCheck: { '@SessionID': sessionId, '@ClassID': classId },
+    });
+    return isCheck === "true" || isCheck === "1";
+  }
+
+
   //====================================================================================================================
   // Информация о системе
   //====================================================================================================================

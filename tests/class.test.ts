@@ -52,4 +52,11 @@ describe("ТБП и типы", () => {
       expect(indexUse).toBeString();
     });
   });
+
+  test("classNeedCollectionIdCheck", async () => {
+    const { client, sessionId } = ctx;
+
+    const isNeed = await client.classNeedCollectionIdCheck(sessionId, "DOCUMENT");
+    expect(isNeed).toBeFalse();
+  });
 });
