@@ -405,7 +405,7 @@ export interface MethodClientScriptGet {
   /** Идентификатор сессии. */
   "@SessionID": string;
   /** Идентификатор операции. */
-  "@MethodID": number;
+  "@MethodID": string;
 }
 
 /**

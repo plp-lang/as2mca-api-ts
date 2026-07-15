@@ -779,6 +779,27 @@ export class Client {
     }));
   }
 
+  /**
+   * Получает клиент скрипт для указанной операции.
+   *
+   * @param sessionId - Идентификатор сессии.
+   * @param methodId - Идентификатор операции.
+   *
+   * @returns Текст скрипта или undefined, если скрипт отсутствует.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async methodClientScriptGet(sessionId: string, methodId: string): Promise<string | undefined> {
+    const { "@Text": script } = await this.api("ClientScript", {
+      MethodClientScriptGet: { "@SessionID": sessionId, "@MethodID": methodId },
+    });
+    return script.length > 0 ? script : undefined;
+  }
+
   //====================================================================================================================
   // Private
   //====================================================================================================================
