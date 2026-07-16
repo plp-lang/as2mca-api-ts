@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { context } from "./ctx";
+import type { Class } from "../src/models";
 
 describe("ТБП и типы", () => {
   const ctx = context();
@@ -34,7 +35,7 @@ describe("ТБП и типы", () => {
     trans.forEach(({ id, name, methodShortName, initialStateID, finalStateID }): void => {
       expect(id).toBeString();
       expect(name).toBeString();
-      expect(methodShortName === undefined || typeof methodShortName === "string").toBe(true);
+      expect(typeof methodShortName).toBeOneOf(["string", "undefined"]);
       expect(initialStateID).toBeString();
       expect(finalStateID).toBeString();
     });
@@ -85,37 +86,35 @@ describe("ТБП и типы", () => {
       expect(cl.isKernelType).toBeBoolean();
       expect(cl.classInterface).toBeString();
       expect(cl.flags).toBeString();
-      expect(cl.menuCaption === undefined || typeof cl.menuCaption === "string").toBe(true);
-      expect(cl.isAccessible === undefined || typeof cl.isAccessible === "boolean").toBe(true);
-      expect(cl.padLength === undefined || typeof cl.padLength === "string").toBe(true);
-      expect(cl.dataSize === undefined || typeof cl.dataSize === "string").toBe(true);
-      expect(cl.dataPrecision === undefined || typeof cl.dataPrecision === "string").toBe(true);
-      expect(cl.properties === undefined || typeof cl.properties === "string").toBe(true);
-      expect(cl.groupId === undefined || typeof cl.groupId === "string").toBe(true);
+      expect(typeof cl.menuCaption).toBeOneOf(["string", "undefined"]);
+      expect(typeof cl.isAccessible).toBeOneOf(["boolean", "undefined"]);
+      expect(typeof cl.padLength).toBeOneOf(["string", "undefined"]);
+      expect(typeof cl.dataSize).toBeOneOf(["string", "undefined"]);
+      expect(typeof cl.dataPrecision).toBeOneOf(["string", "undefined"]);
+      expect(typeof cl.properties).toBeOneOf(["string", "undefined"]);
+      expect(typeof cl.groupId).toBeOneOf(["string", "undefined"]);
     });
   });
 
   test("classGet", async () => {
     const { client, sessionId } = ctx;
 
-    const cl = await client.classGet(sessionId, "DOCUMENT");
+    const cl = (await client.classGet(sessionId, "DOCUMENT")) as Class;
     expect(cl).toBeDefined();
-    if (cl !== undefined) {
-      expect(cl.id).toBeString();
-      expect(cl.name).toBeString();
-      expect(cl.baseClassId).toBe("STRUCTURE");
-      expect(cl.entityId).toBeString();
-      expect(cl.isKernelType).toBeBoolean();
-      expect(cl.classInterface).toBeString();
-      expect(cl.flags).toBeString();
-      expect(cl.menuCaption === undefined || typeof cl.menuCaption === "string").toBe(true);
-      expect(cl.isAccessible === undefined || typeof cl.isAccessible === "boolean").toBe(true);
-      expect(cl.padLength === undefined || typeof cl.padLength === "string").toBe(true);
-      expect(cl.dataSize === undefined || typeof cl.dataSize === "string").toBe(true);
-      expect(cl.dataPrecision === undefined || typeof cl.dataPrecision === "string").toBe(true);
-      expect(cl.properties === undefined || typeof cl.properties === "string").toBe(true);
-      expect(cl.groupId === undefined || typeof cl.groupId === "string").toBe(true);
-    }
+    expect(cl.id).toBeString();
+    expect(cl.name).toBeString();
+    expect(cl.baseClassId).toBe("STRUCTURE");
+    expect(cl.entityId).toBeString();
+    expect(cl.isKernelType).toBeBoolean();
+    expect(cl.classInterface).toBeString();
+    expect(cl.flags).toBeString();
+    expect(typeof cl.menuCaption).toBeOneOf(["string", "undefined"]);
+    expect(typeof cl.isAccessible).toBeOneOf(["boolean", "undefined"]);
+    expect(typeof cl.padLength).toBeOneOf(["string", "undefined"]);
+    expect(typeof cl.dataSize).toBeOneOf(["string", "undefined"]);
+    expect(typeof cl.dataPrecision).toBeOneOf(["string", "undefined"]);
+    expect(typeof cl.properties).toBeOneOf(["string", "undefined"]);
+    expect(typeof cl.groupId).toBeOneOf(["string", "undefined"]);
   });
 
   test("guidesGet", async () => {
@@ -132,13 +131,13 @@ describe("ТБП и типы", () => {
       expect(cl.isKernelType).toBeBoolean();
       expect(cl.classInterface).toBeString();
       expect(cl.flags).toBeString();
-      expect(cl.menuCaption === undefined || typeof cl.menuCaption === "string").toBe(true);
-      expect(cl.isAccessible === undefined || typeof cl.isAccessible === "boolean").toBe(true);
-      expect(cl.padLength === undefined || typeof cl.padLength === "string").toBe(true);
-      expect(cl.dataSize === undefined || typeof cl.dataSize === "string").toBe(true);
-      expect(cl.dataPrecision === undefined || typeof cl.dataPrecision === "string").toBe(true);
-      expect(cl.properties === undefined || typeof cl.properties === "string").toBe(true);
-      expect(cl.groupId === undefined || typeof cl.groupId === "string").toBe(true);
+      expect(typeof cl.menuCaption).toBeOneOf(["string", "undefined"]);
+      expect(typeof cl.isAccessible).toBeOneOf(["boolean", "undefined"]);
+      expect(typeof cl.padLength).toBeOneOf(["string", "undefined"]);
+      expect(typeof cl.dataSize).toBeOneOf(["string", "undefined"]);
+      expect(typeof cl.dataPrecision).toBeOneOf(["string", "undefined"]);
+      expect(typeof cl.properties).toBeOneOf(["string", "undefined"]);
+      expect(typeof cl.groupId).toBeOneOf(["string", "undefined"]);
     });
   });
 
@@ -156,13 +155,13 @@ describe("ТБП и типы", () => {
       expect(cl.isKernelType).toBeBoolean();
       expect(cl.classInterface).toBeString();
       expect(cl.flags).toBeString();
-      expect(cl.menuCaption === undefined || typeof cl.menuCaption === "string").toBe(true);
-      expect(cl.isAccessible === undefined || typeof cl.isAccessible === "boolean").toBe(true);
-      expect(cl.padLength === undefined || typeof cl.padLength === "string").toBe(true);
-      expect(cl.dataSize === undefined || typeof cl.dataSize === "string").toBe(true);
-      expect(cl.dataPrecision === undefined || typeof cl.dataPrecision === "string").toBe(true);
-      expect(cl.properties === undefined || typeof cl.properties === "string").toBe(true);
-      expect(cl.groupId === undefined || typeof cl.groupId === "string").toBe(true);
+      expect(typeof cl.menuCaption).toBeOneOf(["string", "undefined"]);
+      expect(typeof cl.isAccessible).toBeOneOf(["boolean", "undefined"]);
+      expect(typeof cl.padLength).toBeOneOf(["string", "undefined"]);
+      expect(typeof cl.dataSize).toBeOneOf(["string", "undefined"]);
+      expect(typeof cl.dataPrecision).toBeOneOf(["string", "undefined"]);
+      expect(typeof cl.properties).toBeOneOf(["string", "undefined"]);
+      expect(typeof cl.groupId).toBeOneOf(["string", "undefined"]);
     });
   });
 

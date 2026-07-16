@@ -259,3 +259,71 @@ export interface View {
   /** Свойства метода фильтра (опционально). */
   filterMethodProperties?: string;
 }
+
+/**
+ * Описание колонки представления.
+ */
+export interface Column {
+  /** Имя колонки. */
+  name: string;
+  /** Ширина. */
+  width: string;
+  /** Выравнивание. */
+  align: Align;
+  /** Позиция. */
+  position: string;
+  /** Квалификатор. */
+  qual: string;
+  /** Псевдоним. */
+  alias: string;
+  /** Базовый тип. */
+  base: ColumnBase;
+  /** Изменяемый размер. */
+  isSizeable: boolean;
+  /** Стиль ячейки. */
+  isCellStyle: boolean;
+  /** Видимость. */
+  isInvisible: Invisible;
+  /** Возможность выполнения операции. */
+  abilityPerformOperation: boolean;
+  /** Редактируемость (опционально). */
+  isEditable?: boolean;
+  /** Идентификатор ссылки (опционально). */
+  referenceId?: string;
+  /** Целевой ТБП (опционально). */
+  targetClassId?: string;
+  /** Тип ссылки (опционально). */
+  referenceType?: string;
+  /** Логирование (опционально). */
+  logging?: Logging;
+}
+
+/**
+ * Базовый тип данных колонки.
+ */
+export type ColumnBase =
+  | "MEMO"
+  | "DATE"
+  | "STRING"
+  | "NUMBER"
+  | "BOOLEAN"
+  | "REFERENCE"
+  | "COLLECTION"
+  | "OLE"
+  | "NULL"
+  | "STATE";
+
+/**
+ * Выравнивание.
+ */
+export type Align = "0" | "1" | "2"; // 0-лево, 1-центр, 2-право
+
+/**
+ * Видимость.
+ */
+export type Invisible = "0" | "2"; // 0-видимо, 2-скрыто
+
+/**
+ * Логирование.
+ */
+export type Logging = "0" | "D";

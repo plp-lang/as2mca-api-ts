@@ -611,11 +611,11 @@ export interface Column {
   /** Имя колонки. */
   "@Name": string;
   /** Ширина. */
-  "@Width": number;
+  "@Width": string;
   /** Выравнивание. */
   "@Align": Align;
   /** Позиция. */
-  "@Position": number;
+  "@Position": string;
   /** Квалификатор. */
   "@Qual": string;
   /** Псевдоним. */
@@ -623,21 +623,21 @@ export interface Column {
   /** Базовый тип. */
   "@Base": ColumnBase;
   /** Изменяемый размер. */
-  "@IsSizeable": number; // 0 или 1?
+  "@IsSizeable": string; // 0 или 1?
   /** Стиль ячейки. */
-  "@IsCellStyle": number;
+  "@IsCellStyle": string;
   /** Видимость. */
   "@IsInvisible": Invisible;
   /** Возможность выполнения операции. */
-  "@AbilityPerformOperation": boolean;
+  "@AbilityPerformOperation": string;
   /** Редактируемость (опционально). */
-  "@IsEditable"?: number;
+  "@IsEditable"?: string;
   /** Идентификатор ссылки (опционально). */
   "@ReferenceID"?: string;
   /** Целевой ТБП (опционально). */
   "@TargetClassID"?: string;
   /** Тип ссылки (опционально). */
-  "@ReferenceType"?: number;
+  "@ReferenceType"?: string;
   /** Логирование (опционально). */
   "@Logging"?: Logging;
 }
@@ -645,17 +645,27 @@ export interface Column {
 /**
  * Базовый тип данных колонки.
  */
-export type ColumnBase = "MEMO" | "DATE" | "STRING" | "NUMBER" | "BOOLEAN" | "REFERENCE" | "COLLECTION";
+export type ColumnBase =
+  | "MEMO"
+  | "DATE"
+  | "STRING"
+  | "NUMBER"
+  | "BOOLEAN"
+  | "REFERENCE"
+  | "COLLECTION"
+  | "OLE"
+  | "NULL"
+  | "STATE";
 
 /**
  * Выравнивание.
  */
-export type Align = 0 | 1 | 2; // 0-лево, 1-центр, 2-право
+export type Align = "0" | "1" | "2"; // 0-лево, 1-центр, 2-право
 
 /**
  * Видимость.
  */
-export type Invisible = 0 | 2; // 0-видимо, 2-скрыто
+export type Invisible = "0" | "2"; // 0-видимо, 2-скрыто
 
 /**
  * Логирование.

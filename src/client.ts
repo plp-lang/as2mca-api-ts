@@ -9,6 +9,7 @@ import type {
   BackwardReference,
   ChildClass,
   Class,
+  Column,
   CoreInfo,
   GuidesGroup,
   Method,
@@ -934,6 +935,44 @@ export class Client {
       extensionId: v["@ExtensionID"],
       filterMethodShortName: v["@FilterMethodShortName"],
       filterMethodProperties: v["@FilterMethodProperties"],
+    }));
+  }
+
+  /**
+   * Возвращает список колонок для указанного представления.
+   *
+   * @param sessionId - Идентификатор сессии.
+   * @param viewId - Идентификатор представления.
+   *
+   * @returns Массив {@link Column}.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async viewColumnsGet(sessionId: string, viewId: string): Promise<Column[]> {
+    const columns = await this.api("Columns", {
+      ViewColumnsGet: { "@SessionID": sessionId, "@ViewID": viewId },
+    });
+    return normalizeArray(columns.Column).map((v) => ({
+      name: v["@Name"],
+      width: v["@Width"],
+      align: v["@Align"],
+      position: v["@Position"],
+      qual: v["@Qual"],
+      alias: v["@Alias"],
+      base: v["@Base"],
+      isSizeable: normalizeBool(v["@IsSizeable"]),
+      isCellStyle: normalizeBool(v["@IsCellStyle"]),
+      isInvisible: v["@IsInvisible"],
+      abilityPerformOperation: normalizeBool(v["@AbilityPerformOperation"]),
+      isEditable: normalizeBool(v["@IsEditable"]),
+      referenceId: v["@ReferenceID"],
+      targetClassId: v["@TargetClassID"],
+      referenceType: v["@ReferenceType"],
+      logging: v["@Logging"],
     }));
   }
 
