@@ -54,7 +54,6 @@ export type RequestBody =
   | { ViewDataGetCancelable: ViewDataGetCancelable }
   | { ViewColumnsGet: ViewColumnsGet }
   | { ClassViewsGet: ClassViewsGet }
-  | { UserMenuGet: UserMenuGet }
   | { GuidesGet: GuidesGet }
   | { GuidesGroupsGet: GuidesGroupsGet }
   | { TypesGet: TypesGet }
@@ -334,6 +333,30 @@ export interface ClassGet {
   "@ClassID": string;
 }
 
+/**
+ * Запрос списка справочников.
+ */
+export interface GuidesGet {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+}
+
+/**
+ * Запрос групп справочников.
+ */
+export interface GuidesGroupsGet {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+}
+
+/**
+ * Запрос списка типов системы.
+ */
+export interface TypesGet {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+}
+
 //======================================================================================================================
 // Операции
 //======================================================================================================================
@@ -550,6 +573,16 @@ export interface MethodEnd {
 //======================================================================================================================
 
 /**
+ * Запрос представлений ТБП.
+ */
+export interface ClassViewsGet {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+  /** Короткое имя ТБП. */
+  "@ClassID": string;
+}
+
+/**
  * Запрос данных представления с возможностью отмены.
  */
 export interface ViewDataGetCancelable {
@@ -652,52 +685,6 @@ export interface ViewColumnsGet {
   "@SessionID": string;
   /** Идентификатор представления. */
   "@ViewID": number;
-}
-
-/**
- * Запрос представлений ТБП.
- */
-export interface ClassViewsGet {
-  /** Идентификатор сессии. */
-  "@SessionID": string;
-  /** Короткое имя ТБП. */
-  "@ClassID": string;
-}
-
-//======================================================================================================================
-// Навигация, справочники и меню
-//======================================================================================================================
-
-/**
- * Запрос пользовательского меню представлений.
- */
-export interface UserMenuGet {
-  /** Идентификатор сессии. */
-  "@SessionID": string;
-}
-
-/**
- * Запрос списка справочников.
- */
-export interface GuidesGet {
-  /** Идентификатор сессии. */
-  "@SessionID": string;
-}
-
-/**
- * Запрос групп справочников.
- */
-export interface GuidesGroupsGet {
-  /** Идентификатор сессии. */
-  "@SessionID": string;
-}
-
-/**
- * Запрос списка всех ТБП (не справочников) системы.
- */
-export interface TypesGet {
-  /** Идентификатор сессии. */
-  "@SessionID": string;
 }
 
 //======================================================================================================================

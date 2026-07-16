@@ -37,7 +37,6 @@ export type ResponseBody =
   | { MethodVariables: MethodVariables }
   | { Controls: Controls }
   | { Methods: Methods }
-  | { MethodsGroups: MethodsGroups }
   | { Class: Class }
   | { NotFound: NotFound }
   | { Classes: Classes }
@@ -50,7 +49,6 @@ export type ResponseBody =
   | { ViewData: ViewData }
   | { Columns: Columns }
   | { Views: Views }
-  | { UserMenu: UserMenu }
   | { Guides: Guides }
   | { GuidesGroups: GuidesGroups }
   | { Types: Types }
@@ -576,51 +574,9 @@ export interface MethodFrame {
   "@FrameID"?: number;
 }
 
-/**
- * Группа операций пользователя.
- */
-export interface MethodsGroup {
-  /** Идентификатор группы. */
-  "@ID": number;
-  /** Название группы. */
-  "@Name": string;
-}
-
-/**
- * Список групп операций.
- */
-export interface MethodsGroups {
-  /** Массив групп (может быть пустым). */
-  MethodsGroup?: MethodsGroup | MethodsGroup[];
-}
-
 //======================================================================================================================
 // Представления и данные
 //======================================================================================================================
-
-/**
- * Пункт пользовательского меню.
- */
-export interface UserMenuItem {
-  /** Идентификатор пункта. */
-  "@ID": number;
-  /** Название пункта. */
-  "@Name": string;
-  /** ТБП. */
-  "@ClassID": string;
-  /** Идентификатор представления. */
-  "@ViewID": string;
-  /** Свойства. */
-  "@Properties": string;
-}
-
-/**
- * Пользовательское меню.
- */
-export interface UserMenu {
-  /** Массив пунктов меню (может быть пустым). */
-  UserMenuItem?: UserMenuItem | UserMenuItem[];
-}
 
 /**
  * Данные представления.
