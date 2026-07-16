@@ -675,23 +675,23 @@ export interface Columns {
  */
 export interface View {
   /** Идентификатор. */
-  "@ID": number;
+  "@ID": string;
   /** Название. */
   "@Name": string;
   /** Короткое имя. */
   "@ShortName": string;
   /** По умолчанию? (0/1) */
-  "@IsDefault": number;
+  "@IsDefault": string;
   /** Свойства. */
   "@Properties": string;
   /** Расстояние. */
-  "@Distance": number;
+  "@Distance": string;
   /** Права объекта. */
-  "@ObjectRights": number;
+  "@ObjectRights": string;
   /** Печать. */
-  "@ToPrinter": number;
+  "@ToPrinter": string;
   /** В файл. */
-  "@ToFile": number;
+  "@ToFile": string;
   /** Сортировка (опционально). */
   "@OrderBy"?: string;
   /** Подсказки (опционально). */
@@ -699,9 +699,9 @@ export interface View {
   /** Скрипт стиля ячеек (опционально). */
   "@CellStyleScript"?: string;
   /** Идентификатор источника (опционально). */
-  "@SourceID"?: number;
+  "@SourceID"?: string;
   /** Идентификатор расширения (опционально). */
-  "@ExtensionID"?: number;
+  "@ExtensionID"?: string;
   /** Короткое имя метода фильтра (опционально). */
   "@FilterMethodShortName"?: string;
   /** Свойства метода фильтра (опционально). */

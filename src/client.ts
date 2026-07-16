@@ -20,6 +20,7 @@ import type {
   SystemNetAddressSet,
   Transition,
   UserInfo,
+  View,
 } from "./models";
 import type {
   Response,
@@ -892,6 +893,48 @@ export class Client {
       MethodClientScriptGet: { "@SessionID": sessionId, "@MethodID": methodId },
     });
     return script.length > 0 ? script : undefined;
+  }
+
+  //====================================================================================================================
+  // Представления и данные
+  //====================================================================================================================
+
+  /**
+   * Возвращает список представлений, доступных для указанного ТБП.
+   *
+   * @param sessionId - Идентификатор сессии.
+   * @param classId - Короткое имя ТБП.
+   *
+   * @returns Массив {@link View}.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async classViewsGet(sessionId: string, classId: string): Promise<View[]> {
+    const views = await this.api("Views", {
+      ClassViewsGet: { "@SessionID": sessionId, "@ClassID": classId },
+    });
+    return normalizeArray(views.View).map((v) => ({
+      id: v["@ID"],
+      name: v["@Name"],
+      shortName: v["@ShortName"],
+      isDefault: normalizeBool(v["@IsDefault"]),
+      properties: v["@Properties"],
+      distance: v["@Distance"],
+      objectRights: v["@ObjectRights"],
+      toPrinter: normalizeBool(v["@ToPrinter"]),
+      toFile: normalizeBool(v["@ToFile"]),
+      orderBy: v["@OrderBy"],
+      hints: v["@Hints"],
+      cellStyleScript: v["@CellStyleScript"],
+      sourceId: v["@SourceID"],
+      extensionId: v["@ExtensionID"],
+      filterMethodShortName: v["@FilterMethodShortName"],
+      filterMethodProperties: v["@FilterMethodProperties"],
+    }));
   }
 
   //====================================================================================================================
