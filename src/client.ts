@@ -10,6 +10,7 @@ import type {
   ChildClass,
   Class,
   CoreInfo,
+  GuidesGroup,
   Method,
   NetworkInformationSet,
   ObjectClassAndArchiveKey,
@@ -737,6 +738,99 @@ export class Client {
           properties: v["@Properties"],
           groupId: v["@GroupID"],
         };
+  }
+
+  /**
+   * Получает список справочников.
+   *
+   * @param sessionId - Идентификатор сессии.
+   *
+   * @returns Массив {@link Class}.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async guidesGet(sessionId: string): Promise<Class[]> {
+    const guides = await this.api("Guides", {
+      GuidesGet: { "@SessionID": sessionId },
+    });
+    return normalizeArray(guides.Class).map((v) => ({
+      id: v["@ID"],
+      name: v["@Name"],
+      baseClassId: v["@BaseClassID"],
+      entityId: v["@EntityID"],
+      isKernelType: normalizeBool(v["@IsKernelType"]),
+      classInterface: v["@ClassInterface"],
+      flags: v["@Flags"],
+      menuCaption: v["@MenuCaption"],
+      isAccessible: normalizeBool(v["@IsAccessible"]),
+      padLength: v["@PadLength"],
+      dataSize: v["@DataSize"],
+      dataPrecision: v["@DataPrecision"],
+      properties: v["@Properties"],
+      groupId: v["@GroupID"],
+    }));
+  }
+
+  /**
+   * Получает список всех типов системы.
+   *
+   * @param sessionId - Идентификатор сессии.
+   *
+   * @returns Массив {@link Class}.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async typesGet(sessionId: string): Promise<Class[]> {
+    const types = await this.api("Types", {
+      TypesGet: { "@SessionID": sessionId },
+    });
+    return normalizeArray(types.Class).map((v) => ({
+      id: v["@ID"],
+      name: v["@Name"],
+      baseClassId: v["@BaseClassID"],
+      entityId: v["@EntityID"],
+      isKernelType: normalizeBool(v["@IsKernelType"]),
+      classInterface: v["@ClassInterface"],
+      flags: v["@Flags"],
+      menuCaption: v["@MenuCaption"],
+      isAccessible: normalizeBool(v["@IsAccessible"]),
+      padLength: v["@PadLength"],
+      dataSize: v["@DataSize"],
+      dataPrecision: v["@DataPrecision"],
+      properties: v["@Properties"],
+      groupId: v["@GroupID"],
+    }));
+  }
+
+  /**
+   * Получает список групп справочников.
+   *
+   * @param sessionId - Идентификатор сессии.
+   *
+   * @returns Массив {@link GuidesGroup}.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async guidesGroupsGet(sessionId: string): Promise<GuidesGroup[]> {
+    const groups = await this.api("GuidesGroups", {
+      GuidesGroupsGet: { "@SessionID": sessionId },
+    });
+    return normalizeArray(groups.GuidesGroup).map((v) => ({
+      id: v["@ID"],
+      name: v["@Name"],
+    }));
   }
 
   //====================================================================================================================
