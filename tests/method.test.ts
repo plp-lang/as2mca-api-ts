@@ -12,7 +12,7 @@ describe("Операции", () => {
   test("reqeust `classMethodsGet`", async () => {
     const { client, sessionId } = ctx;
 
-    const mths = await client.classMethodsGet(sessionId, "CL_PRIV");
+    const mths = await client.classMethodsGet(sessionId, "FP_TUNE");
     expect(mths).toBeArray();
     expect(mths.length).toBeGreaterThan(0);
     methods.push(...mths);
@@ -98,19 +98,27 @@ describe("Операции", () => {
     expect(methods).toBeArray();
     expect(methods.length).toBeGreaterThan(2);
 
+    // Конструктор
+
     const creteMethodId = methods.find((v) => v.shortName === METHOD_CREATE_SHORT_NAME)?.id;
     expect(creteMethodId).toBeString();
-    const deleteMethodId = methods.find((v) => v.shortName === METHOD_DELETE_SHORT_NAME)?.id;
-    expect(deleteMethodId).toBeString();
 
-    // Конструктор
     const createFrameId = await client.methodBegin(sessionId, creteMethodId as string);
     expect(createFrameId).toBeString();
+
+    await client.methodValidateDefault(sessionId, {
+      classId: CLASS_SHORT_NAME,
+      methodId: creteMethodId as string,
+    });
 
     const prevCreateFrameId = await client.methodEnd(sessionId, createFrameId as string);
     expect(prevCreateFrameId).toBeUndefined();
 
     // Деструктор
+
+    const deleteMethodId = methods.find((v) => v.shortName === METHOD_DELETE_SHORT_NAME)?.id;
+    expect(deleteMethodId).toBeString();
+
     const deleteFrameId = await client.methodBegin(sessionId, deleteMethodId as string);
     expect(deleteFrameId).toBeString();
 

@@ -15,6 +15,7 @@ import type {
   GuidesGroup,
   Method,
   MethodParameter,
+  MethodValidateDefault,
   MethodVariable,
   NetworkInformationSet,
   ObjectClassAndArchiveKey,
@@ -25,6 +26,7 @@ import type {
   SystemNetAddressSet,
   Transition,
   UserInfo,
+  Validate,
   View,
   ViewDataGetCancelable,
 } from "./models";
@@ -989,6 +991,42 @@ export class Client {
       position: v["@Position"],
       referenceType: v["@ReferenceType"],
     }));
+  }
+
+  /**
+   * Выполняет блок `Validate` операции по умолчанию (при открытии формы).
+   *
+   * @param params - Параметры запроса MethodValidateDefault.
+   *
+   * @returns Объект {@link Validate}.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async methodValidateDefault(sessionId: string, params: MethodValidateDefault): Promise<Validate> {
+    const { "@DebugText": debugText, ControlsState } = await this.api("Validate", {
+      MethodValidateDefault: {
+        "@SessionID": sessionId,
+        "@MethodID": params.methodId,
+        "@ClassID": params.classId,
+        "@Info": params.info ?? "",
+        "@DoCommit": params.doCommit ?? true,
+        "@ObjectID": (params.objectId ?? []).join(","),
+        "@DebugLevel": params.debugLevel ?? 0,
+        "@IsCalledFromAnotherMethod": params.isCalledFromAnotherMethod ?? false,
+        "@ReadOnly": params.readOnly ?? false,
+        "@GetDebugText": params.getDebugText ?? false,
+        "@OptimizedGridUpdates": params.optimizedGridUpdates ?? false,
+        "@LockObjectClassID": params.lockObjectClassId,
+      },
+    });
+    return {
+      debugText,
+      controlsStates: normalizeArray(ControlsState).map((v) => ({ id: v["@ID"], value: v["@Value"] })),
+    };
   }
 
   //====================================================================================================================

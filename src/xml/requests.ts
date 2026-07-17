@@ -438,7 +438,7 @@ export interface MethodValidateDefault {
   /** Идентификатор сессии. */
   "@SessionID": string;
   /** Идентификатор операции. */
-  "@MethodID": number;
+  "@MethodID": string;
   /** Значение переменной P_INFO. */
   "@Info": string;
   /** Флаг подтверждения транзакции. */

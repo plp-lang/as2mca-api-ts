@@ -424,11 +424,20 @@ export interface MethodParameter {
 
 /**
  * Тип ссылки.
+ *
+ * `D` — default.
+ * `T` — table of.
+ * `R` — ref
  */
 export type ReferenceType = "D" | "T" | "R";
 
 /**
  * Направление параметра.
+ *
+ * `I` — in.
+ * `D` — default
+ * `B` — in out
+ * `O` — out
  */
 export type Direction = "D" | "I" | "B" | "O";
 
@@ -544,7 +553,7 @@ export interface Validate {
  */
 export interface ControlsState {
   /** Идентификатор элемента. */
-  "@ID": number;
+  "@ID": string;
   /** Значение элемента. */
   "@Value": string;
 }

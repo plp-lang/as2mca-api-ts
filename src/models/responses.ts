@@ -245,11 +245,20 @@ export interface MethodParameter {
 
 /**
  * Тип ссылки.
+ *
+ * `D` — default.
+ * `T` — table of.
+ * `R` — ref
  */
 export type ReferenceType = "D" | "T" | "R";
 
 /**
  * Направление параметра.
+ *
+ * `I` — in.
+ * `D` — default
+ * `B` — in out
+ * `O` — out
  */
 export type Direction = "D" | "I" | "B" | "O";
 
@@ -265,6 +274,26 @@ export interface MethodVariable {
   position: string;
   /** Тип ссылки. */
   referenceType: ReferenceType;
+}
+
+/**
+ * Результат выполнения блока `Validate`.
+ */
+export interface Validate {
+  /** Отладочный текст. */
+  debugText: string;
+  /** Состояния элементов. */
+  controlsStates: ControlsState[];
+}
+
+/**
+ * Состояние элемента на форме.
+ */
+export interface ControlsState {
+  /** Идентификатор элемента. */
+  id: string;
+  /** Значение элемента. */
+  value: string;
 }
 
 //======================================================================================================================
