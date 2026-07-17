@@ -386,8 +386,9 @@ export interface Method {
  * `R` — отчёт.
  * `S` — групповая операция.
  * `Y` — деструктор.
+ * `P` — печать.
  */
-export type MethodType = "C" | "G" | "M" | "R" | "S" | "Y" | "O";
+export type MethodType = "C" | "G" | "M" | "R" | "S" | "Y" | "O" | "P";
 
 /**
  * Список операций.
@@ -406,13 +407,13 @@ export interface MethodParameter {
   /** ТБП параметра. */
   "@ClassID": string;
   /** Позиция. */
-  "@Position": number;
+  "@Position": string;
   /** Тип ссылки. */
   "@ReferenceType": ReferenceType;
   /** Направление. */
   "@Direction": Direction;
   /** Идентификатор представления (опционально). */
-  "@ViewID"?: number;
+  "@ViewID"?: string;
   /** Класс представления (опционально). */
   "@ViewClassID"?: string;
   /** Фильтр представления (опционально). */
@@ -424,12 +425,12 @@ export interface MethodParameter {
 /**
  * Тип ссылки.
  */
-export type ReferenceType = "D" | "T";
+export type ReferenceType = "D" | "T" | "R";
 
 /**
  * Направление параметра.
  */
-export type Direction = "D" | "I";
+export type Direction = "D" | "I" | "B" | "O";
 
 /**
  * Список входных параметров.
@@ -448,7 +449,7 @@ export interface MethodVariable {
   /** ТБП переменной. */
   "@ClassID": string;
   /** Позиция. */
-  "@Position": number;
+  "@Position": string;
   /** Тип ссылки. */
   "@ReferenceType": ReferenceType;
 }

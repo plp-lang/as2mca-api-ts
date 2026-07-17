@@ -14,6 +14,8 @@ import type {
   Filter,
   GuidesGroup,
   Method,
+  MethodParameter,
+  MethodVariable,
   NetworkInformationSet,
   ObjectClassAndArchiveKey,
   RowItem,
@@ -930,6 +932,63 @@ export class Client {
       MethodEnd: { "@SessionID": sessionId, "@FrameID": frameId },
     });
     return prevFrameId;
+  }
+
+  /**
+   * Получает список входных параметров (P‑параметров) операции.
+   *
+   * @param sessionId - Идентификатор сессии.
+   * @param methodId - Идентификатор операции.
+   *
+   * @returns Массив {@link MethodParameter}.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async methodParametersGet(sessionId: string, methodId: string): Promise<MethodParameter[]> {
+    const params = await this.api("MethodParameters", {
+      MethodParametersGet: { "@SessionID": sessionId, "@MethodID": methodId },
+    });
+    return normalizeArray(params.MethodParameter).map((v) => ({
+      shortName: v["@ShortName"],
+      classId: v["@ClassID"],
+      position: v["@Position"],
+      referenceType: v["@ReferenceType"],
+      direction: v["@Direction"],
+      viewId: v["@ViewID"],
+      viewClassId: v["@ViewClassID"],
+      viewFilter: v["@ViewFilter"],
+      defaultValue: v["@DefaultValue"],
+    }));
+  }
+
+  /**
+   * Получает список публичных переменных (V‑переменных) операции.
+   *
+   * @param sessionId - Идентификатор сессии.
+   * @param methodId - Идентификатор операции.
+   *
+   * @returns Массив {@link MethodVariable}.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async methodVariablesGet(sessionId: string, methodId: string): Promise<MethodVariable[]> {
+    const vars = await this.api("MethodVariables", {
+      MethodVariablesGet: { "@SessionID": sessionId, "@MethodID": methodId },
+    });
+    return normalizeArray(vars.MethodVariable).map((v) => ({
+      shortName: v["@ShortName"],
+      classId: v["@ClassID"],
+      position: v["@Position"],
+      referenceType: v["@ReferenceType"],
+    }));
   }
 
   //====================================================================================================================

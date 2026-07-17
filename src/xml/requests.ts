@@ -388,7 +388,7 @@ export interface MethodParametersGet {
   /** Идентификатор сессии. */
   "@SessionID": string;
   /** Идентификатор операции. */
-  "@MethodID": number;
+  "@MethodID": string;
 }
 
 /**
@@ -398,7 +398,7 @@ export interface MethodVariablesGet {
   /** Идентификатор сессии. */
   "@SessionID": string;
   /** Идентификатор операции. */
-  "@MethodID": number;
+  "@MethodID": string;
 }
 
 /**

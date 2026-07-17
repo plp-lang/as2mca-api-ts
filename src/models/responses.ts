@@ -215,8 +215,57 @@ export interface Method {
  * `S` — групповая операция.
  * `Y` — деструктор.
  * `O` — выбор.
+ * `P` — печать.
  */
-export type MethodType = "C" | "G" | "M" | "R" | "S" | "Y" | "O";
+export type MethodType = "C" | "G" | "M" | "R" | "S" | "Y" | "O" | "P";
+
+/**
+ * Описание входного параметра операции.
+ */
+export interface MethodParameter {
+  /** Короткое имя параметра. */
+  shortName: string;
+  /** ТБП параметра. */
+  classId: string;
+  /** Позиция. */
+  position: string;
+  /** Тип ссылки. */
+  referenceType: ReferenceType;
+  /** Направление. */
+  direction: Direction;
+  /** Идентификатор представления (опционально). */
+  viewId?: string;
+  /** Класс представления (опционально). */
+  viewClassId?: string;
+  /** Фильтр представления (опционально). */
+  viewFilter?: string;
+  /** Значение по умолчанию (опционально). */
+  defaultValue?: string;
+}
+
+/**
+ * Тип ссылки.
+ */
+export type ReferenceType = "D" | "T" | "R";
+
+/**
+ * Направление параметра.
+ */
+export type Direction = "D" | "I" | "B" | "O";
+
+/**
+ * Описание публичной переменной операции.
+ */
+export interface MethodVariable {
+  /** Имя переменной. */
+  shortName: string;
+  /** ТБП переменной. */
+  classId: string;
+  /** Позиция. */
+  position: string;
+  /** Тип ссылки. */
+  referenceType: ReferenceType;
+}
 
 //======================================================================================================================
 // Представления и данные

@@ -1,48 +1,89 @@
 import { describe, expect, test } from "bun:test";
 import { context } from "./ctx";
+import type { Method, MethodParameter, MethodVariable } from "../src/models";
 
 describe("Операции", () => {
   const ctx = context();
 
-  test("classMethodsGet", async () => {
+  let methods: Method[] = [];
+  let params: MethodParameter[] = [];
+  let vars: MethodVariable[] = [];
+
+  test("reqeust `classMethodsGet`", async () => {
     const { client, sessionId } = ctx;
 
-    const methods = await client.classMethodsGet(sessionId, "DOCUMENT");
-    expect(methods).toBeArray();
-    expect(methods.length).toBeGreaterThan(1);
+    const mths = await client.classMethodsGet(sessionId, "CL_PRIV");
+    expect(mths).toBeArray();
+    expect(mths.length).toBeGreaterThan(0);
+    methods.push(...mths);
+  });
+
+  test("validate `Method`", () => {
     methods.forEach((mth) => {
       expect(mth.id).toBeString();
       expect(mth.name).toBeString();
       expect(mth.shortName).toBeString();
-      expect(mth.type).toBeOneOf(["C", "G", "M", "R", "S", "Y", "O"]);
+      expect(mth.type).toBeOneOf(["C", "G", "M", "R", "S", "Y", "O", "P"]);
       expect(mth.formClassId).toBeString();
       expect(mth.properties).toBeString();
       expect(mth.distance).toBeString();
-      expect(mth.callableShortName === undefined || typeof mth.callableShortName === "string").toBe(true);
-      expect(mth.scriptId === undefined || typeof mth.scriptId === "string").toBe(true);
-      expect(mth.resultClassId === undefined || typeof mth.resultClassId === "string").toBe(true);
-      expect(mth.userDriven === undefined || typeof mth.userDriven === "boolean").toBe(true);
-      expect(mth.formId === undefined || typeof mth.formId === "string").toBe(true);
-      expect(mth.reportType === undefined || typeof mth.reportType === "string").toBe(true);
-      expect(mth.reportTemplate === undefined || typeof mth.reportTemplate === "string").toBe(true);
+      expect(typeof mth.callableShortName).toBeOneOf(["string", "undefined"]);
+      expect(typeof mth.scriptId).toBeOneOf(["string", "undefined"]);
+      expect(typeof mth.resultClassId).toBeOneOf(["string", "undefined"]);
+      expect(typeof mth.userDriven).toBeOneOf(["boolean", "undefined"]);
+      expect(typeof mth.formId).toBeOneOf(["string", "undefined"]);
+      expect(typeof mth.reportType).toBeOneOf(["string", "undefined"]);
+      expect(typeof mth.reportTemplate).toBeOneOf(["string", "undefined"]);
     });
   });
 
-  test("methodClientScriptGet", async () => {
+  test("request `methodClientScriptGet`", async () => {
     const { client, sessionId } = ctx;
 
-    const CLASS_SHORT_NAME = "CL_PRIV";
-    const METHOD_SHORT_NAME = "EDIT#AUTO";
+    (await Promise.all(methods.map((mth) => client.methodClientScriptGet(sessionId, mth.id)))).forEach((script) => {
+      expect(typeof script).toBeOneOf(["string", "undefined"]);
+    });
+  });
 
-    const methods = await client.classMethodsGet(sessionId, CLASS_SHORT_NAME);
-    expect(methods).toBeArray();
-    expect(methods.length).toBeGreaterThan(1);
+  test("request `methodParametersGet`", async () => {
+    const { client, sessionId } = ctx;
 
-    const methodId = methods.find((v) => v.shortName === METHOD_SHORT_NAME)?.id;
-    expect(methodId).toBeString();
+    (await Promise.all(methods.map((mth) => client.methodParametersGet(sessionId, mth.id)))).forEach((prms) => {
+      expect(prms).toBeArray();
+      params.push(...prms);
+    });
+  });
 
-    const script = await client.methodClientScriptGet(sessionId, methodId as string);
-    expect(script).toBeString();
+  test("validate `MethodParameter`", () => {
+    params.forEach((p) => {
+      expect(p.shortName).toBeString();
+      expect(p.classId).toBeString();
+      expect(p.position).toBeString();
+      expect(p.referenceType).toBeOneOf(["D", "T", "R"]);
+      expect(p.direction).toBeOneOf(["D", "I", "B", "O"]);
+      expect(typeof p.viewId).toBeOneOf(["string", "undefined"]);
+      expect(typeof p.viewClassId).toBeOneOf(["string", "undefined"]);
+      expect(typeof p.viewFilter).toBeOneOf(["string", "undefined"]);
+      expect(typeof p.defaultValue).toBeOneOf(["string", "undefined"]);
+    });
+  });
+
+  test("request `methodVariablesGet`", async () => {
+    const { client, sessionId } = ctx;
+
+    (await Promise.all(methods.map((mth) => client.methodVariablesGet(sessionId, mth.id)))).forEach((vrs) => {
+      expect(vrs).toBeArray();
+      vars.push(...vrs);
+    });
+  });
+
+  test("validate `MethodParameter`", () => {
+    vars.forEach((p) => {
+      expect(p.shortName).toBeString();
+      expect(p.classId).toBeString();
+      expect(p.position).toBeString();
+      expect(p.referenceType).toBeOneOf(["D", "T", "R"]);
+    });
   });
 
   test("Создать и удалить экземпляр ::[FP_TUNE]", async () => {
