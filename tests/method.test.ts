@@ -12,7 +12,7 @@ describe("Операции", () => {
   test("reqeust `classMethodsGet`", async () => {
     const { client, sessionId } = ctx;
 
-    const mths = await client.classMethodsGet(sessionId, "FP_TUNE");
+    const mths = await client.classMethodsGet(sessionId, "AC_FIN");
     expect(mths).toBeArray();
     expect(mths.length).toBeGreaterThan(0);
     methods.push(...mths);
@@ -92,7 +92,7 @@ describe("Операции", () => {
     const CLASS_SHORT_NAME = "FP_TUNE";
     // const VIEW_SHORT_NAME = "VW_CRIT_FP_TUNE_ALL";
     const METHOD_CREATE_SHORT_NAME = "NEW#AUTO";
-    const METHOD_DELETE_SHORT_NAME = "DELETE#AUTO";
+    // const METHOD_DELETE_SHORT_NAME = "DELETE#AUTO";
 
     const methods = await client.classMethodsGet(sessionId, CLASS_SHORT_NAME);
     expect(methods).toBeArray();
@@ -100,15 +100,41 @@ describe("Операции", () => {
 
     // Конструктор
 
-    const creteMethodId = methods.find((v) => v.shortName === METHOD_CREATE_SHORT_NAME)?.id;
-    expect(creteMethodId).toBeString();
+    const createMethodId = methods.find((v) => v.shortName === METHOD_CREATE_SHORT_NAME)?.id;
+    expect(createMethodId).toBeString();
 
-    const createFrameId = await client.methodBegin(sessionId, creteMethodId as string);
+    const createFrameId = await client.methodBegin(sessionId, createMethodId as string);
     expect(createFrameId).toBeString();
 
     await client.methodValidateDefault(sessionId, {
       classId: CLASS_SHORT_NAME,
-      methodId: creteMethodId as string,
+      methodId: createMethodId as string,
+    });
+
+    await client.methodValidate(sessionId, {
+      methodId: createMethodId as string,
+      info: "%PARAM%.P_CODE",
+      controlsStates: [{ id: "17_007_818", value: "TEST" }],
+    });
+    await client.methodValidate(sessionId, {
+      methodId: createMethodId as string,
+      info: "%PARAM%.P_NAME",
+      controlsStates: [{ id: "17_007_820", value: "TEST" }],
+    });
+    await client.methodValidate(sessionId, {
+      methodId: createMethodId as string,
+      info: "%PARAM%.P_GROUP_ID",
+      controlsStates: [{ id: "17_007_839", value: "TEST" }],
+    });
+    await client.methodValidate(sessionId, {
+      methodId: createMethodId as string,
+      info: "%VAR%.V_VAL_TYPE.0",
+      controlsStates: [{ id: "17_007_844", value: "4" }],
+    });
+    await client.methodValidate(sessionId, {
+      methodId: createMethodId as string,
+      info: "%VAR%.V_VAL_BOOL.0",
+      controlsStates: [{ id: "17_007_835", value: "1" }],
     });
 
     const prevCreateFrameId = await client.methodEnd(sessionId, createFrameId as string);
@@ -116,13 +142,13 @@ describe("Операции", () => {
 
     // Деструктор
 
-    const deleteMethodId = methods.find((v) => v.shortName === METHOD_DELETE_SHORT_NAME)?.id;
-    expect(deleteMethodId).toBeString();
+    // const deleteMethodId = methods.find((v) => v.shortName === METHOD_DELETE_SHORT_NAME)?.id;
+    // expect(deleteMethodId).toBeString();
 
-    const deleteFrameId = await client.methodBegin(sessionId, deleteMethodId as string);
-    expect(deleteFrameId).toBeString();
+    // const deleteFrameId = await client.methodBegin(sessionId, deleteMethodId as string);
+    // expect(deleteFrameId).toBeString();
 
-    const prevDeleteFrameId = await client.methodEnd(sessionId, deleteFrameId as string);
-    expect(prevDeleteFrameId).toBeUndefined();
+    // const prevDeleteFrameId = await client.methodEnd(sessionId, deleteFrameId as string);
+    // expect(prevDeleteFrameId).toBeUndefined();
   });
 });

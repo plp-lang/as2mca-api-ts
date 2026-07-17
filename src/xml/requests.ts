@@ -468,7 +468,7 @@ export interface MethodValidate {
   /** Идентификатор сессии. */
   "@SessionID": string;
   /** Идентификатор операции. */
-  "@MethodID": number;
+  "@MethodID": string;
   /** Тип валидации. */
   "@Type": ValidateType;
   /** Значение переменной P_INFO. */
@@ -510,7 +510,7 @@ export interface MethodExecute {
  */
 export interface ControlState {
   /** Идентификатор элемента. */
-  "@ID": number;
+  "@ID": string;
   /** Значение элемента. */
   "@Value": string;
 }
@@ -546,7 +546,7 @@ export interface PLPParameter {
 /**
  * Объединённый тип сущности для PLP вызова.
  */
-export type PLPEntity = PLPConstant | PLPVariable | PLPParameter;
+export type PLPEntity = { PLPConstant: PLPConstant } | { PLPVariable: PLPVariable } | { PLPParameter: PLPParameter };
 
 /**
  * Параметр PLP-вызова (источник и цель).

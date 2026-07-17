@@ -386,6 +386,7 @@ export interface Method {
  * `R` — отчёт.
  * `S` — групповая операция.
  * `Y` — деструктор.
+ * `O` - выбор.
  * `P` — печать.
  */
 export type MethodType = "C" | "G" | "M" | "R" | "S" | "Y" | "O" | "P";

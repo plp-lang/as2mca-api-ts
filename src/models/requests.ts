@@ -2,6 +2,8 @@
 // Сессия и информация о пользователе
 //======================================================================================================================
 
+import type { ControlState } from "./responses";
+
 /**
  * Установка информации о сетевом окружении клиента.
  */
@@ -56,6 +58,73 @@ export interface MethodValidateDefault {
   getDebugText?: boolean;
   /** Оптимизированные обновления грида. */
   optimizedGridUpdates?: boolean;
+}
+
+/**
+ * Запрос на вызов блока `Validate` операции при событии элемента формы.
+ */
+export interface MethodValidate {
+  /** Идентификатор операции. */
+  methodId: string;
+  /** Тип валидации. */
+  type?: ValidateType;
+  /** Значение переменной P_INFO. */
+  info: string;
+  /** Флаг подтверждения транзакции. */
+  doCommit?: boolean;
+  /** Получать ли отладочный текст. */
+  getDebugText?: boolean;
+  /** Оптимизированные обновления грида. */
+  optimizedGridUpdates?: boolean;
+  /** Состояния элементов управления (может быть один или несколько). */
+  controlsStates?: ControlState[];
+  /** Параметры PLP-вызовов (может быть один или несколько). */
+  plpCallParameters?: PLPCallParameter[];
+}
+
+export type ValidateType = "VALIDATE";
+
+/**
+ * Константа для PLP-вызова.
+ */
+export interface PLPConstant {
+  /** Значение константы. */
+  value: string;
+}
+
+/**
+ * Переменная для PLP-вызова.
+ */
+export interface PLPVariable {
+  /** Идентификатор операции. */
+  methodId: string;
+  /** Имя переменной. */
+  name: string;
+}
+
+/**
+ * Параметр для PLP-вызова.
+ */
+export interface PLPParameter {
+  /** Идентификатор операции. */
+  methodId: string;
+  /** Имя переменной. */
+  name: string;
+}
+
+/**
+ * Объединённый тип сущности для PLP вызова.
+ */
+export type PLPEntity = { PLPConstant: PLPConstant } | { PLPVariable: PLPVariable } | { PLPParameter: PLPParameter };
+
+/**
+ * Параметр PLP-вызова (источник и цель).
+ */
+export interface PLPCallParameter {
+  /** Исходная сущность PLP. */
+  sourcePLPCallItem: PLPEntity[];
+  /** Целевая сущность PLP. */
+  targetPLPCallItem: PLPEntity[];
 }
 
 //======================================================================================================================

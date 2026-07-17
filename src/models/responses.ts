@@ -283,13 +283,13 @@ export interface Validate {
   /** Отладочный текст. */
   debugText: string;
   /** Состояния элементов. */
-  controlsStates: ControlsState[];
+  controlsStates: ControlState[];
 }
 
 /**
  * Состояние элемента на форме.
  */
-export interface ControlsState {
+export interface ControlState {
   /** Идентификатор элемента. */
   id: string;
   /** Значение элемента. */

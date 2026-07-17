@@ -15,6 +15,7 @@ import type {
   GuidesGroup,
   Method,
   MethodParameter,
+  MethodValidate,
   MethodValidateDefault,
   MethodVariable,
   NetworkInformationSet,
@@ -996,7 +997,7 @@ export class Client {
   /**
    * Выполняет блок `Validate` операции по умолчанию (при открытии формы).
    *
-   * @param params - Параметры запроса MethodValidateDefault.
+   * @param params - Параметры запроса {@link MethodValidateDefault}.
    *
    * @returns Объект {@link Validate}.
    *
@@ -1021,6 +1022,39 @@ export class Client {
         "@GetDebugText": params.getDebugText ?? false,
         "@OptimizedGridUpdates": params.optimizedGridUpdates ?? false,
         "@LockObjectClassID": params.lockObjectClassId,
+      },
+    });
+    return {
+      debugText,
+      controlsStates: normalizeArray(ControlsState).map((v) => ({ id: v["@ID"], value: v["@Value"] })),
+    };
+  }
+
+  /**
+   * Выполняет блок `Validate` операции по событию элемента формы.
+   *
+   * @param params - Параметры запроса {@link MethodValidate}.
+   *
+   * @returns Объект {@link Validate}.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async methodValidate(sessionId: string, params: MethodValidate): Promise<Validate> {
+    const { "@DebugText": debugText, ControlsState } = await this.api("Validate", {
+      MethodValidate: {
+        "@SessionID": sessionId,
+        "@MethodID": params.methodId,
+        "@Info": params.info,
+        "@Type": params.type ?? "VALIDATE",
+        "@DoCommit": params.doCommit ?? true,
+        "@GetDebugText": params.getDebugText ?? false,
+        "@OptimizedGridUpdates": params.optimizedGridUpdates ?? false,
+        ControlsStates: (params.controlsStates ?? []).map((v) => ({ "@ID": v.id, "@Value": v.value })),
+        PLPCallParameters: [],
       },
     });
     return {
