@@ -479,13 +479,21 @@ export interface MethodValidate {
   "@GetDebugText": boolean;
   /** Оптимизированные обновления грида. */
   "@OptimizedGridUpdates": boolean;
-  /** Состояния элементов управления (может быть один или несколько). */
-  ControlsStates: ControlState | ControlState[];
-  /** Параметры PLP-вызовов (может быть один или несколько). */
-  PLPCallParameters: PLPCallParameter | PLPCallParameter[];
+  /** Состояния элементов формы. */
+  ControlsStates: ControlsStates;
+  /** Параметры PLP-вызовов */
+  PLPCallParameters: PLPCallParameter;
 }
 
 export type ValidateType = "VALIDATE";
+
+/**
+ * Состояния элементов формы.
+ */
+export type ControlsStates = {
+  /** Состояния элементов формы (может быть один или несколько). */
+  ControlState: ControlState | ControlState[];
+};
 
 /**
  * Запрос на вызов блока `Execute` операции.
@@ -494,15 +502,15 @@ export interface MethodExecute {
   /** Идентификатор сессии. */
   "@SessionID": string;
   /** Идентификатор операции. */
-  "@MethodID": number;
+  "@MethodID": string;
   /** Флаг подтверждения транзакции. */
   "@DoCommit": boolean;
   /** Оптимизированные обновления грида. */
   "@OptimizedGridUpdates": boolean;
-  /** Состояния элементов управления (может быть один или несколько). */
-  ControlsStates: ControlState | ControlState[];
+  /** Состояния элементов формы. */
+  ControlsStates: ControlsStates;
   /** Параметры PLP-вызовов (может быть один или несколько). */
-  PLPCallParameters: PLPCallParameter | PLPCallParameter[];
+  PLPCallParameters: PLPCallParameter;
 }
 
 /**
@@ -528,7 +536,7 @@ export interface PLPConstant {
  */
 export interface PLPVariable {
   /** Идентификатор операции. */
-  "@MethodID": number;
+  "@MethodID": string;
   /** Имя переменной. */
   "@Name": string;
 }
@@ -538,7 +546,7 @@ export interface PLPVariable {
  */
 export interface PLPParameter {
   /** Идентификатор операции. */
-  "@MethodID": number;
+  "@MethodID": string;
   /** Имя параметра. */
   "@Name": string;
 }
@@ -551,12 +559,20 @@ export type PLPEntity = { PLPConstant: PLPConstant } | { PLPVariable: PLPVariabl
 /**
  * Параметр PLP-вызова (источник и цель).
  */
-export interface PLPCallParameter {
+export interface PLPCallParameters {
   /** Исходная сущность PLP (может быть одна или несколько). */
   SourcePLPCallItem: PLPEntity | PLPEntity[];
   /** Целевая сущность PLP (может быть одна или несколько). */
   TargetPLPCallItem: PLPEntity | PLPEntity[];
 }
+
+/**
+ * Параметры PLP-вызововов
+ */
+export type PLPCallParameter = {
+  /** Параметры PLP-вызовов (может быть один или несколько). */
+  PLPCallParameter: PLPCallParameters | PLPCallParameters[];
+};
 
 /**
  * Запрос на завершение выполнения операции (закрытие формы).

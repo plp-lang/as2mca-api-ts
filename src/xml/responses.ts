@@ -564,7 +564,7 @@ export interface ControlsState {
  */
 export interface MethodResult {
   /** Результат операции (число, может отсутствовать). */
-  "@Value"?: number;
+  "@Value"?: string;
   /** Состояния элементов (может быть один или несколько). */
   ControlsState?: ControlsState | ControlsState[];
 }

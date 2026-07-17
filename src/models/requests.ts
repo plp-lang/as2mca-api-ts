@@ -115,16 +115,32 @@ export interface PLPParameter {
 /**
  * Объединённый тип сущности для PLP вызова.
  */
-export type PLPEntity = { PLPConstant: PLPConstant } | { PLPVariable: PLPVariable } | { PLPParameter: PLPParameter };
+export type PLPEntity = { constant: PLPConstant } | { variable: PLPVariable } | { parameter: PLPParameter };
 
 /**
  * Параметр PLP-вызова (источник и цель).
  */
 export interface PLPCallParameter {
   /** Исходная сущность PLP. */
-  sourcePLPCallItem: PLPEntity[];
+  source: PLPEntity[];
   /** Целевая сущность PLP. */
-  targetPLPCallItem: PLPEntity[];
+  target: PLPEntity[];
+}
+
+/**
+ * Запрос на вызов блока `Execute` операции.
+ */
+export interface MethodExecute {
+  /** Идентификатор операции. */
+  methodId: string;
+  /** Флаг подтверждения транзакции. */
+  doCommit?: boolean;
+  /** Оптимизированные обновления грида. */
+  optimizedGridUpdates?: boolean;
+  /** Состояния элементов управления (может быть один или несколько). */
+  controlsStates?: ControlState[];
+  /** Параметры PLP-вызовов (может быть один или несколько). */
+  plpCallParameters?: PLPCallParameter[];
 }
 
 //======================================================================================================================

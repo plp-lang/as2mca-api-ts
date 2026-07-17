@@ -14,12 +14,15 @@ import type {
   Filter,
   GuidesGroup,
   Method,
+  MethodExecute,
   MethodParameter,
+  MethodResult,
   MethodValidate,
   MethodValidateDefault,
   MethodVariable,
   NetworkInformationSet,
   ObjectClassAndArchiveKey,
+  PLPEntity,
   RowItem,
   SessionInfo,
   Setting,
@@ -1015,7 +1018,7 @@ export class Client {
         "@ClassID": params.classId,
         "@Info": params.info ?? "",
         "@DoCommit": params.doCommit ?? true,
-        "@ObjectID": (params.objectId ?? []).join(","),
+        "@ObjectID": normalizeArray(params.objectId).join(","),
         "@DebugLevel": params.debugLevel ?? 0,
         "@IsCalledFromAnotherMethod": params.isCalledFromAnotherMethod ?? false,
         "@ReadOnly": params.readOnly ?? false,
@@ -1053,12 +1056,56 @@ export class Client {
         "@DoCommit": params.doCommit ?? true,
         "@GetDebugText": params.getDebugText ?? false,
         "@OptimizedGridUpdates": params.optimizedGridUpdates ?? false,
-        ControlsStates: (params.controlsStates ?? []).map((v) => ({ "@ID": v.id, "@Value": v.value })),
-        PLPCallParameters: [],
+        ControlsStates: {
+          ControlState: normalizeArray(params.controlsStates).map((v) => ({ "@ID": v.id, "@Value": v.value })),
+        },
+        PLPCallParameters: {
+          PLPCallParameter: normalizeArray(params.plpCallParameters).map((e) => ({
+            SourcePLPCallItem: e.source.map(buildEntity),
+            TargetPLPCallItem: e.target.map(buildEntity),
+          })),
+        },
       },
     });
     return {
       debugText,
+      controlsStates: normalizeArray(ControlsState).map((v) => ({ id: v["@ID"], value: v["@Value"] })),
+    };
+  }
+
+  /**
+   * Выполняет блок `Execute` операции (непосредственное действие).
+   *
+   * @param params - Параметры запроса {@link MethodExecute}.
+   *
+   * @returns Объект {@link MethodResult}.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async methodExecute(sessionId: string, params: MethodExecute): Promise<MethodResult> {
+    const { "@Value": value, ControlsState } = await this.api("Result", {
+      MethodExecute: {
+        "@SessionID": sessionId,
+        "@MethodID": params.methodId,
+        "@DoCommit": params.doCommit ?? true,
+        "@OptimizedGridUpdates": params.optimizedGridUpdates ?? false,
+        ControlsStates: {
+          ControlState: normalizeArray(params.controlsStates).map((v) => ({ "@ID": v.id, "@Value": v.value })),
+        },
+        PLPCallParameters: {
+          PLPCallParameter: normalizeArray(params.plpCallParameters).map((e) => ({
+            SourcePLPCallItem: e.source.map(buildEntity),
+            TargetPLPCallItem: e.target.map(buildEntity),
+          })),
+        },
+      },
+    });
+    return {
+      value,
       controlsStates: normalizeArray(ControlsState).map((v) => ({ id: v["@ID"], value: v["@Value"] })),
     };
   }
@@ -1157,28 +1204,6 @@ export class Client {
    * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
    */
   public async viewDataGetCancelable(sessionId: string, params: ViewDataGetCancelable): Promise<RowItem[][]> {
-    const buildFilter = (f: Filter): xml.Filter => {
-      if ("simpleFilter" in f)
-        return {
-          SimpleFilter: {
-            "@ColumnName": f.simpleFilter.columnName,
-            "@Operator": f.simpleFilter.operator,
-            "@Value": f.simpleFilter.value,
-          },
-        };
-      if ("caseInsensitiveFilter" in f)
-        return {
-          CaseInsensitiveFilter: {
-            "@ColumnName": f.caseInsensitiveFilter.columnName,
-            "@Operator": f.caseInsensitiveFilter.operator,
-            "@Value": f.caseInsensitiveFilter.value,
-          },
-        };
-      if ("and" in f) return { AND: f.and.map(buildFilter) };
-      if ("or" in f) return { OR: f.or.map(buildFilter) };
-      throw new Error(`Неизвестный тип фильтра: ${JSON.stringify(f)}`);
-    };
-
     const and = params.userFilter?.and?.map(buildFilter);
     const or = params.userFilter?.or?.map(buildFilter);
 
@@ -1347,4 +1372,39 @@ const normalizeArray = <T>(value: T | T[] | undefined): T[] => {
 const normalizeBool = (value: string | undefined): boolean => {
   if (value === undefined) return false;
   return value === "true" || value === "1";
+};
+
+/**
+ * Вспомогательная функция конвертации {@link PLPEntity} в xml
+ */
+const buildEntity = (e: PLPEntity): xml.PLPEntity => {
+  if ("constant" in e) return { PLPConstant: { "@Value": e.constant.value } };
+  if ("parameter" in e) return { PLPVariable: { "@MethodID": e.parameter.methodId, "@Name": e.parameter.name } };
+  if ("variable" in e) return { PLPVariable: { "@MethodID": e.variable.methodId, "@Name": e.variable.name } };
+  throw new XmlSerializeError(`Неизвестный тип PLP: ${JSON.stringify(e)}`);
+};
+
+/**
+ * Вспомогательная функция конвертации {@link Filter} в xml
+ */
+const buildFilter = (f: Filter): xml.Filter => {
+  if ("simpleFilter" in f)
+    return {
+      SimpleFilter: {
+        "@ColumnName": f.simpleFilter.columnName,
+        "@Operator": f.simpleFilter.operator,
+        "@Value": f.simpleFilter.value,
+      },
+    };
+  if ("caseInsensitiveFilter" in f)
+    return {
+      CaseInsensitiveFilter: {
+        "@ColumnName": f.caseInsensitiveFilter.columnName,
+        "@Operator": f.caseInsensitiveFilter.operator,
+        "@Value": f.caseInsensitiveFilter.value,
+      },
+    };
+  if ("and" in f) return { AND: f.and.map(buildFilter) };
+  if ("or" in f) return { OR: f.or.map(buildFilter) };
+  throw new XmlSerializeError(`Неизвестный тип фильтра: ${JSON.stringify(f)}`);
 };
