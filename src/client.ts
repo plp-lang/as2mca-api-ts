@@ -890,6 +890,48 @@ export class Client {
     return script.length > 0 ? script : undefined;
   }
 
+  /**
+   * Начинает выполнение операции – открывает форму.
+   *
+   * @param sessionId - Идентификатор сессии.
+   * @param methodId - Идентификатор операции.
+   *
+   * @returns Идентификатор открытой формы (frameId), необходимый для последующих вызовов.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async methodBegin(sessionId: string, methodId: string): Promise<string | undefined> {
+    const { "@FrameID": frameId } = await this.api("MethodFrame", {
+      MethodBegin: { "@SessionID": sessionId, "@MethodID": methodId },
+    });
+    return frameId;
+  }
+
+  /**
+   * Завершает выполнение операции – закрывает форму.
+   *
+   * @param sessionId - Идентификатор сессии.
+   * @param frameId - Идентификатор формы, полученный из {@link methodBegin}.
+   *
+   * @returns Идентификатор предыдущей открытой формы (если была) или undefined.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async methodEnd(sessionId: string, frameId: string): Promise<string | undefined> {
+    const { "@FrameID": prevFrameId } = await this.api("MethodFrame", {
+      MethodEnd: { "@SessionID": sessionId, "@FrameID": frameId },
+    });
+    return prevFrameId;
+  }
+
   //====================================================================================================================
   // Представления и данные
   //====================================================================================================================

@@ -44,4 +44,36 @@ describe("Операции", () => {
     const script = await client.methodClientScriptGet(sessionId, methodId as string);
     expect(script).toBeString();
   });
+
+  test("Создать и удалить экземпляр ::[FP_TUNE]", async () => {
+    const { client, sessionId } = ctx;
+
+    const CLASS_SHORT_NAME = "FP_TUNE";
+    // const VIEW_SHORT_NAME = "VW_CRIT_FP_TUNE_ALL";
+    const METHOD_CREATE_SHORT_NAME = "NEW#AUTO";
+    const METHOD_DELETE_SHORT_NAME = "DELETE#AUTO";
+
+    const methods = await client.classMethodsGet(sessionId, CLASS_SHORT_NAME);
+    expect(methods).toBeArray();
+    expect(methods.length).toBeGreaterThan(2);
+
+    const creteMethodId = methods.find((v) => v.shortName === METHOD_CREATE_SHORT_NAME)?.id;
+    expect(creteMethodId).toBeString();
+    const deleteMethodId = methods.find((v) => v.shortName === METHOD_DELETE_SHORT_NAME)?.id;
+    expect(deleteMethodId).toBeString();
+
+    // Конструктор
+    const createFrameId = await client.methodBegin(sessionId, creteMethodId as string);
+    expect(createFrameId).toBeString();
+
+    const prevCreateFrameId = await client.methodEnd(sessionId, createFrameId as string);
+    expect(prevCreateFrameId).toBeUndefined();
+
+    // Деструктор
+    const deleteFrameId = await client.methodBegin(sessionId, deleteMethodId as string);
+    expect(deleteFrameId).toBeString();
+
+    const prevDeleteFrameId = await client.methodEnd(sessionId, deleteFrameId as string);
+    expect(prevDeleteFrameId).toBeUndefined();
+  });
 });

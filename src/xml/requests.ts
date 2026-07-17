@@ -378,7 +378,7 @@ export interface MethodBegin {
   /** Идентификатор сессии. */
   "@SessionID": string;
   /** Идентификатор операции. */
-  "@MethodID": number;
+  "@MethodID": string;
 }
 
 /**
@@ -565,7 +565,7 @@ export interface MethodEnd {
   /** Идентификатор сессии. */
   "@SessionID": string;
   /** Идентификатор формы, полученный из `MethodBegin`. */
-  "@FrameID": number;
+  "@FrameID": string;
 }
 
 //======================================================================================================================
