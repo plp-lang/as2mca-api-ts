@@ -36,7 +36,7 @@ export class TestHttpAdapter implements HttpAdapter {
   }
 
   async api(url: string, body: string, headers?: Record<string, string>): Promise<HttpApiResponse> {
-    this.log.trace("-> started processing request, url: {url}", { url });
+    this.log.trace("-> started processing request, url: {url}, request: {body}", { url, body });
     const res = await this.httpAdapter.api(url, body, headers);
     this.log.trace("<- finished processing request, url: {url}, status: {status}, response: {body}", { url, ...res });
     return res;

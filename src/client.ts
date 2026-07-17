@@ -11,10 +11,12 @@ import type {
   Class,
   Column,
   CoreInfo,
+  Filter,
   GuidesGroup,
   Method,
   NetworkInformationSet,
   ObjectClassAndArchiveKey,
+  RowItem,
   SessionInfo,
   Setting,
   State,
@@ -22,17 +24,9 @@ import type {
   Transition,
   UserInfo,
   View,
+  ViewDataGetCancelable,
 } from "./models";
-import type {
-  Response,
-  Request,
-  RequestBody,
-  ResponseBody,
-  ResponseKey,
-  ResponseValue,
-  UserPrivileged,
-  UserInfo as UserInfoXML,
-} from "./xml";
+import type { xml } from ".";
 
 /**
  * Клиент для взаимодействия с API сервера приложений.
@@ -160,7 +154,7 @@ export class Client {
     const user = await this.api("User", {
       SystemUserPrivilegedGet: { "@SessionID": sessionId },
     });
-    const isPrivileged = (user as UserPrivileged)["@IsPrivileged"];
+    const isPrivileged = (user as xml.UserPrivileged)["@IsPrivileged"];
     return normalizeBool(isPrivileged);
   }
 
@@ -180,7 +174,7 @@ export class Client {
   public async userInfoGet(sessionId: string): Promise<UserInfo> {
     const user = (await this.api("User", {
       UserInfoGet: { "@SessionID": sessionId },
-    })) as UserInfoXML;
+    })) as xml.UserInfo;
     return {
       name: user["@Name"],
       shortName: user["@ShortName"],
@@ -976,6 +970,69 @@ export class Client {
     }));
   }
 
+  /**
+   * Получает данные представления (табличные данные).
+   *
+   * @param params - Параметры запроса ViewDataGetCancelable.
+   *
+   * @returns Массив строк {@link RowItem}.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async viewDataGetCancelable(sessionId: string, params: ViewDataGetCancelable): Promise<RowItem[][]> {
+    const buildFilter = (f: Filter): xml.Filter => {
+      if ("simpleFilter" in f)
+        return {
+          SimpleFilter: {
+            "@ColumnName": f.simpleFilter.columnName,
+            "@Operator": f.simpleFilter.operator,
+            "@Value": f.simpleFilter.value,
+          },
+        };
+      if ("caseInsensitiveFilter" in f)
+        return {
+          CaseInsensitiveFilter: {
+            "@ColumnName": f.caseInsensitiveFilter.columnName,
+            "@Operator": f.caseInsensitiveFilter.operator,
+            "@Value": f.caseInsensitiveFilter.value,
+          },
+        };
+      if ("and" in f) return { AND: f.and.map(buildFilter) };
+      if ("or" in f) return { OR: f.or.map(buildFilter) };
+      throw new Error(`Неизвестный тип фильтра: ${JSON.stringify(f)}`);
+    };
+
+    const and = params.userFilter?.and?.map(buildFilter);
+    const or = params.userFilter?.or?.map(buildFilter);
+
+    const columns = await this.api("ViewData", {
+      ViewDataGetCancelable: {
+        "@SessionID": sessionId,
+        "@ViewShortName": params.viewShortName,
+        "@ClassID": params.classId,
+        "@Hint": params.hint ?? "FIRST_ROWS",
+        "@AllowTimestampMilliseconds": params.allowTimestampMilliseconds ?? true,
+        "@RowsLimit": params.rowsLimit,
+        AdditionalFilterBind: params.additionalFilterBindClause
+          ? { "@Clause": params.additionalFilterBindClause }
+          : undefined,
+        ObjectFilter: params.objectIdFilter ? { "@ObjectID": params.objectIdFilter } : undefined,
+        UserFilter: {
+          "@ExtraFilter": params.extraFilter,
+          AND: and,
+          OR: or,
+        },
+      },
+    });
+    return normalizeArray(columns.Row).map((v) =>
+      normalizeArray(v.RowItem).map((v) => ({ columnName: v["@ColumnName"], value: v["@Value"] })),
+    );
+  }
+
   //====================================================================================================================
   // Private
   //====================================================================================================================
@@ -991,6 +1048,8 @@ export class Client {
     ignoreAttributes: false,
     attributeNamePrefix: "@",
     suppressEmptyNode: true,
+    processEntities: false,
+    suppressBooleanAttributes: false,
     format: false,
   });
 
@@ -1008,10 +1067,10 @@ export class Client {
    * @throws {XmlSerializeError} При ошибке сериализации запроса.
    * @throws {XmlDeserializeError} При ошибке парсинга ответа.
    */
-  private async api<K extends Exclude<ResponseKey, "Error">>(
+  private async api<K extends Exclude<xml.ResponseKey, "Error">>(
     expectedKey: K | K[],
-    obj: RequestBody,
-  ): Promise<ResponseValue<K>> {
+    obj: xml.RequestBody,
+  ): Promise<xml.ResponseValue<K>> {
     const url = this.endpoint("api");
     const xmlBody = this.serialization(obj);
 
@@ -1032,10 +1091,9 @@ export class Client {
       throw new ApiError(message, details);
     }
 
-    const keys = Array.isArray(expectedKey) ? expectedKey : [expectedKey];
-    const foundKey = keys.find((k) => k in root);
+    const foundKey = normalizeArray(expectedKey).find((k) => k in root);
     if (foundKey) {
-      return (root as Record<string, any>)[foundKey] as ResponseValue<K>;
+      return (root as Record<string, any>)[foundKey] as xml.ResponseValue<K>;
     }
 
     throw new UnexpectedResponseError(body);
@@ -1061,7 +1119,7 @@ export class Client {
    *
    * @throws {XmlSerializeError} При ошибке построения XML.
    */
-  private serialization(obj: RequestBody): string {
+  private serialization(obj: xml.RequestBody): string {
     try {
       return this.builder.build({
         "?xml": {
@@ -1070,7 +1128,7 @@ export class Client {
           "@standalone": "yes",
         },
         Request: obj,
-      } satisfies Request);
+      } satisfies xml.Request);
     } catch (cause) {
       throw new XmlSerializeError((cause as Error).message, { cause });
     }
@@ -1085,9 +1143,9 @@ export class Client {
    *
    * @throws {XmlDeserializeError} При ошибке парсинга или отсутствии тега <Response>.
    */
-  private deserialization(text: string): ResponseBody {
+  private deserialization(text: string): xml.ResponseBody {
     try {
-      const xml = this.parser.parse(text) as Response;
+      const xml = this.parser.parse(text) as xml.Response;
       if (!xml?.Response) {
         throw new Error("Missing <Response> tag");
       }

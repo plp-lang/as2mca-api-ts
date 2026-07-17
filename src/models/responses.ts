@@ -327,3 +327,13 @@ export type Invisible = "0" | "2"; // 0-видимо, 2-скрыто
  * Логирование.
  */
 export type Logging = "0" | "D";
+
+/**
+ * Значение колонки в строке.
+ */
+export interface RowItem {
+  /** Имя колонки. */
+  columnName: string;
+  /** Значение. */
+  value: string;
+}

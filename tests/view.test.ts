@@ -1,10 +1,9 @@
 import { describe, expect, test } from "bun:test";
 
 import { context } from "./ctx";
-
 import type { Class, Column, View } from "../src/models";
 
-describe("Представления и данные", () => {
+describe("Представления и колонки", () => {
   const ctx = context();
 
   let classes: Class[] = [];
@@ -14,25 +13,24 @@ describe("Представления и данные", () => {
   test("request `classesGet`", async () => {
     const { client, sessionId } = ctx;
 
-    const new_classes = await client.classesGet(sessionId, ["USER", "DOCUMENT", "CL_PRIV", "CL_ORG"]);
-    expect(new_classes).toBeArray();
-    expect(new_classes.length).toBeGreaterThan(0);
-    classes.push(...new_classes);
+    const cls = await client.classesGet(sessionId, ["USER", "DOCUMENT", "CL_PRIV", "CL_ORG"]);
+    expect(cls).toBeArray();
+    expect(cls.length).toBeGreaterThan(0);
+    classes.push(...cls);
   });
 
   test("request `classViewsGet`", async () => {
     const { client, sessionId } = ctx;
 
-    for (const cl of classes) {
-      const new_views = await client.classViewsGet(sessionId, cl.id);
-      expect(new_views).toBeArray();
-      expect(new_views.length).toBeGreaterThan(0);
-      views.push(...new_views);
-    }
+    (await Promise.all(classes.map((cl) => client.classViewsGet(sessionId, cl.id)))).forEach((vws) => {
+      expect(vws).toBeArray();
+      expect(vws.length).toBeGreaterThan(0);
+      views.push(...vws);
+    });
   });
 
   test("validate `View`", () => {
-    for (const v of views) {
+    views.forEach((v) => {
       expect(v.id).toBeString();
       expect(v.name).toBeString();
       expect(v.shortName).toBeString();
@@ -49,21 +47,21 @@ describe("Представления и данные", () => {
       expect(typeof v.extensionId).toBeOneOf(["string", "undefined"]);
       expect(typeof v.filterMethodShortName).toBeOneOf(["string", "undefined"]);
       expect(typeof v.filterMethodProperties).toBeOneOf(["string", "undefined"]);
-    }
+    });
   });
 
   test("request `viewColumnsGet`", async () => {
     const { client, sessionId } = ctx;
-    for (const view of views) {
-      const new_columns = await client.viewColumnsGet(sessionId, view.id);
-      expect(new_columns).toBeArray();
-      expect(new_columns.length).toBeGreaterThan(0);
-      columns.push(...new_columns);
-    }
+
+    (await Promise.all(views.map((view) => client.viewColumnsGet(sessionId, view.id)))).forEach((clms) => {
+      expect(clms).toBeArray();
+      expect(clms.length).toBeGreaterThan(0);
+      columns.push(...clms);
+    });
   });
 
   test("validate `Column`", () => {
-    for (const v of columns) {
+    columns.forEach((v) => {
       expect(v.name).toBeString();
       expect(v.width).toBeString();
       expect(v.align).toBeOneOf(["0", "1", "2"]);
@@ -91,6 +89,6 @@ describe("Представления и данные", () => {
       expect(typeof v.targetClassId).toBeOneOf(["string", "undefined"]);
       expect(typeof v.referenceType).toBeOneOf(["string", "undefined"]);
       expect(v.logging).toBeOneOf([undefined, "0", "D"]);
-    }
+    });
   });
 });

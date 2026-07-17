@@ -619,7 +619,7 @@ export interface AdditionalFilterBind {
  */
 export interface ObjectFilter {
   /** Идентификатор экземпляра. */
-  "@ObjectID": number;
+  "@ObjectID": string;
 }
 
 /**
@@ -647,25 +647,13 @@ export interface CaseInsensitiveFilter {
 }
 
 /**
- * Логический фильтр "AND".
- */
-export interface AndFilter {
-  /** Вложенные фильтры (один или несколько). */
-  AND: Filter | Filter[];
-}
-
-/**
- * Логический фильтр "OR".
- */
-export interface OrFilter {
-  /** Вложенные фильтры (один или несколько). */
-  OR: Filter | Filter[];
-}
-
-/**
  * Объединённый тип фильтра для представления.
  */
-export type Filter = AndFilter | OrFilter | SimpleFilter | CaseInsensitiveFilter;
+export type Filter =
+  | { AND: Filter | Filter[] }
+  | { OR: Filter | Filter[] }
+  | { SimpleFilter: SimpleFilter }
+  | { CaseInsensitiveFilter: CaseInsensitiveFilter };
 
 /**
  * Пользовательский фильтр для представления.
@@ -673,8 +661,10 @@ export type Filter = AndFilter | OrFilter | SimpleFilter | CaseInsensitiveFilter
 export interface UserFilter {
   /** Дополнительный фильтр (опционально). */
   "@ExtraFilter"?: string;
-  /** Список фильтров (один или несколько). */
-  Filter: Filter | Filter[];
+  /** Логический оператор "AND" (опционально). */
+  AND?: Filter | Filter[];
+  // /** Логический оператор "OR" (опционально). */
+  OR?: Filter | Filter[];
 }
 
 /**
