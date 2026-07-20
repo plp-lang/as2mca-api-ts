@@ -33,6 +33,7 @@ import type {
   Validate,
   View,
   ViewDataGetCancelable,
+  Object,
 } from "./models";
 import type { xml } from ".";
 
@@ -480,11 +481,11 @@ export class Client {
    * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
    * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
    */
-  public async pipeTextGet(sessionId: string, pipeName: string): Promise<string> {
-    const result = await this.api("PipeText", {
+  public async pipeTextGet(sessionId: string, pipeName: string): Promise<string | undefined> {
+    const { "@Value": text } = await this.api("PipeText", {
       PipeTextGet: { "@SessionID": sessionId, "@PipeName": pipeName },
     });
-    return result["@Value"];
+    return normalizeString(text);
   }
 
   /**
@@ -501,11 +502,11 @@ export class Client {
    * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
    * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
    */
-  public async debugTextGet(sessionId: string, direction: string): Promise<string> {
-    const result = await this.api("DebugText", {
+  public async debugTextGet(sessionId: string, direction: string): Promise<string | undefined> {
+    const { "@Value": text } = await this.api("DebugText", {
       DebugTextGet: { "@SessionID": sessionId, "@Direction": direction },
     });
-    return result["@Value"];
+    return normalizeString(text);
   }
 
   //====================================================================================================================
@@ -895,7 +896,7 @@ export class Client {
     const { "@Text": script } = await this.api("ClientScript", {
       MethodClientScriptGet: { "@SessionID": sessionId, "@MethodID": methodId },
     });
-    return script.length > 0 ? script : undefined;
+    return normalizeString(script);
   }
 
   /**
@@ -1232,6 +1233,55 @@ export class Client {
   }
 
   //====================================================================================================================
+  // Блокировки
+  //====================================================================================================================
+
+  /**
+   * Блокирует один или несколько экземпляров.
+   *
+   * @param sessionId - Идентификатор сессии.
+   * @param objects - Массив объектов с id и classId.
+   *
+   * @returns Сообщение об ошибке, если блокировка не удалась; иначе undefined.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async objectsLock(sessionId: string, objects: Object[]): Promise<string | undefined> {
+    const { "@Message": msg } = await this.api("LockResult", {
+      ObjectsLock: {
+        "@SessionID": sessionId,
+        Object: objects.map((obj) => ({ "@ID": obj.id, "@ClassID": obj.classId })),
+      },
+    });
+    return normalizeString(msg);
+  }
+
+  /**
+   * Разблокирует экземпляры (снять все блокировки или только текущей сессии).
+   *
+   * @param sessionId - Идентификатор сессии.
+   * @param clearAllLocks - Если true, снимаются все блокировки; если false – только текущей сессии.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async objectsUnlock(sessionId: string, clearAllLocks: boolean = false): Promise<void> {
+    await this.api("Done", {
+      ObjectsUnlock: {
+        "@SessionID": sessionId,
+        "@ClearAllLocks": clearAllLocks,
+      },
+    });
+  }
+
+  //====================================================================================================================
   // Private
   //====================================================================================================================
 
@@ -1372,6 +1422,14 @@ const normalizeArray = <T>(value: T | T[] | undefined): T[] => {
 const normalizeBool = (value: string | undefined): boolean => {
   if (value === undefined) return false;
   return value === "true" || value === "1";
+};
+
+/**
+ * Нормализует значение строки, которое может отсутствовать или быть пустым.
+ */
+const normalizeString = (value: string | undefined): string | undefined => {
+  if (value === undefined) return undefined;
+  return value.length > 0 ? value : undefined;
 };
 
 /**

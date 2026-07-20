@@ -9,8 +9,8 @@ describe("ТБП и типы", () => {
     const { client, sessionId } = ctx;
 
     const { classId, archiveKey } = await client.objectClassAndArchiveKeyGet(sessionId, 0, "DOCUMENT");
-    expect(classId === undefined || typeof archiveKey === "string").toBe(true);
-    expect(classId === undefined || typeof archiveKey === "string").toBe(true);
+    expect(typeof classId).toBeOneOf(["undefined", "string"]);
+    expect(typeof archiveKey).toBeOneOf(["undefined", "string"]);
   });
 
   test("objectBackwardReferencesGet", async () => {

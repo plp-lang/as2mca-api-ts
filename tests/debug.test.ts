@@ -8,13 +8,13 @@ describe("Отладка", () => {
     const { client, sessionId, debugPipeName } = ctx;
 
     const text = await client.pipeTextGet(sessionId, debugPipeName);
-    expect(text).toBeString();
+    expect(typeof text).toBeOneOf(["undefined", "string"]);
   });
 
   test("debugTextGet", async () => {
     const { client, sessionId } = ctx;
 
     const text = await client.debugTextGet(sessionId, "B");
-    expect(text).toBeString();
+    expect(typeof text).toBeOneOf(["undefined", "string"]);
   });
 });

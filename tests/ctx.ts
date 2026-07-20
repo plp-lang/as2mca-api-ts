@@ -1,4 +1,4 @@
-import { beforeEach, afterEach } from "bun:test";
+import { beforeAll, afterAll } from "bun:test";
 
 import { getLogger, configure, getConsoleSink } from "@logtape/logtape";
 import { prettyFormatter } from "@logtape/pretty";
@@ -49,7 +49,7 @@ export class TestHttpAdapter implements HttpAdapter {
 export function context() {
   let ctx: Context = {} as Context;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const url = Bun.env["AS2MCA_API_URL"] ?? "http://localhost:3000/platform2mca/";
     const username = Bun.env["AS2MCA_API_USERNAME"] ?? "test";
     const password = Bun.env["AS2MCA_API_PASSWORD"] ?? "test";
@@ -63,7 +63,7 @@ export function context() {
     ctx.debugPipeName = debugPipeName;
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     await ctx.client.sessionDeinit(ctx.sessionId);
   });
 

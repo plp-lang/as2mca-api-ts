@@ -702,7 +702,7 @@ export interface ViewColumnsGet {
  */
 export interface Object {
   /** Идентификатор экземпляра. */
-  "@ID": number;
+  "@ID": string;
   /** Короткое имя ТБП. */
   "@ClassID": string;
 }

@@ -127,6 +127,13 @@ describe("Создать и удалить экземпляр ::[FP_TUNE]", () =
     expect(data[0]?.find((v) => v.columnName === "C_2")?.value).toBe(TEST_OBJECT_VALUE);
   });
 
+  test("Блокируем тестовый экземпляр", async () => {
+    const { client, sessionId } = ctx;
+
+    const msg = await client.objectsLock(sessionId, [{ classId: CLASS_SHORT_NAME, id: OBJECT_ID }]);
+    expect(msg).toBeUndefined();
+  });
+
   test("Удаляем тестовый экземпляр", async () => {
     const { client, sessionId } = ctx;
 
@@ -142,5 +149,10 @@ describe("Создать и удалить экземпляр ::[FP_TUNE]", () =
     });
     const prevFrameId = await client.methodEnd(sessionId, frameId);
     expect(prevFrameId).toBeUndefined();
+  });
+
+  test("Снимаем блокировку с экземпляра", async () => {
+    const { client, sessionId } = ctx;
+    await client.objectsUnlock(sessionId);
   });
 });
