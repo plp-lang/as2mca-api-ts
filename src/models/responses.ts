@@ -55,7 +55,7 @@ export interface Setting {
   /** Имя настройки. */
   name: string;
   /** Значение настройки (может отсутствовать). */
-  value: string | undefined;
+  value?: string;
 }
 
 //======================================================================================================================
@@ -67,9 +67,9 @@ export interface Setting {
  */
 export interface ObjectClassAndArchiveKey {
   /** Короткое имя текущего ТБП экземпляра. */
-  classId: string | undefined;
+  classId?: string;
   /** Ключ архива. */
-  archiveKey: string | undefined;
+  archiveKey?: string;
 }
 
 /**
@@ -306,6 +306,72 @@ export interface MethodResult {
   controlsStates: ControlState[];
 }
 
+/**
+ * Описание элемента формы.
+ */
+export interface Control {
+  /** Идентификатор элемента. */
+  id: string;
+  /** Идентификатор операции. */
+  methodId: string;
+  /** Квалификатор. */
+  qualifier: string;
+  /** Тип элемента. */
+  control: ControlType;
+  /** Заголовок. */
+  caption: string;
+  /** Отступ сверху (пиксели). */
+  top: string;
+  /** Отступ слева (пиксели). */
+  left: string;
+  /** Высота (пиксели). */
+  height: string;
+  /** Ширина (пиксели). */
+  width: string;
+  /** Индекс табуляции. */
+  tabIndex: string;
+  /** Позиция. */
+  position: string;
+  /** Имя для валидации. */
+  validateName: string;
+  /** Идентификатор родительского элемента (может отсутствовать). */
+  parentId?: string;
+  /** ТБП значения (опционально). */
+  classId?: string;
+  /** Зависимость (опционально). */
+  depend?: string;
+  /** Свойства (опционально). */
+  properties?: string;
+  /** Подсказка (опционально). */
+  tips?: string;
+}
+
+/**
+ * Тип элемента формы.
+ */
+export type ControlType =
+  | "FORM"
+  | "LABEL"
+  | "TEXT"
+  | "OBJECT"
+  | "CHECK"
+  | "BUTTON"
+  | "SUBFORM"
+  | "LINE"
+  | "MEMO"
+  | "FRAME"
+  | "DATE"
+  | "VARIANT"
+  | "ARRAY"
+  | "PANEL"
+  | "COMBO"
+  | "NUMBER"
+  | "DEPEND"
+  | "TABBED"
+  | "GRID"
+  | "GRIDCOL"
+  | "TABLE";
+
 //======================================================================================================================
 // Представления и данные
 //======================================================================================================================
@@ -368,12 +434,12 @@ export interface Column {
   base: ColumnBase;
   /** Изменяемый размер. */
   isSizeable: boolean;
-  /** Стиль ячейки. */
-  isCellStyle: boolean;
   /** Видимость. */
   isInvisible: Invisible;
   /** Возможность выполнения операции. */
   abilityPerformOperation: boolean;
+  /** Стиль ячейки. */
+  isCellStyle?: boolean;
   /** Редактируемость (опционально). */
   isEditable?: boolean;
   /** Идентификатор ссылки (опционально). */

@@ -8,7 +8,7 @@ describe("ТБП и типы", () => {
   test("objectClassAndArchiveKeyGet", async () => {
     const { client, sessionId } = ctx;
 
-    const { classId, archiveKey } = await client.objectClassAndArchiveKeyGet(sessionId, 0, "DOCUMENT");
+    const { classId, archiveKey } = await client.objectClassAndArchiveKeyGet(sessionId, 0, "USER");
     expect(typeof classId).toBeOneOf(["undefined", "string"]);
     expect(typeof archiveKey).toBeOneOf(["undefined", "string"]);
   });
@@ -16,8 +16,9 @@ describe("ТБП и типы", () => {
   test("objectBackwardReferencesGet", async () => {
     const { client, sessionId } = ctx;
 
-    const refs = await client.objectBackwardReferencesGet(sessionId, 0, "DOCUMENT");
+    const refs = await client.objectBackwardReferencesGet(sessionId, 8_935_328, "USER");
     expect(refs).toBeArray();
+    expect(refs.length).toBeGreaterThan(0);
     refs.forEach(({ classId, className, qual, qualName }): void => {
       expect(classId).toBeString();
       expect(className).toBeString();
@@ -44,10 +45,10 @@ describe("ТБП и типы", () => {
   test("classStatesGet", async () => {
     const { client, sessionId } = ctx;
 
-    const trans = await client.classStatesGet(sessionId, "VZ_CARDS");
-    expect(trans).toBeArray();
-    expect(trans.length).toBeGreaterThan(1);
-    trans.forEach(({ id, name, indexUse }): void => {
+    const states = await client.classStatesGet(sessionId, "VZ_CARDS");
+    expect(states).toBeArray();
+    expect(states.length).toBeGreaterThan(1);
+    states.forEach(({ id, name, indexUse }): void => {
       expect(id).toBeString();
       expect(name).toBeString();
       expect(indexUse).toBeString();

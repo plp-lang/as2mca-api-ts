@@ -49,6 +49,7 @@ describe("Создать и удалить экземпляр ::[FP_TUNE]", () =
     const object = data[0];
     const objectId = object?.find((v) => v.columnName === "ID")?.value as string;
     const objectCode = object?.find((v) => v.columnName === "C_2")?.value as string;
+
     if (objectCode === TEST_OBJECT_VALUE) {
       const frameId = (await client.methodBegin(sessionId, METHOD_DELETE_ID)) as string;
       expect(frameId).toBeString();
@@ -58,7 +59,7 @@ describe("Создать и удалить экземпляр ::[FP_TUNE]", () =
         objectId: [objectId],
       });
       await client.methodExecute(sessionId, {
-        methodId: METHOD_DELETE_SHORT_NAME,
+        methodId: METHOD_DELETE_ID,
       });
       const prevFrameId = await client.methodEnd(sessionId, frameId);
       expect(prevFrameId).toBeUndefined();
@@ -145,7 +146,7 @@ describe("Создать и удалить экземпляр ::[FP_TUNE]", () =
       objectId: [OBJECT_ID],
     });
     await client.methodExecute(sessionId, {
-      methodId: METHOD_DELETE_SHORT_NAME,
+      methodId: METHOD_DELETE_ID,
     });
     const prevFrameId = await client.methodEnd(sessionId, frameId);
     expect(prevFrameId).toBeUndefined();

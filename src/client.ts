@@ -34,6 +34,7 @@ import type {
   View,
   ViewDataGetCancelable,
   Object,
+  Control,
 } from "./models";
 import type { xml } from ".";
 
@@ -698,7 +699,7 @@ export class Client {
       classInterface: v["@ClassInterface"],
       flags: v["@Flags"],
       menuCaption: v["@MenuCaption"],
-      isAccessible: normalizeBool(v["@IsAccessible"]),
+      isAccessible: normalizeBoolOrUndefined(v["@IsAccessible"]),
       padLength: v["@PadLength"],
       dataSize: v["@DataSize"],
       dataPrecision: v["@DataPrecision"],
@@ -736,7 +737,7 @@ export class Client {
           classInterface: v["@ClassInterface"],
           flags: v["@Flags"],
           menuCaption: v["@MenuCaption"],
-          isAccessible: normalizeBool(v["@IsAccessible"]),
+          isAccessible: normalizeBoolOrUndefined(v["@IsAccessible"]),
           padLength: v["@PadLength"],
           dataSize: v["@DataSize"],
           dataPrecision: v["@DataPrecision"],
@@ -771,7 +772,7 @@ export class Client {
       classInterface: v["@ClassInterface"],
       flags: v["@Flags"],
       menuCaption: v["@MenuCaption"],
-      isAccessible: normalizeBool(v["@IsAccessible"]),
+      isAccessible: normalizeBoolOrUndefined(v["@IsAccessible"]),
       padLength: v["@PadLength"],
       dataSize: v["@DataSize"],
       dataPrecision: v["@DataPrecision"],
@@ -806,7 +807,7 @@ export class Client {
       classInterface: v["@ClassInterface"],
       flags: v["@Flags"],
       menuCaption: v["@MenuCaption"],
-      isAccessible: normalizeBool(v["@IsAccessible"]),
+      isAccessible: normalizeBoolOrUndefined(v["@IsAccessible"]),
       padLength: v["@PadLength"],
       dataSize: v["@DataSize"],
       dataPrecision: v["@DataPrecision"],
@@ -871,7 +872,7 @@ export class Client {
       callableShortName: v["@CallableShortName"],
       scriptId: v["@ScriptID"],
       resultClassId: v["@ResultClassID"],
-      userDriven: normalizeBool(v["@UserDriven"]),
+      userDriven: normalizeBoolOrUndefined(v["@UserDriven"]),
       formId: v["@FormID"],
       reportType: v["@ReportType"],
       reportTemplate: v["@ReportTemplate"],
@@ -995,6 +996,45 @@ export class Client {
       classId: v["@ClassID"],
       position: v["@Position"],
       referenceType: v["@ReferenceType"],
+    }));
+  }
+
+  /**
+   * Получает список элементов управления (controls) на форме операции.
+   *
+   * @param sessionId - Идентификатор сессии.
+   * @param formId - Идентификатор операции.
+   *
+   * @returns Массив Control.
+   *
+   * @throws {ApiError} Если сессия уже неактивна или невалидна.
+   * @throws {HttpError} При сетевых проблемах.
+   * @throws {XmlSerializeError} При ошибке сериализации запроса.
+   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
+   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   */
+  public async methodControlsGet(sessionId: string, formId: string): Promise<Control[]> {
+    const controls = await this.api("Controls", {
+      MethodControlsGet: { "@SessionID": sessionId, "@FormID": formId },
+    });
+    return normalizeArray(controls.Control).map((v) => ({
+      id: v["@ID"],
+      methodId: v["@MethodID"],
+      qualifier: v["@Qualifier"],
+      control: v["@Control"],
+      caption: v["@Caption"],
+      top: v["@Top"],
+      left: v["@Left"],
+      height: v["@Height"],
+      width: v["@Width"],
+      tabIndex: v["@TabIndex"],
+      position: v["@Position"],
+      validateName: v["@ValidateName"],
+      parentId: v["@ParentID"],
+      classId: v["@ClassID"],
+      depend: v["@Depend"],
+      properties: v["@Properties"],
+      tips: v["@Tips"],
     }));
   }
 
@@ -1180,10 +1220,10 @@ export class Client {
       alias: v["@Alias"],
       base: v["@Base"],
       isSizeable: normalizeBool(v["@IsSizeable"]),
-      isCellStyle: normalizeBool(v["@IsCellStyle"]),
       isInvisible: v["@IsInvisible"],
       abilityPerformOperation: normalizeBool(v["@AbilityPerformOperation"]),
-      isEditable: normalizeBool(v["@IsEditable"]),
+      isCellStyle: normalizeBoolOrUndefined(v["@IsCellStyle"]),
+      isEditable: normalizeBoolOrUndefined(v["@IsEditable"]),
       referenceId: v["@ReferenceID"],
       targetClassId: v["@TargetClassID"],
       referenceType: v["@ReferenceType"],
@@ -1414,6 +1454,14 @@ export class Client {
 const normalizeArray = <T>(value: T | T[] | undefined): T[] => {
   if (value === undefined) return [];
   return Array.isArray(value) ? value : [value];
+};
+
+/**
+ * Нормализует значение, которое может быть строкой "true" или "1", в boolean, или может отсутствовать.
+ */
+const normalizeBoolOrUndefined = (value: string | undefined): boolean | undefined => {
+  if (value === undefined) return undefined;
+  return value === "true" || value === "1";
 };
 
 /**

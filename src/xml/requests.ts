@@ -408,7 +408,7 @@ export interface MethodControlsGet {
   /** Идентификатор сессии. */
   "@SessionID": string;
   /** Идентификатор формы. */
-  "@FormID": number;
+  "@FormID": string;
 }
 
 /**

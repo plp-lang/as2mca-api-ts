@@ -477,9 +477,9 @@ export interface MethodVariables {
  */
 export interface Control {
   /** Идентификатор элемента. */
-  "@ID": number;
+  "@ID": string;
   /** Идентификатор операции. */
-  "@MethodID": number;
+  "@MethodID": string;
   /** Квалификатор. */
   "@Qualifier": string;
   /** Тип элемента. */
@@ -487,25 +487,25 @@ export interface Control {
   /** Заголовок. */
   "@Caption": string;
   /** Отступ сверху (пиксели). */
-  "@Top": number;
+  "@Top": string;
   /** Отступ слева (пиксели). */
-  "@Left": number;
+  "@Left": string;
   /** Высота (пиксели). */
-  "@Height": number;
+  "@Height": string;
   /** Ширина (пиксели). */
-  "@Width": number;
+  "@Width": string;
   /** Индекс табуляции. */
-  "@TabIndex": number;
+  "@TabIndex": string;
   /** Позиция. */
-  "@Position": number;
+  "@Position": string;
   /** Имя для валидации. */
   "@ValidateName": string;
   /** Идентификатор родительского элемента (может отсутствовать). */
-  "@ParentID"?: number;
+  "@ParentID"?: string;
   /** ТБП значения (опционально). */
   "@ClassID"?: string;
   /** Зависимость (опционально). */
-  "@Depend"?: number;
+  "@Depend"?: string;
   /** Свойства (опционально). */
   "@Properties"?: string;
   /** Подсказка (опционально). */
@@ -635,12 +635,12 @@ export interface Column {
   "@Base": ColumnBase;
   /** Изменяемый размер. */
   "@IsSizeable": string; // 0 или 1?
-  /** Стиль ячейки. */
-  "@IsCellStyle": string;
   /** Видимость. */
   "@IsInvisible": Invisible;
   /** Возможность выполнения операции. */
   "@AbilityPerformOperation": string;
+  /** Стиль ячейки. (опционально) */
+  "@IsCellStyle"?: string;
   /** Редактируемость (опционально). */
   "@IsEditable"?: string;
   /** Идентификатор ссылки (опционально). */

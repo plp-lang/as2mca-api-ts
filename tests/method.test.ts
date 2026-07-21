@@ -1,11 +1,12 @@
 import { describe, expect, test } from "bun:test";
 import { context } from "./ctx";
-import type { Method, MethodParameter, MethodVariable } from "../src/models";
+import type { Control, Method, MethodParameter, MethodVariable } from "../src/models";
 
 describe("Операции", () => {
   const ctx = context();
 
   let methods: Method[] = [];
+  let controls: Control[] = [];
   let params: MethodParameter[] = [];
   let vars: MethodVariable[] = [];
 
@@ -42,6 +43,59 @@ describe("Операции", () => {
 
     (await Promise.all(methods.map((mth) => client.methodClientScriptGet(sessionId, mth.id)))).forEach((script) => {
       expect(typeof script).toBeOneOf(["string", "undefined"]);
+    });
+  });
+
+  test("request `methodControlsGet`", async () => {
+    const { client, sessionId } = ctx;
+
+    (await Promise.all(methods.map((mth) => client.methodControlsGet(sessionId, mth.id)))).forEach((ctrls) => {
+      expect(ctrls).toBeArray();
+      controls.push(...ctrls);
+    });
+  });
+
+  test("validate `Control`", () => {
+    controls.forEach((c) => {
+      expect(c.id).toBeString();
+      expect(c.methodId).toBeString();
+      expect(c.qualifier).toBeString();
+      expect(c.control).toBeOneOf([
+        "FORM",
+        "LABEL",
+        "TEXT",
+        "OBJECT",
+        "CHECK",
+        "BUTTON",
+        "SUBFORM",
+        "LINE",
+        "MEMO",
+        "FRAME",
+        "DATE",
+        "VARIANT",
+        "ARRAY",
+        "PANEL",
+        "COMBO",
+        "NUMBER",
+        "DEPEND",
+        "TABBED",
+        "GRID",
+        "GRIDCOL",
+        "TABLE",
+      ]);
+      expect(c.caption).toBeString();
+      expect(c.top).toBeString();
+      expect(c.left).toBeString();
+      expect(c.height).toBeString();
+      expect(c.width).toBeString();
+      expect(c.tabIndex).toBeString();
+      expect(c.position).toBeString();
+      expect(c.validateName).toBeString();
+      expect(typeof c.parentId).toBeOneOf(["undefined", "string"]);
+      expect(typeof c.classId).toBeOneOf(["undefined", "string"]);
+      expect(typeof c.depend).toBeOneOf(["undefined", "string"]);
+      expect(typeof c.properties).toBeOneOf(["undefined", "string"]);
+      expect(typeof c.tips).toBeOneOf(["undefined", "string"]);
     });
   });
 
