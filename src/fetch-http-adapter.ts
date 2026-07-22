@@ -9,6 +9,7 @@ import type { HttpAdapter, HttpAuthBasicResponse, HttpApiResponse } from "./http
  * - В браузере использует нативный fetch с credentials: "include".
  *
  * Позволяет внедрить собственный экземпляр fetch (например, для тестов или браузера).
+ * @category HttpAdapter
  */
 export class FetchHttpAdapter implements HttpAdapter {
   private fetcher: (input: string | URL | Request, init?: RequestInit) => Promise<Response>;

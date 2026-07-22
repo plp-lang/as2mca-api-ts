@@ -1,5 +1,6 @@
 /**
  * Сетевая ошибка – проблемы с соединением, таймауты, некорректные статусы.
+ * @category Error
  */
 export class HttpError extends Error {
   public readonly code: number;
@@ -25,6 +26,7 @@ export class HttpError extends Error {
 
 /**
  * API‑ошибки – сервер вернул структурированное сообщение об ошибке.
+ * @category Error
  */
 export class ApiError extends Error {
   public readonly details: string;
@@ -47,6 +49,7 @@ export class ApiError extends Error {
 /**
  * Ошибка, возникающая, когда сервер возвращает неожиданный формат ответа.
  * Обычно это означает, что API изменилось и несовместимо с текущей версией библиотеки.
+ * @category Error
  */
 export class UnexpectedResponseError extends Error {
   public readonly actual: string;
@@ -71,6 +74,7 @@ export class UnexpectedResponseError extends Error {
 
 /**
  * Ошибка несоответствия XML‑схеме
+ * @category Error
  */
 export class XmlSerializeError extends Error {
   /**
@@ -89,6 +93,8 @@ export class XmlSerializeError extends Error {
 
 /**
  * Ошибка несоответствия XML‑схеме или сервер вернул неожиданный формат ответа
+ *
+ * @category Error
  */
 export class XmlDeserializeError extends Error {
   /**

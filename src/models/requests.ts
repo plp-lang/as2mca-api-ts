@@ -6,6 +6,7 @@ import type { ControlState } from "./responses";
 
 /**
  * Установка информации о сетевом окружении клиента.
+ * @category model
  */
 export interface NetworkInformationSet {
   /** Hostname устройства пользователя. */
@@ -20,6 +21,7 @@ export interface NetworkInformationSet {
 
 /**
  * Установка MAC и IP адресов клиента.
+ * @category model
  */
 export interface SystemNetAddressSet {
   /** MAC‑адрес устройства (например, "aabbccddeeff"). */
@@ -34,6 +36,7 @@ export interface SystemNetAddressSet {
 
 /**
  * Запрос вызова блока `Validate` операции (по умолчанию, при открытии формы).
+ * @category model
  */
 export interface MethodValidateDefault {
   /** Идентификатор операции. */
@@ -62,6 +65,7 @@ export interface MethodValidateDefault {
 
 /**
  * Запрос на вызов блока `Validate` операции при событии элемента формы.
+ * @category model
  */
 export interface MethodValidate {
   /** Идентификатор операции. */
@@ -82,10 +86,14 @@ export interface MethodValidate {
   plpCallParameters?: PLPCallParameter[];
 }
 
+/**
+ * @category model
+ */
 export type ValidateType = "VALIDATE";
 
 /**
  * Константа для PLP-вызова.
+ * @category model
  */
 export interface PLPConstant {
   /** Значение константы. */
@@ -94,6 +102,7 @@ export interface PLPConstant {
 
 /**
  * Переменная для PLP-вызова.
+ * @category model
  */
 export interface PLPVariable {
   /** Идентификатор операции. */
@@ -104,6 +113,7 @@ export interface PLPVariable {
 
 /**
  * Параметр для PLP-вызова.
+ * @category model
  */
 export interface PLPParameter {
   /** Идентификатор операции. */
@@ -114,11 +124,13 @@ export interface PLPParameter {
 
 /**
  * Объединённый тип сущности для PLP вызова.
+ * @category model
  */
 export type PLPEntity = { constant: PLPConstant } | { variable: PLPVariable } | { parameter: PLPParameter };
 
 /**
  * Параметр PLP-вызова (источник и цель).
+ * @category model
  */
 export interface PLPCallParameter {
   /** Исходная сущность PLP. */
@@ -129,6 +141,7 @@ export interface PLPCallParameter {
 
 /**
  * Запрос на вызов блока `Execute` операции.
+ * @category model
  */
 export interface MethodExecute {
   /** Идентификатор операции. */
@@ -149,6 +162,7 @@ export interface MethodExecute {
 
 /**
  * Запрос данных представления с возможностью отмены.
+ * @category model
  */
 export interface ViewDataGetCancelable {
   /** Короткое имя представления. */
@@ -171,6 +185,9 @@ export interface ViewDataGetCancelable {
   userFilter?: UserFilter;
 }
 
+/**
+ * @category model
+ */
 export type UserFilter = {
   and?: Filter[];
   or?: Filter[];
@@ -178,6 +195,7 @@ export type UserFilter = {
 
 /**
  * Объединённый тип фильтра для представления.
+ * @category model
  */
 export type Filter =
   | { and: Filter[] }
@@ -187,6 +205,7 @@ export type Filter =
 
 /**
  * Простой фильтр для представления.
+ * @category model
  */
 export interface SimpleFilter {
   /** Имя колонки. */
@@ -199,6 +218,7 @@ export interface SimpleFilter {
 
 /**
  * Регистронезависимый фильтр для представления.
+ * @category model
  */
 export interface CaseInsensitiveFilter {
   /** Имя колонки. */
@@ -215,6 +235,7 @@ export interface CaseInsensitiveFilter {
 
 /**
  * Описание экземпляра для блокировки.
+ * @category model
  */
 export interface Object {
   /** Идентификатор экземпляра. */

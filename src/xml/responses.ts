@@ -1,5 +1,6 @@
 /**
  * Базовая обертка XML-ответа от сервера.
+ * @category XML
  */
 export interface Response {
   "?xml": {
@@ -12,6 +13,7 @@ export interface Response {
 
 /**
  * Объединённый тип для тела ответа.
+ * @category XML
  */
 export type ResponseBody =
   | { Error: Error }
@@ -55,27 +57,37 @@ export type ResponseBody =
   | { PipeText: PipeText }
   | { DebugText: DebugText };
 
+/**
+ * @category Utility
+ */
 export type KeysOfUnion<T> = T extends any ? keyof T : never;
 
+/**
+ * @category Utility
+ */
 export type ResponseKey = KeysOfUnion<ResponseBody>;
 
 /**
- * Вспомогательный тип: извлекает тип значения из ResponseBody по ключу K
+ * Вспомогательный тип: извлекает тип значения из `ResponseBody` по ключу `K`
+ * @category XML
  */
 export type ResponseValue<K extends ResponseKey> = K extends any ? Extract<ResponseBody, Record<K, any>>[K] : never;
 
 /**
  * Ответ "Not Found" (пустой).
+ * @category XML
  */
 export type NotFound = "";
 
 /**
  * Пустой ответ, подтверждающий успешное выполнение действия (например, отключение сессии).
+ * @category XML
  */
 export type Done = "";
 
 /**
  * Структура ошибки API.
+ * @category XML
  */
 export interface Error {
   /** Текст ошибки. */
@@ -86,6 +98,7 @@ export interface Error {
 
 /**
  * Детали серверной ошибки.
+ * @category XML
  */
 export interface ServerErrorInfo {
   /** Текст ошибки. */
@@ -98,6 +111,7 @@ export interface ServerErrorInfo {
 
 /**
  * Ответ с данными успешно инициализированной сессии.
+ * @category XML
  */
 export interface Session {
   /** Идентификатор сессии. */
@@ -108,6 +122,7 @@ export interface Session {
 
 /**
  * Ответ с URL для авторизации.
+ * @category XML
  */
 export interface AuthenticationURL {
   /** Относительный URL для авторизации. */
@@ -116,6 +131,7 @@ export interface AuthenticationURL {
 
 /**
  * Базовая информация о пользователе.
+ * @category XML
  */
 export interface UserInfo {
   /** Полное имя (ФИО). */
@@ -128,6 +144,7 @@ export interface UserInfo {
 
 /**
  * Информация о привилегиях пользователя.
+ * @category XML
  */
 export interface UserPrivileged {
   /** true, если пользователь привилегированный. */
@@ -136,6 +153,7 @@ export interface UserPrivileged {
 
 /**
  * Значение свойства профиля пользователя.
+ * @category XML
  */
 export interface UserProfileProperty {
   /** Значение свойства. */
@@ -144,6 +162,7 @@ export interface UserProfileProperty {
 
 /**
  * Универсальный результат проверки (например, вхождения в группу).
+ * @category XML
  */
 export interface CheckResult {
   /** true, если условие выполнено. */
@@ -156,6 +175,7 @@ export interface CheckResult {
 
 /**
  * Информация о версии протокола.
+ * @category XML
  */
 export interface ProtocolInfo {
   /** Версия протокола (например, "9.54"). */
@@ -164,6 +184,7 @@ export interface ProtocolInfo {
 
 /**
  * Информация о версии сервера.
+ * @category XML
  */
 export interface ServerInfo {
   /** Версия базы данных (например, "12.2.0.1"). */
@@ -172,6 +193,7 @@ export interface ServerInfo {
 
 /**
  * Информация о ядре системы.
+ * @category XML
  */
 export interface CoreInfo {
   /** Код аудитора (например, "AUD"). */
@@ -192,6 +214,7 @@ export interface CoreInfo {
 
 /**
  * Список системных настроек.
+ * @category XML
  */
 export interface Settings {
   /** Массив настроек (может быть пустым). */
@@ -200,6 +223,7 @@ export interface Settings {
 
 /**
  * Cистемная настройка (ключ-значение).
+ * @category XML
  */
 export interface Setting {
   /** Имя настройки. */
@@ -209,15 +233,17 @@ export interface Setting {
 }
 
 /**
- * Результат проверки доступности NOVO.
+ * Результат проверки доступности `NOVO`.
+ * @category XML
  */
 export interface NovoAllowedCheckResult {
-  /** Строка "true"/"false" или "1"/"0" */
+  /** Строка `"true"` / `"false"` или `"1"` / `"0"` */
   "@Value": string;
 }
 
 /**
  * Информация о включенности системной опции.
+ * @category XML
  */
 export interface OptionInfo {
   /** true, если опция включена. */
@@ -230,6 +256,7 @@ export interface OptionInfo {
 
 /**
  * Текст из отладочного канала.
+ * @category XML
  */
 export interface PipeText {
   /** Текст из канала. */
@@ -238,6 +265,7 @@ export interface PipeText {
 
 /**
  * Отладочный текст.
+ * @category XML
  */
 export interface DebugText {
   /** Отладочная информация (может быть пустой). */
@@ -250,6 +278,7 @@ export interface DebugText {
 
 /**
  * Идентификатор ТБП и ключ архива экземпляра.
+ * @category XML
  */
 export interface ObjectClassAndArchiveKey {
   /** Короткое имя текущего ТБП экземпляра. */
@@ -260,6 +289,7 @@ export interface ObjectClassAndArchiveKey {
 
 /**
  * Обратная ссылка на экземпляр.
+ * @category XML
  */
 export interface BackwardReference {
   /** Короткое имя ТБП, который ссылается. */
@@ -274,6 +304,7 @@ export interface BackwardReference {
 
 /**
  * Список обратных ссылок.
+ * @category XML
  */
 export interface BackwardReferences {
   /** Массив обратных ссылок (может быть пустым). */
@@ -282,6 +313,7 @@ export interface BackwardReferences {
 
 /**
  * Переход состояний ТБП.
+ * @category XML
  */
 export interface Transition {
   /** Идентификатор перехода. */
@@ -298,6 +330,7 @@ export interface Transition {
 
 /**
  * Список переходов.
+ * @category XML
  */
 export interface Transitions {
   /** Массив переходов (может быть пустым). */
@@ -306,6 +339,7 @@ export interface Transitions {
 
 /**
  * Состояние ТБП.
+ * @category XML
  */
 export interface State {
   /** Идентификатор состояния. */
@@ -318,6 +352,7 @@ export interface State {
 
 /**
  * Список состояний.
+ * @category XML
  */
 export interface States {
   /** Массив состояний (может быть пустым). */
@@ -326,6 +361,7 @@ export interface States {
 
 /**
  * Дочерний ТБП.
+ * @category XML
  */
 export interface ChildClass {
   /** Короткое имя дочернего ТБП. */
@@ -334,6 +370,7 @@ export interface ChildClass {
 
 /**
  * Список дочерних ТБП.
+ * @category XML
  */
 export interface ChildClasses {
   /** Массив дочерних классов (может быть пустым). */
@@ -346,6 +383,7 @@ export interface ChildClasses {
 
 /**
  * Описание операции.
+ * @category XML
  */
 export interface Method {
   /** Идентификатор операции. */
@@ -354,7 +392,7 @@ export interface Method {
   "@Name": string;
   /** Короткое имя. */
   "@ShortName": string;
-  /** Тип операции (C, G, M, R, S, Y). */
+  /** Тип операции. */
   "@Type": MethodType;
   /** Идентификатор класса формы. */
   "@FormClassID": string;
@@ -388,11 +426,14 @@ export interface Method {
  * `Y` — деструктор.
  * `O` - выбор.
  * `P` — печать.
+ *
+ * @category XML
  */
 export type MethodType = "C" | "G" | "M" | "R" | "S" | "Y" | "O" | "P";
 
 /**
  * Список операций.
+ * @category XML
  */
 export interface Methods {
   /** Массив операций (может быть пустым). */
@@ -401,6 +442,7 @@ export interface Methods {
 
 /**
  * Описание входного параметра операции.
+ * @category XML
  */
 export interface MethodParameter {
   /** Короткое имя параметра. */
@@ -426,24 +468,30 @@ export interface MethodParameter {
 /**
  * Тип ссылки.
  *
- * `D` — default.
- * `T` — table of.
- * `R` — ref
+ * `D` — `default`.
+ * `T` — `table of`.
+ * `R` — `ref`.
+ *
+ * @category XML
  */
 export type ReferenceType = "D" | "T" | "R";
 
 /**
  * Направление параметра.
+ * @category XML
  *
- * `I` — in.
- * `D` — default
- * `B` — in out
- * `O` — out
+ * `I` — `in`.
+ * `D` — `default`.
+ * `B` — `in out`.
+ * `O` — `out`.
+ *
+ * @category XML
  */
 export type Direction = "D" | "I" | "B" | "O";
 
 /**
  * Список входных параметров.
+ * @category XML
  */
 export interface MethodParameters {
   /** Массив параметров (может быть пустым). */
@@ -452,6 +500,7 @@ export interface MethodParameters {
 
 /**
  * Описание публичной переменной операции.
+ * @category XML
  */
 export interface MethodVariable {
   /** Имя переменной. */
@@ -466,6 +515,7 @@ export interface MethodVariable {
 
 /**
  * Список публичных переменных.
+ * @category XML
  */
 export interface MethodVariables {
   /** Массив переменных (может быть пустым). */
@@ -474,6 +524,7 @@ export interface MethodVariables {
 
 /**
  * Описание элемента формы.
+ * @category XML
  */
 export interface Control {
   /** Идентификатор элемента. */
@@ -514,6 +565,7 @@ export interface Control {
 
 /**
  * Тип элемента формы.
+ * @category XML
  */
 export type ControlType =
   | "FORM"
@@ -533,6 +585,7 @@ export type ControlType =
 
 /**
  * Спиcок элементов на форме.
+ * @category XML
  */
 export interface Controls {
   /** Массив элементов (может быть пустым). */
@@ -541,6 +594,7 @@ export interface Controls {
 
 /**
  * Результат выполнения блока `Validate`.
+ * @category XML
  */
 export interface Validate {
   /** Отладочный текст. */
@@ -551,6 +605,7 @@ export interface Validate {
 
 /**
  * Состояние элемента на форме.
+ * @category XML
  */
 export interface ControlsState {
   /** Идентификатор элемента. */
@@ -561,6 +616,7 @@ export interface ControlsState {
 
 /**
  * Результат выполнения блока `Execute`.
+ * @category XML
  */
 export interface MethodResult {
   /** Результат операции (число, может отсутствовать). */
@@ -571,6 +627,7 @@ export interface MethodResult {
 
 /**
  * Клиент-скрипт.
+ * @category XML
  */
 export interface ClientScript {
   /** Текст скрипта. */
@@ -579,6 +636,7 @@ export interface ClientScript {
 
 /**
  * Информация об открытой форме.
+ * @category XML
  */
 export interface MethodFrame {
   /** Идентификатор формы (может отсутствовать). */
@@ -591,6 +649,7 @@ export interface MethodFrame {
 
 /**
  * Данные представления.
+ * @category XML
  */
 export interface ViewData {
   /** Массив строк (может быть пустым). */
@@ -599,6 +658,7 @@ export interface ViewData {
 
 /**
  * Строка данных представления.
+ * @category XML
  */
 export interface Row {
   /** Массив элементов строки (может быть пустым). */
@@ -607,6 +667,7 @@ export interface Row {
 
 /**
  * Значение колонки в строке.
+ * @category XML
  */
 export interface RowItem {
   /** Имя колонки. */
@@ -617,6 +678,7 @@ export interface RowItem {
 
 /**
  * Описание колонки представления.
+ * @category XML
  */
 export interface Column {
   /** Имя колонки. */
@@ -655,6 +717,7 @@ export interface Column {
 
 /**
  * Базовый тип данных колонки.
+ * @category XML
  */
 export type ColumnBase =
   | "MEMO"
@@ -670,21 +733,34 @@ export type ColumnBase =
 
 /**
  * Выравнивание.
+ *
+ * - 0-лево
+ * - 1-центр
+ * - 2-право
+ *
+ * @category XML
  */
-export type Align = "0" | "1" | "2"; // 0-лево, 1-центр, 2-право
+export type Align = "0" | "1" | "2";
 
 /**
  * Видимость.
+ *
+ * - 0-видимо
+ * - 2-скрыто
+ *
+ * @category XML
  */
-export type Invisible = "0" | "2"; // 0-видимо, 2-скрыто
+export type Invisible = "0" | "2";
 
 /**
  * Логирование.
+ * @category XML
  */
 export type Logging = "0" | "D";
 
 /**
  * Список колонок.
+ * @category XML
  */
 export interface Columns {
   /** Массив колонок (может быть пустым). */
@@ -693,6 +769,7 @@ export interface Columns {
 
 /**
  * Описание представления.
+ * @category XML
  */
 export interface View {
   /** Идентификатор. */
@@ -701,7 +778,7 @@ export interface View {
   "@Name": string;
   /** Короткое имя. */
   "@ShortName": string;
-  /** По умолчанию? (0/1) */
+  /** По умолчанию? (`0` / `1`) */
   "@IsDefault": string;
   /** Свойства. */
   "@Properties": string;
@@ -731,6 +808,7 @@ export interface View {
 
 /**
  * Список представлений.
+ * @category XML
  */
 export interface Views {
   /** Массив представлений (может быть пустым). */
@@ -743,6 +821,7 @@ export interface Views {
 
 /**
  * Список справочников.
+ * @category XML
  */
 export interface Guides {
   /** Массив классов-справочников (может быть пустым). */
@@ -751,6 +830,7 @@ export interface Guides {
 
 /**
  * Группа справочников.
+ * @category XML
  */
 export interface GuidesGroup {
   /** Идентификатор группы. */
@@ -761,6 +841,7 @@ export interface GuidesGroup {
 
 /**
  * Список групп справочников.
+ * @category XML
  */
 export interface GuidesGroups {
   /** Массив групп (может быть пустым). */
@@ -769,6 +850,7 @@ export interface GuidesGroups {
 
 /**
  * Список cправочников.
+ * @category XML
  */
 export interface Classes {
   /** Массив классов (может быть пустым). */
@@ -777,6 +859,7 @@ export interface Classes {
 
 /**
  * Список ТПБ (не справочников).
+ * @category XML
  */
 export interface Types {
   /** Массив классов (может быть пустым). */
@@ -785,6 +868,7 @@ export interface Types {
 
 /**
  * Описание ТБП (класса).
+ * @category XML
  */
 export interface Class {
   /** Короткое имя ТБП. */
@@ -816,7 +900,9 @@ export interface Class {
   /** Идентификатор группы (опционально). */
   "@GroupID"?: string;
 }
-
+/**
+ * @category XML
+ */
 export type BaseClassID = "STRUCTURE";
 
 //======================================================================================================================
@@ -825,6 +911,7 @@ export type BaseClassID = "STRUCTURE";
 
 /**
  * Результат блокировки экземпляра.
+ * @category XML
  */
 export interface LockResult {
   /** Сообщение об ошибке (если блокировка не удалась). */

@@ -1,5 +1,6 @@
 /**
  * Результат выполнения HTTP-запроса авторизации (authbasic).
+ * @category HttpAdapter
  */
 export interface HttpAuthBasicResponse {
   /** HTTP-код статуса. */
@@ -10,6 +11,7 @@ export interface HttpAuthBasicResponse {
 
 /**
  * Результат выполнения API-запроса (POST /api).
+ * @category HttpAdapter
  */
 export interface HttpApiResponse {
   /** HTTP-код статуса. */
@@ -22,6 +24,7 @@ export interface HttpApiResponse {
 
 /**
  * Адаптер для выполнения HTTP-запросов к серверу приложений.
+ * @category HttpAdapter
  */
 export interface HttpAdapter {
   /**

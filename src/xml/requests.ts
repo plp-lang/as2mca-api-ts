@@ -1,5 +1,6 @@
 /**
  * Общая обёртка для любого XML-запроса.
+ * @category XML
  */
 export type Request = {
   "?xml": {
@@ -12,6 +13,7 @@ export type Request = {
 
 /**
  * Объединённый тип для тела запроса.
+ * @category XML
  */
 export type RequestBody =
   | { SessionInit: SessionInit }
@@ -66,6 +68,7 @@ export type RequestBody =
 
 /**
  * Запрос на инициализацию (активацию) сессии.
+ * @category XML
  */
 export interface SessionInit {
   /**
@@ -77,6 +80,7 @@ export interface SessionInit {
 
 /**
  * Запрос на деактивацию (завершение) сессии.
+ * @category XML
  */
 export interface Disconnect {
   /** Идентификатор сессии. */
@@ -85,11 +89,13 @@ export interface Disconnect {
 
 /**
  * Запрос на получение URL для авторизации.
+ * @category XML
  */
 export type AuthenticationURLGet = Record<never, never>; // Пустой объект
 
 /**
  * Запрос базовой информации о пользователе.
+ * @category XML
  */
 export interface UserInfoGet {
   /** Идентификатор сессии. */
@@ -98,6 +104,7 @@ export interface UserInfoGet {
 
 /**
  * Запрос проверки привилегий пользователя.
+ * @category XML
  */
 export interface SystemUserPrivilegedGet {
   /** Идентификатор сессии. */
@@ -106,26 +113,29 @@ export interface SystemUserPrivilegedGet {
 
 /**
  * Запрос свойства профиля пользователя.
+ * @category XML
  */
 export interface UserProfilePropertyGet {
   /** Идентификатор сессии. */
   "@SessionID": string;
-  /** Имя свойства (например, "SESSIONS_PER_USER"). */
+  /** Имя свойства (например, `"SESSIONS_PER_USER"`). */
   "@PropertyName": string;
 }
 
 /**
  * Запрос проверки вхождения пользователя в группу.
+ * @category XML
  */
 export interface UserBelongsGroupCheck {
   /** Идентификатор сессии. */
   "@SessionID": string;
-  /** Идентификатор группы (например, "ADMIN_GRP"). */
+  /** Идентификатор группы (например, `"ADMIN_GRP"`). */
   "@GroupID": string;
 }
 
 /**
  * Установка информации о сетевом окружении клиента.
+ * @category XML
  */
 export interface NetworkInformationSet {
   /** Идентификатор сессии. */
@@ -142,6 +152,7 @@ export interface NetworkInformationSet {
 
 /**
  * Установка MAC и IP адресов клиента.
+ * @category XML
  */
 export interface SystemNetAddressSet {
   /** Идентификатор сессии. */
@@ -158,11 +169,13 @@ export interface SystemNetAddressSet {
 
 /**
  * Запрос версии протокола API.
+ * @category XML
  */
-export type ProtocolInfoGet = Record<never, never>; // Пустой объект
+export type ProtocolInfoGet = Record<never, never>;
 
 /**
  * Запрос версии сервера приложений.
+ * @category XML
  */
 export interface SystemServerVersionGet {
   /** Идентификатор сессии. */
@@ -171,6 +184,7 @@ export interface SystemServerVersionGet {
 
 /**
  * Запрос информации о ядре системы.
+ * @category XML
  */
 export interface SystemCoreInfoGet {
   /** Идентификатор сессии. */
@@ -179,6 +193,7 @@ export interface SystemCoreInfoGet {
 
 /**
  * Запрос всех системных настроек.
+ * @category XML
  */
 export interface SystemSettingsGet {
   /** Идентификатор сессии. */
@@ -187,16 +202,18 @@ export interface SystemSettingsGet {
 
 /**
  * Запрос конкретной системной настройки по имени.
+ * @category XML
  */
 export interface SystemSettingGet {
   /** Идентификатор сессии. */
   "@SessionID": string;
-  /** Имя настройки (например, "SHOW_SYSTEM_MENU"). */
+  /** Имя настройки (например, `"SHOW_SYSTEM_MENU"`). */
   "@Name": string;
 }
 
 /**
- * Запрос проверки доступности NOVO.
+ * Запрос проверки доступности `NOVO`.
+ * @category XML
  */
 export interface NovoAllowedCheck {
   /** Идентификатор сессии. */
@@ -205,11 +222,12 @@ export interface NovoAllowedCheck {
 
 /**
  * Запрос проверки включения системной опции.
+ * @category XML
  */
 export interface SystemOptionEnabledCheck {
   /** Идентификатор сессии. */
   "@SessionID": string;
-  /** Имя опции (например, "NAV_SKIN_INTERFACE"). */
+  /** Имя опции (например, `"NAV_SKIN_INTERFACE"`). */
   "@OptionName": string;
 }
 
@@ -218,7 +236,8 @@ export interface SystemOptionEnabledCheck {
 //======================================================================================================================
 
 /**
- * Запрос текста из отладочного канала (Pipe).
+ * Запрос текста из отладочного канала (`Pipe`).
+ * @category XML
  */
 export interface PipeTextGet {
   /** Идентификатор сессии. */
@@ -229,6 +248,7 @@ export interface PipeTextGet {
 
 /**
  * Запрос отладочного текста.
+ * @category XML
  */
 export interface DebugTextGet {
   /** Идентификатор сессии. */
@@ -243,6 +263,7 @@ export interface DebugTextGet {
 
 /**
  * Запрос ТБП и ключа архива для экземпляра.
+ * @category XML
  */
 export interface ObjectClassAndArchiveKeyGet {
   /** Идентификатор сессии. */
@@ -255,6 +276,7 @@ export interface ObjectClassAndArchiveKeyGet {
 
 /**
  * Запрос обратных ссылок на экземпляр.
+ * @category XML
  */
 export interface ObjectBackwardReferencesGet {
   /** Идентификатор сессии. */
@@ -267,6 +289,7 @@ export interface ObjectBackwardReferencesGet {
 
 /**
  * Запрос переходов состояний ТБП.
+ * @category XML
  */
 export interface ClassTransitionsGet {
   /** Идентификатор сессии. */
@@ -277,6 +300,7 @@ export interface ClassTransitionsGet {
 
 /**
  * Запрос состояний ТБП.
+ * @category XML
  */
 export interface ClassStatesGet {
   /** Идентификатор сессии. */
@@ -287,6 +311,7 @@ export interface ClassStatesGet {
 
 /**
  * Запрос проверки необходимости `CollectionID` для ТБП.
+ * @category XML
  */
 export interface ClassNeedCollectionIDCheck {
   /** Идентификатор сессии. */
@@ -297,6 +322,7 @@ export interface ClassNeedCollectionIDCheck {
 
 /**
  * Запрос дочерних ТБП.
+ * @category XML
  */
 export interface ClassChildrenGet {
   /** Идентификатор сессии. */
@@ -307,6 +333,7 @@ export interface ClassChildrenGet {
 
 /**
  * Информация о ТБП для запроса списка ТБП.
+ * @category XML
  */
 export interface ClassInfo {
   /** Короткое имя ТБП. */
@@ -315,16 +342,18 @@ export interface ClassInfo {
 
 /**
  * Запрос на получение списка ТБП.
+ * @category XML
  */
 export interface ClassesGet {
   /** Идентификатор сессии. */
   "@SessionID": string;
-  /** Массив объектов ClassInfo (может быть один или несколько). */
+  /** Массив объектов (может быть один или несколько). */
   ClassInfo: ClassInfo | ClassInfo[];
 }
 
 /**
  * Запрос на получение информации об ТБП.
+ * @category XML
  */
 export interface ClassGet {
   /** Идентификатор сессии. */
@@ -335,6 +364,7 @@ export interface ClassGet {
 
 /**
  * Запрос списка справочников.
+ * @category XML
  */
 export interface GuidesGet {
   /** Идентификатор сессии. */
@@ -343,6 +373,7 @@ export interface GuidesGet {
 
 /**
  * Запрос групп справочников.
+ * @category XML
  */
 export interface GuidesGroupsGet {
   /** Идентификатор сессии. */
@@ -351,6 +382,7 @@ export interface GuidesGroupsGet {
 
 /**
  * Запрос списка типов системы.
+ * @category XML
  */
 export interface TypesGet {
   /** Идентификатор сессии. */
@@ -363,6 +395,7 @@ export interface TypesGet {
 
 /**
  * Запрос операций ТБП.
+ * @category XML
  */
 export interface ClassMethodsGet {
   /** Идентификатор сессии. */
@@ -373,6 +406,7 @@ export interface ClassMethodsGet {
 
 /**
  * Запрос на открытие формы операции.
+ * @category XML
  */
 export interface MethodBegin {
   /** Идентификатор сессии. */
@@ -383,6 +417,7 @@ export interface MethodBegin {
 
 /**
  * Запрос списка входных параметров операции.
+ * @category XML
  */
 export interface MethodParametersGet {
   /** Идентификатор сессии. */
@@ -393,6 +428,7 @@ export interface MethodParametersGet {
 
 /**
  * Запрос списка публичных переменных операции.
+ * @category XML
  */
 export interface MethodVariablesGet {
   /** Идентификатор сессии. */
@@ -403,6 +439,7 @@ export interface MethodVariablesGet {
 
 /**
  * Запрос списка элементов формы операции.
+ * @category XML
  */
 export interface MethodControlsGet {
   /** Идентификатор сессии. */
@@ -413,6 +450,7 @@ export interface MethodControlsGet {
 
 /**
  * Запрос групп операций пользователя для ТБП.
+ * @category XML
  */
 export interface ClassMethodsGroupsUserGet {
   /** Идентификатор сессии. */
@@ -423,6 +461,7 @@ export interface ClassMethodsGroupsUserGet {
 
 /**
  * Запрос на получение клиент-скрипта операции.
+ * @category XML
  */
 export interface MethodClientScriptGet {
   /** Идентификатор сессии. */
@@ -433,13 +472,14 @@ export interface MethodClientScriptGet {
 
 /**
  * Запрос вызова блока `Validate` операции (по умолчанию, при открытии формы).
+ * @category XML
  */
 export interface MethodValidateDefault {
   /** Идентификатор сессии. */
   "@SessionID": string;
   /** Идентификатор операции. */
   "@MethodID": string;
-  /** Значение переменной P_INFO. */
+  /** Значение переменной `P_INFO`. */
   "@Info": string;
   /** Флаг подтверждения транзакции. */
   "@DoCommit": boolean;
@@ -463,6 +503,7 @@ export interface MethodValidateDefault {
 
 /**
  * Запрос на вызов блока `Validate` операции при событии элемента формы.
+ * @category XML
  */
 export interface MethodValidate {
   /** Идентификатор сессии. */
@@ -489,6 +530,7 @@ export type ValidateType = "VALIDATE";
 
 /**
  * Состояния элементов формы.
+ * @category XML
  */
 export type ControlsStates = {
   /** Состояния элементов формы (может быть один или несколько). */
@@ -497,6 +539,7 @@ export type ControlsStates = {
 
 /**
  * Запрос на вызов блока `Execute` операции.
+ * @category XML
  */
 export interface MethodExecute {
   /** Идентификатор сессии. */
@@ -515,6 +558,7 @@ export interface MethodExecute {
 
 /**
  * Состояние элемента управления на форме.
+ * @category XML
  */
 export interface ControlState {
   /** Идентификатор элемента. */
@@ -525,6 +569,7 @@ export interface ControlState {
 
 /**
  * Константа для PLP-вызова.
+ * @category XML
  */
 export interface PLPConstant {
   /** Значение константы. */
@@ -533,6 +578,7 @@ export interface PLPConstant {
 
 /**
  * Переменная для PLP-вызова.
+ * @category XML
  */
 export interface PLPVariable {
   /** Идентификатор операции. */
@@ -543,6 +589,7 @@ export interface PLPVariable {
 
 /**
  * Параметр для PLP-вызова.
+ * @category XML
  */
 export interface PLPParameter {
   /** Идентификатор операции. */
@@ -553,11 +600,13 @@ export interface PLPParameter {
 
 /**
  * Объединённый тип сущности для PLP вызова.
+ * @category XML
  */
 export type PLPEntity = { PLPConstant: PLPConstant } | { PLPVariable: PLPVariable } | { PLPParameter: PLPParameter };
 
 /**
  * Параметр PLP-вызова (источник и цель).
+ * @category XML
  */
 export interface PLPCallParameters {
   /** Исходная сущность PLP (может быть одна или несколько). */
@@ -568,6 +617,7 @@ export interface PLPCallParameters {
 
 /**
  * Параметры PLP-вызововов
+ * @category XML
  */
 export type PLPCallParameter = {
   /** Параметры PLP-вызовов (может быть один или несколько). */
@@ -576,6 +626,7 @@ export type PLPCallParameter = {
 
 /**
  * Запрос на завершение выполнения операции (закрытие формы).
+ * @category XML
  */
 export interface MethodEnd {
   /** Идентификатор сессии. */
@@ -590,6 +641,7 @@ export interface MethodEnd {
 
 /**
  * Запрос представлений ТБП.
+ * @category XML
  */
 export interface ClassViewsGet {
   /** Идентификатор сессии. */
@@ -600,6 +652,7 @@ export interface ClassViewsGet {
 
 /**
  * Запрос данных представления с возможностью отмены.
+ * @category XML
  */
 export interface ViewDataGetCancelable {
   /** Идентификатор сессии. */
@@ -608,7 +661,7 @@ export interface ViewDataGetCancelable {
   "@ViewShortName": string;
   /** Короткое имя ТБП. */
   "@ClassID": string;
-  /** Подсказка для оптимизатора (например, "FIRST_ROWS"). */
+  /** Подсказка для оптимизатора (например, `"FIRST_ROWS"`). */
   "@Hint": string;
   /** Разрешить миллисекунды в метках времени. */
   "@AllowTimestampMilliseconds": boolean;
@@ -624,6 +677,7 @@ export interface ViewDataGetCancelable {
 
 /**
  * Дополнительная привязка фильтра для представления.
+ * @category XML
  */
 export interface AdditionalFilterBind {
   /** Условие фильтрации (SQL-подобное выражение). */
@@ -632,6 +686,7 @@ export interface AdditionalFilterBind {
 
 /**
  * Фильтр по идентификатору экземпляра.
+ * @category XML
  */
 export interface ObjectFilter {
   /** Идентификатор экземпляра. */
@@ -640,6 +695,7 @@ export interface ObjectFilter {
 
 /**
  * Простой фильтр для представления.
+ * @category XML
  */
 export interface SimpleFilter {
   /** Имя колонки. */
@@ -652,6 +708,7 @@ export interface SimpleFilter {
 
 /**
  * Регистронезависимый фильтр для представления.
+ * @category XML
  */
 export interface CaseInsensitiveFilter {
   /** Имя колонки. */
@@ -664,6 +721,7 @@ export interface CaseInsensitiveFilter {
 
 /**
  * Объединённый тип фильтра для представления.
+ * @category XML
  */
 export type Filter =
   | { AND: Filter | Filter[] }
@@ -673,6 +731,7 @@ export type Filter =
 
 /**
  * Пользовательский фильтр для представления.
+ * @category XML
  */
 export interface UserFilter {
   /** Дополнительный фильтр (опционально). */
@@ -685,6 +744,7 @@ export interface UserFilter {
 
 /**
  * Запрос колонок представления.
+ * @category XML
  */
 export interface ViewColumnsGet {
   /** Идентификатор сессии. */
@@ -699,6 +759,7 @@ export interface ViewColumnsGet {
 
 /**
  * Описание экземпляра для блокировки.
+ * @category XML
  */
 export interface Object {
   /** Идентификатор экземпляра. */
@@ -709,6 +770,7 @@ export interface Object {
 
 /**
  * Запрос на блокировку одного или нескольких экземпляров.
+ * @category XML
  */
 export interface ObjectsLock {
   /** Идентификатор сессии. */
@@ -719,10 +781,11 @@ export interface ObjectsLock {
 
 /**
  * Запрос на разблокировку экземпляров.
+ * @category XML
  */
 export interface ObjectsUnlock {
   /** Идентификатор сессии. */
   "@SessionID": string;
-  /** Если true, снимаются все блокировки; если false – только текущей сессии. */
+  /** Если `true`, снимаются все блокировки; если `false` – только текущей сессии. */
   "@ClearAllLocks": boolean;
 }

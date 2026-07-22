@@ -44,12 +44,14 @@ import type { xml } from ".";
  * Содержит HTTP‑клиент и базовый URL. Все методы выполняют POST‑запросы на эндпоинт `/api`
  * с XML‑телом, соответствующим структурам из модуля `requests`.
  *
- * # Важно
- * - Для работы требуется **активная сессия**, полученная через {@link Client.authbasic} и {@link Client.session_init}.
+ * Для работы требуется **активная сессия**, полученная через {@link Client.authbasic} и {@link Client.sessionInit}.
  */
 export class Client {
   private readonly httpAdapter: HttpAdapter;
 
+  /**
+   * Базовый конструктор, с {@link HttpAdapter} по умолчанию {@link FetchHttpAdapter}.
+   */
   constructor(
     private readonly baseUrl: string,
     httpAdapter?: HttpAdapter,
@@ -64,22 +66,33 @@ export class Client {
   /**
    * Выполняет HTTP Basic‑авторизацию на сервере.
    *
+   * @category Session
+   * @description
    * Сервер в любом случае устанавливает cookie `JSESSIONID` (даже при неверных учётных данных),
    * поэтому этот метод не возвращает ошибку при неудачной аутентификации.
-   * Для проверки успешности следует вызвать {@link session_init}.
-   *
-   * @param username - Имя пользователя.
-   * @param password - Пароль.
-   * @throws {HttpError} При сетевых проблемах или если сервер вернул HTTP‑код 4xx/5xx.
+   * Для проверки успешности следует вызвать {@link sessionInit}.
    *
    * @remarks
    * После вызова этого метода сервер установит `JSESSIONID` в cookie клиента.
-   * Для активации сессии необходимо вызвать {@link session_init}.
+   * Для активации сессии необходимо вызвать {@link sessionInit}.
+   *
+   * @param username - Имя пользователя.
+   * @param password - Пароль.
+   * @returns Ответа нет
    *
    * @example
    * ```typescript
+   * const client = new Client("http://localhost:3000/platform2mca/");
    * await client.authbasic('admin', 'password');
+   *
+   * const session = await client.sessionInit();
+   * console.log('Session ID: ', session.sessionId);
+   *
+   * await client.sessionDeinit(session.sessionId);
    * ```
+   * @throws {HttpError}
+   * Возможные ошибки:
+   * - {@link HttpError}: При сетевых проблемах
    */
   public async authbasic(username: string, password: string): Promise<void> {
     const url = this.endpoint("authbasic");
@@ -94,23 +107,31 @@ export class Client {
   /**
    * Активирует сессию, проверяя валидность учётных данных.
    *
-   * После успешного вызова возвращается структура {@link SessionInfo}, содержащая `session_id`
-   * и имя отладочного канала (`debug_pipe_name`).
+   * @category Session
+   * @description
+   * После успешного вызова возвращается структура {@link SessionInfo}, содержащая `sessionId`
+   * и имя отладочного канала (`debugPipeName`).
    *
    * @param aliveActiveSession - Флаг, указывающий, следует ли поддерживать активную сессию (опционально).
-   *
    * @returns Данные сессии {@link SessionInfo}.
-   *
-   * @throws {ApiError} Если сервер вернул ошибку (неверные логин/пароль, блокировка и т.п.).
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
    *
    * @example
    * ```typescript
+   * const client = new Client("http://localhost:3000/platform2mca/");
+   * await client.authbasic('admin', 'password');
+   *
    * const session = await client.sessionInit();
    * console.log('Session ID: ', session.sessionId);
+   *
+   * await client.sessionDeinit(session.sessionId);
    * ```
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async sessionInit(aliveActiveSession?: boolean): Promise<SessionInfo> {
     const { "@ID": sessionId, "@DebugPipeName": debugPipeName } = await this.api("Session", {
@@ -124,20 +145,29 @@ export class Client {
   /**
    * Деактивирует сессию, делая её недействительной.
    *
-   * После вызова все последующие запросы с этим `session_id` будут отклонены.
+   * @category Session
+   * @remarks
+   * После вызова все последующие запросы с этим `sessionId` будут отклонены.
    *
-   * @param sessionId - Идентификатор сессии, полученный из {@link SessionInfo.session_id}.
-   *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @param sessionId - Идентификатор сессии, полученный из {@link SessionInfo.sessionId}.
    *
    * @example
    * ```typescript
+   * const client = new Client("http://localhost:3000/platform2mca/");
+   * await client.authbasic('admin', 'password');
+   *
+   * const session = await client.sessionInit();
+   * console.log('Session ID: ', session.sessionId);
+   *
    * await client.sessionDeinit(session.sessionId);
    * ```
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async sessionDeinit(sessionId: string): Promise<void> {
     await this.api("Done", {
@@ -150,15 +180,17 @@ export class Client {
   /**
    * Проверяет, является ли текущий пользователь привилегированным.
    *
+   * @category Session
    * @param sessionId - Идентификатор сессии.
+   * @returns `true`, если пользователь имеет привилегии.
    *
-   * @returns true, если пользователь имеет привилегии.
-   *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async systemUserPrivilegedGet(sessionId: string): Promise<boolean> {
     const user = await this.api("User", {
@@ -171,15 +203,17 @@ export class Client {
   /**
    * Возвращает детальную информацию о пользователе.
    *
+   * @category Session
    * @param sessionId - Идентификатор сессии.
-   *
    * @returns Объект {@link UserInfo}.
    *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async userInfoGet(sessionId: string): Promise<UserInfo> {
     const user = (await this.api("User", {
@@ -195,16 +229,18 @@ export class Client {
   /**
    * Получает значение свойства профиля пользователя по его имени.
    *
+   * @category Session
    * @param sessionId - Идентификатор сессии.
-   * @param propertyName - Имя свойства (например, "SESSIONS_PER_USER").
-   *
+   * @param propertyName - Имя свойства (например, `"SESSIONS_PER_USER"`).
    * @returns Значение свойства в виде строки.
    *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async userProfilePropertyGet(sessionId: string, propertyName: string): Promise<string> {
     const result = await this.api("UserProfileProperty", {
@@ -216,16 +252,18 @@ export class Client {
   /**
    * Проверяет, входит ли пользователь в указанную группу.
    *
+   * @category Session
    * @param sessionId - Идентификатор сессии.
-   * @param groupId - Идентификатор группы (например, "ADMIN_GRP").
+   * @param groupId - Идентификатор группы (например, `"ADMIN_GRP"`).
+   * @returns `true`, если пользователь является членом группы.
    *
-   * @returns true, если пользователь является членом группы.
-   *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async userBelongsGroupCheck(sessionId: string, groupId: string): Promise<boolean> {
     const { "@Value": value } = await this.api("CheckResult", {
@@ -237,14 +275,17 @@ export class Client {
   /**
    * Устанавливает сетевую информацию для текущей сессии.
    *
+   * @category Session
    * @param sessionId - Идентификатор сессии.
    * @param params - Параметры NetworkInformationSet.
    *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async networkInformationSet(sessionId: string, params: NetworkInformationSet): Promise<void> {
     await this.api("Done", {
@@ -261,14 +302,17 @@ export class Client {
   /**
    * Устанавливает MAC и IP‑адрес клиента для текущей сессии.
    *
+   * @category Session
    * @param sessionId - Идентификатор сессии.
    * @param params - Параметры {@link SystemNetAddressSet}.
    *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async systemNetAddressSet(sessionId: string, params: SystemNetAddressSet): Promise<void> {
     await this.api("Done", {
@@ -287,19 +331,21 @@ export class Client {
   /**
    * Возвращает версию протокола API, поддерживаемую сервером.
    *
-   * @returns Строка с версией, например "9.54".
-   *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @category System
+   * @returns Строка с версией, например `"9.54"`.
    *
    * @example
    * ```typescript
    * const version = await client.protocolInfoGet();
    * console.log("Protocol version: ", version);
    * ```
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async protocolInfoGet(): Promise<string> {
     const { "@Version": version } = await this.api("ProtocolInfo", { ProtocolInfoGet: {} });
@@ -309,21 +355,22 @@ export class Client {
   /**
    * Возвращает версию базы данных, используемой сервером.
    *
+   * @category System
    * @param sessionId - Идентификатор сессии.
-   *
-   * @returns Строка, например "12.2.0.1".
-   *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @returns Строка, например `"12.2.0.1"`.
    *
    * @example
    * ```typescript
    * const version = await client.systemServerVersionGet(sessionId);
    * console.log("Server version: ", version);
    * ```
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async systemServerVersionGet(sessionId: string): Promise<string> {
     const { "@Version": version } = await this.api("ServerInfo", {
@@ -335,21 +382,22 @@ export class Client {
   /**
    * Возвращает подробную информацию о ядре системы.
    *
+   * @category System
    * @param sessionId - Идентификатор сессии.
-   *
    * @returns Объект {@link CoreInfo}.
-   *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
    *
    * @example
    * ```typescript
    * const core = await client.systemCoreInfoGet(sessionId);
    * console.log("Core version: ", core.version);
    * ```
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async systemCoreInfoGet(sessionId: string): Promise<CoreInfo> {
     const core = await this.api("CoreInfo", {
@@ -369,15 +417,17 @@ export class Client {
   /**
    * Получает все системные настройки в формате ключ значение.
    *
+   * @category System
    * @param sessionId - Идентификатор сессии.
-   *
    * @returns Массив настроек {@link Setting}.
    *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async systemSettingsGet(sessionId: string): Promise<Setting[]> {
     const settings = await this.api("Settings", {
@@ -389,16 +439,18 @@ export class Client {
   /**
    * Получает значение конкретной системной настройки по её имени.
    *
+   * @category System
    * @param sessionId - Идентификатор сессии.
    * @param name - Имя настройки (например, "SHOW_SYSTEM_MENU").
-   *
    * @returns - Значение или undefined, если настройка не найдена или пуста.
    *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async systemSettingGet(sessionId: string, name: string): Promise<string | undefined> {
     const setting = await this.api("Setting", {
@@ -410,13 +462,16 @@ export class Client {
   /**
    * Возвращает относительный URL для эндпоинта авторизации.
    *
-   * @returns Строка, например "/platform2mca/authbasic".
+   * @category System
+   * @returns Строка, например `"/platform2mca/authbasic"`.
    *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async authenticationUrlGet(): Promise<string> {
     const { "@URL": url } = await this.api("AuthenticationURL", { AuthenticationURLGet: {} });
@@ -426,15 +481,17 @@ export class Client {
   /**
    * Проверяет, разрешено ли использование функционала NOVO для текущей сессии.
    *
+   * @category System
    * @param sessionId - Идентификатор сессии.
+   * @returns true, если `NOVO` доступен.
    *
-   * @returns true, если NOVO доступен.
-   *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async novoAllowedCheck(sessionId: string): Promise<boolean> {
     const { "@Value": val } = await this.api("NovoAllowedCheckResult", {
@@ -446,16 +503,18 @@ export class Client {
   /**
    * Проверяет, включена ли указанная системная опция.
    *
+   * @category System
    * @param sessionId - Идентификатор сессии.
-   * @param optionName - Имя опции (например, "NAV_SKIN_INTERFACE").
+   * @param optionName - Имя опции (например, `"NAV_SKIN_INTERFACE"`).
+   * @returns `true`, если опция включена.
    *
-   * @returns true, если опция включена.
-   *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async systemOptionEnabledCheck(sessionId: string, optionName: string): Promise<boolean> {
     const result = await this.api("OptionInfo", {
@@ -471,16 +530,18 @@ export class Client {
   /**
    * Получает текст из отладочного канала по его имени.
    *
+   * @category Debug
    * @param sessionId - Идентификатор сессии.
    * @param pipeName - Имя канала.
-   *
    * @returns Текст, сгенерированный сервером для этого канала.
    *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async pipeTextGet(sessionId: string, pipeName: string): Promise<string | undefined> {
     const { "@Value": text } = await this.api("PipeText", {
@@ -492,16 +553,18 @@ export class Client {
   /**
    * Получает отладочный текст.
    *
+   * @category Debug
    * @param sessionId - Идентификатор сессии.
    * @param direction - Направление отладки.
-   *
    * @returns Отладочная информация в виде строки.
    *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async debugTextGet(sessionId: string, direction: string): Promise<string | undefined> {
     const { "@Value": text } = await this.api("DebugText", {
@@ -517,17 +580,19 @@ export class Client {
   /**
    * Возвращает короткое имя ТБП и ключ архива для указанного экземпляра.
    *
+   * @category Class
    * @param sessionId - Идентификатор сессии.
    * @param objectId - Идентификатор экземпляра.
-   * @param baseClassId - Короткое имя базового ТБП (например, "DOCUMENT").
-   *
+   * @param baseClassId - Короткое имя базового ТБП (например, `"DOCUMENT"`).
    * @returns Объект {@link ObjectClassAndArchiveKey}.
    *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async objectClassAndArchiveKeyGet(
     sessionId: string,
@@ -547,17 +612,19 @@ export class Client {
   /**
    * Возвращает список обратных ссылок на указанный экземпляр.
    *
+   * @category Class
    * @param sessionId - Идентификатор сессии.
    * @param objectId - Идентификатор экземпляра.
    * @param classId - Короткое имя ТБП.
-   *
    * @returns Массив {@link BackwardReference}.
    *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async objectBackwardReferencesGet(
     sessionId: string,
@@ -582,16 +649,18 @@ export class Client {
   /**
    * Возвращает информацию о возможных переходах между состояниями для указанного ТБП.
    *
+   * @category Class
    * @param sessionId - Идентификатор сессии.
    * @param classId - Короткое имя ТБП.
-   *
    * @returns Массив {@link Transition}.
    *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async classTransitionsGet(sessionId: string, classId: string): Promise<Transition[]> {
     const transitions = await this.api("Transitions", {
@@ -609,16 +678,18 @@ export class Client {
   /**
    * Возвращает список состояний для указанного ТБП.
    *
+   * @category Class
    * @param sessionId - Идентификатор сессии.
    * @param classId - Короткое имя ТБП.
-   *
    * @returns Массив {@link State}.
    *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async classStatesGet(sessionId: string, classId: string): Promise<State[]> {
     const states = await this.api("States", {
@@ -630,16 +701,18 @@ export class Client {
   /**
    * Проверяет, требуется ли указывать `collectionid` для данного ТБП.
    *
+   * @category Class
    * @param sessionId - Идентификатор сессии.
    * @param classId - Короткое имя ТБП.
+   * @returns `true`, если `collectionid` обязателен.
    *
-   * @returns true, если `collectionid` обязателен.
-   *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async classNeedCollectionIdCheck(sessionId: string, classId: string): Promise<boolean> {
     const { "@Value": isCheck } = await this.api("CheckResult", {
@@ -651,16 +724,18 @@ export class Client {
   /**
    * Возвращает список дочерних ТБП для указанного ТБП.
    *
+   * @category Class
    * @param sessionId - Идентификатор сессии.
    * @param classId - Короткое имя родительского ТБП.
-   *
    * @returns Массив {@link ChildClass}.
    *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async classChildrenGet(sessionId: string, classId: string): Promise<ChildClass[]> {
     const children = await this.api("ChildClasses", {
@@ -672,16 +747,18 @@ export class Client {
   /**
    * Получает детальную информацию о нескольких ТБП/типах.
    *
+   * @category Class
    * @param sessionId - Идентификатор сессии.
    * @param classInfo - Массив объектов с полем classId (короткие имена).
-   *
    * @returns Массив {@link Class}.
    *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async classesGet(sessionId: string, classes: string[]): Promise<Class[]> {
     const res = await this.api("Classes", {
@@ -711,16 +788,18 @@ export class Client {
   /**
    * Возвращает детальную информацию о конкретном ТБП.
    *
+   * @category Class
    * @param sessionId - Идентификатор сессии.
    * @param classId - Короткое имя ТБП.
-   *
    * @returns Объект {@link Class} или undefined, если ТБП не найден.
    *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async classGet(sessionId: string, classId: string): Promise<Class | undefined> {
     const v = await this.api(["Class", "NotFound"], {
@@ -749,15 +828,17 @@ export class Client {
   /**
    * Получает список справочников.
    *
+   * @category Class
    * @param sessionId - Идентификатор сессии.
-   *
    * @returns Массив {@link Class}.
    *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async guidesGet(sessionId: string): Promise<Class[]> {
     const guides = await this.api("Guides", {
@@ -784,15 +865,17 @@ export class Client {
   /**
    * Получает список всех типов системы.
    *
+   * @category Class
    * @param sessionId - Идентификатор сессии.
-   *
    * @returns Массив {@link Class}.
    *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async typesGet(sessionId: string): Promise<Class[]> {
     const types = await this.api("Types", {
@@ -819,15 +902,17 @@ export class Client {
   /**
    * Получает список групп справочников.
    *
+   * @category Class
    * @param sessionId - Идентификатор сессии.
-   *
    * @returns Массив {@link GuidesGroup}.
    *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async guidesGroupsGet(sessionId: string): Promise<GuidesGroup[]> {
     const groups = await this.api("GuidesGroups", {
@@ -846,16 +931,18 @@ export class Client {
   /**
    * Возвращает список операций, доступных для указанного ТБП.
    *
+   * @category Method
    * @param sessionId - Идентификатор сессии.
    * @param classId - Короткое имя ТБП.
+   * @returns Массив {@link Method}.
    *
-   * @returns Массив Method.
-   *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async classMethodsGet(sessionId: string, classId: string): Promise<Method[]> {
     const methods = await this.api("Methods", {
@@ -882,16 +969,18 @@ export class Client {
   /**
    * Получает клиент скрипт для указанной операции.
    *
+   * @category Method
    * @param sessionId - Идентификатор сессии.
    * @param methodId - Идентификатор операции.
+   * @returns Текст скрипта или `undefined`, если скрипт отсутствует.
    *
-   * @returns Текст скрипта или undefined, если скрипт отсутствует.
-   *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async methodClientScriptGet(sessionId: string, methodId: string): Promise<string | undefined> {
     const { "@Text": script } = await this.api("ClientScript", {
@@ -903,16 +992,18 @@ export class Client {
   /**
    * Начинает выполнение операции – открывает форму.
    *
+   * @category Method
    * @param sessionId - Идентификатор сессии.
    * @param methodId - Идентификатор операции.
+   * @returns Идентификатор открытой формы (`frameId`), необходимый для последующих вызовов.
    *
-   * @returns Идентификатор открытой формы (frameId), необходимый для последующих вызовов.
-   *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async methodBegin(sessionId: string, methodId: string): Promise<string | undefined> {
     const { "@FrameID": frameId } = await this.api("MethodFrame", {
@@ -924,16 +1015,18 @@ export class Client {
   /**
    * Завершает выполнение операции – закрывает форму.
    *
+   * @category Method
    * @param sessionId - Идентификатор сессии.
-   * @param frameId - Идентификатор формы, полученный из {@link methodBegin}.
+   * @param frameId - Идентификатор формы, полученный из {@link Client.methodBegin}.
+   * @returns Идентификатор предыдущей открытой формы (если была) или `undefined`.
    *
-   * @returns Идентификатор предыдущей открытой формы (если была) или undefined.
-   *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async methodEnd(sessionId: string, frameId: string): Promise<string | undefined> {
     const { "@FrameID": prevFrameId } = await this.api("MethodFrame", {
@@ -945,16 +1038,18 @@ export class Client {
   /**
    * Получает список входных параметров (P‑параметров) операции.
    *
+   * @category Method
    * @param sessionId - Идентификатор сессии.
    * @param methodId - Идентификатор операции.
-   *
    * @returns Массив {@link MethodParameter}.
    *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async methodParametersGet(sessionId: string, methodId: string): Promise<MethodParameter[]> {
     const params = await this.api("MethodParameters", {
@@ -976,16 +1071,18 @@ export class Client {
   /**
    * Получает список публичных переменных (V‑переменных) операции.
    *
+   * @category Method
    * @param sessionId - Идентификатор сессии.
    * @param methodId - Идентификатор операции.
-   *
    * @returns Массив {@link MethodVariable}.
    *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async methodVariablesGet(sessionId: string, methodId: string): Promise<MethodVariable[]> {
     const vars = await this.api("MethodVariables", {
@@ -1002,16 +1099,18 @@ export class Client {
   /**
    * Получает список элементов управления (controls) на форме операции.
    *
+   * @category Method
    * @param sessionId - Идентификатор сессии.
-   * @param formId - Идентификатор операции.
+   * @param formId - Идентификатор операции или `formId` из {@link Method}.
+   * @returns Массив {@link Control}.
    *
-   * @returns Массив Control.
-   *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async methodControlsGet(sessionId: string, formId: string): Promise<Control[]> {
     const controls = await this.api("Controls", {
@@ -1041,15 +1140,17 @@ export class Client {
   /**
    * Выполняет блок `Validate` операции по умолчанию (при открытии формы).
    *
+   * @category Method
    * @param params - Параметры запроса {@link MethodValidateDefault}.
-   *
    * @returns Объект {@link Validate}.
    *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async methodValidateDefault(sessionId: string, params: MethodValidateDefault): Promise<Validate> {
     const { "@DebugText": debugText, ControlsState } = await this.api("Validate", {
@@ -1077,15 +1178,17 @@ export class Client {
   /**
    * Выполняет блок `Validate` операции по событию элемента формы.
    *
+   * @category Method
    * @param params - Параметры запроса {@link MethodValidate}.
-   *
    * @returns Объект {@link Validate}.
    *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async methodValidate(sessionId: string, params: MethodValidate): Promise<Validate> {
     const { "@DebugText": debugText, ControlsState } = await this.api("Validate", {
@@ -1117,15 +1220,17 @@ export class Client {
   /**
    * Выполняет блок `Execute` операции (непосредственное действие).
    *
+   * @category Method
    * @param params - Параметры запроса {@link MethodExecute}.
-   *
    * @returns Объект {@link MethodResult}.
    *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async methodExecute(sessionId: string, params: MethodExecute): Promise<MethodResult> {
     const { "@Value": value, ControlsState } = await this.api("Result", {
@@ -1158,16 +1263,19 @@ export class Client {
   /**
    * Возвращает список представлений, доступных для указанного ТБП.
    *
+   *
+   * @category Method
    * @param sessionId - Идентификатор сессии.
    * @param classId - Короткое имя ТБП.
-   *
    * @returns Массив {@link View}.
    *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async classViewsGet(sessionId: string, classId: string): Promise<View[]> {
     const views = await this.api("Views", {
@@ -1196,16 +1304,18 @@ export class Client {
   /**
    * Возвращает список колонок для указанного представления.
    *
+   * @category Method
    * @param sessionId - Идентификатор сессии.
    * @param viewId - Идентификатор представления.
-   *
    * @returns Массив {@link Column}.
    *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async viewColumnsGet(sessionId: string, viewId: string): Promise<Column[]> {
     const columns = await this.api("Columns", {
@@ -1234,15 +1344,17 @@ export class Client {
   /**
    * Получает данные представления (табличные данные).
    *
+   * @category Method
    * @param params - Параметры запроса ViewDataGetCancelable.
-   *
    * @returns Массив строк {@link RowItem}.
    *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async viewDataGetCancelable(sessionId: string, params: ViewDataGetCancelable): Promise<RowItem[][]> {
     const and = params.userFilter?.and?.map(buildFilter);
@@ -1279,16 +1391,18 @@ export class Client {
   /**
    * Блокирует один или несколько экземпляров.
    *
+   * @category Lock
    * @param sessionId - Идентификатор сессии.
-   * @param objects - Массив объектов с id и classId.
+   * @param objects - Массив объектов {@link Object}.
+   * @returns Сообщение об ошибке, если блокировка не удалась, иначе `undefined`.
    *
-   * @returns Сообщение об ошибке, если блокировка не удалась; иначе undefined.
-   *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async objectsLock(sessionId: string, objects: Object[]): Promise<string | undefined> {
     const { "@Message": msg } = await this.api("LockResult", {
@@ -1303,14 +1417,17 @@ export class Client {
   /**
    * Разблокирует экземпляры (снять все блокировки или только текущей сессии).
    *
+   * @category Lock
    * @param sessionId - Идентификатор сессии.
-   * @param clearAllLocks - Если true, снимаются все блокировки; если false – только текущей сессии.
+   * @param clearAllLocks - Если `true`, снимаются все блокировки; если `false` – только текущей сессии.
    *
-   * @throws {ApiError} Если сессия уже неактивна или невалидна.
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} Если ответ не удалось разобрать.
-   * @throws {UnexpectedResponseError} Если структура ответа не соответствует ожидаемой.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async objectsUnlock(sessionId: string, clearAllLocks: boolean = false): Promise<void> {
     await this.api("Done", {
@@ -1346,14 +1463,15 @@ export class Client {
    *
    * @param expected_key - Ожидаемый корневой тег ответа.
    * @param obj - Тело запроса (объект, который будет сериализован в XML).
+   * @returns Объект ответа, соответствующий ключу.
    *
-   * @returns Распарсенный объект ответа, соответствующий ключу.
-   *
-   * @throws {HttpError} При сетевых проблемах.
-   * @throws {ApiError} Если сервер вернул ошибку в XML.
-   * @throws {UnexpectedResponseError} Если ожидаемый ключ отсутствует в ответе.
-   * @throws {XmlSerializeError} При ошибке сериализации запроса.
-   * @throws {XmlDeserializeError} При ошибке парсинга ответа.
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   private async api<K extends Exclude<xml.ResponseKey, "Error">>(
     expectedKey: K | K[],
@@ -1391,7 +1509,6 @@ export class Client {
    * Формирует полный URL для заданного относительного пути.
    *
    * @param path - Относительный путь (например, 'authbasic' или 'api').
-   *
    * @returns Полный URL в виде строки.
    */
   private endpoint(path: string): string {
@@ -1402,10 +1519,11 @@ export class Client {
    * Сериализует объект запроса в XML.
    *
    * @param obj - Объект запроса (без обёртки Request).
-   *
    * @returns XML-строка с заголовком.
    *
-   * @throws {XmlSerializeError} При ошибке построения XML.
+   * @throws {XmlSerializeError}
+   * Возможные ошибки:
+   * - {@link XmlSerializeError}: При ошибке построения XML
    */
   private serialization(obj: xml.RequestBody): string {
     try {
@@ -1426,10 +1544,11 @@ export class Client {
    * Десериализует XML-ответ в объект.
    *
    * @param text - XML-строка.
-   *
    * @returns Корневой объект ответа (содержимое тега <Response>).
    *
-   * @throws {XmlDeserializeError} При ошибке парсинга или отсутствии тега <Response>.
+   * @throws {XmlDeserializeError}
+   * Возможные ошибки:
+   *  - {@link XmlDeserializeError} При ошибке парсинга или отсутствии тега <Response>.
    */
   private deserialization(text: string): xml.ResponseBody {
     try {
@@ -1447,9 +1566,8 @@ export class Client {
 /**
  * Нормализует значение, которое может быть одним элементом или массивом, в массив.
  *
- * @param value - Значение (один элемент, массив или undefined).
- *
- * @returns Массив элементов (пустой, если value = undefined).
+ * @param value - Значение (один элемент, массив или `undefined`).
+ * @returns Массив элементов (пустой, если `value = undefined`).
  */
 const normalizeArray = <T>(value: T | T[] | undefined): T[] => {
   if (value === undefined) return [];
@@ -1457,7 +1575,7 @@ const normalizeArray = <T>(value: T | T[] | undefined): T[] => {
 };
 
 /**
- * Нормализует значение, которое может быть строкой "true" или "1", в boolean, или может отсутствовать.
+ * Нормализует значение, которое может быть строкой `"true"` или `"1"`, в `boolean`, или может отсутствовать.
  */
 const normalizeBoolOrUndefined = (value: string | undefined): boolean | undefined => {
   if (value === undefined) return undefined;
@@ -1465,7 +1583,7 @@ const normalizeBoolOrUndefined = (value: string | undefined): boolean | undefine
 };
 
 /**
- * Нормализует значение, которое может быть строкой "true" или "1", в boolean.
+ * Нормализует значение, которое может быть строкой `"true"`` или `"1"``, в `boolean`.
  */
 const normalizeBool = (value: string | undefined): boolean => {
   if (value === undefined) return false;
@@ -1482,16 +1600,24 @@ const normalizeString = (value: string | undefined): string | undefined => {
 
 /**
  * Вспомогательная функция конвертации {@link PLPEntity} в xml
+ *
+ * @throws {XmlSerializeError}
+ * Возможные ошибки:
+ * - {@link XmlSerializeError}: При ошибке построения XML
  */
 const buildEntity = (e: PLPEntity): xml.PLPEntity => {
   if ("constant" in e) return { PLPConstant: { "@Value": e.constant.value } };
-  if ("parameter" in e) return { PLPVariable: { "@MethodID": e.parameter.methodId, "@Name": e.parameter.name } };
+  if ("parameter" in e) return { PLPParameter: { "@MethodID": e.parameter.methodId, "@Name": e.parameter.name } };
   if ("variable" in e) return { PLPVariable: { "@MethodID": e.variable.methodId, "@Name": e.variable.name } };
   throw new XmlSerializeError(`Неизвестный тип PLP: ${JSON.stringify(e)}`);
 };
 
 /**
  * Вспомогательная функция конвертации {@link Filter} в xml
+ *
+ * @throws {XmlSerializeError}
+ * Возможные ошибки:
+ * - {@link XmlSerializeError}: При ошибке построения XML
  */
 const buildFilter = (f: Filter): xml.Filter => {
   if ("simpleFilter" in f)

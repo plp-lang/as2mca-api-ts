@@ -4,6 +4,7 @@
 
 /**
  * Ответ с данными успешно инициализированной сессии.
+ * @category model
  */
 export interface SessionInfo {
   /** Идентификатор сессии. */
@@ -14,6 +15,7 @@ export interface SessionInfo {
 
 /**
  * Базовая информация о пользователе.
+ * @category model
  */
 export interface UserInfo {
   /** Полное имя (ФИО). */
@@ -30,6 +32,7 @@ export interface UserInfo {
 
 /**
  * Информация о ядре системы.
+ * @category model
  */
 export interface CoreInfo {
   /** Код аудитора (например, "AUD"). */
@@ -50,6 +53,7 @@ export interface CoreInfo {
 
 /**
  * Cистемная настройка (ключ-значение).
+ * @category model
  */
 export interface Setting {
   /** Имя настройки. */
@@ -64,6 +68,7 @@ export interface Setting {
 
 /**
  * Идентификатор ТБП и ключ архива экземпляра.
+ * @category model
  */
 export interface ObjectClassAndArchiveKey {
   /** Короткое имя текущего ТБП экземпляра. */
@@ -74,6 +79,7 @@ export interface ObjectClassAndArchiveKey {
 
 /**
  * Обратная ссылка на экземпляр.
+ * @category model
  */
 export interface BackwardReference {
   /** Короткое имя ТБП, который ссылается. */
@@ -88,6 +94,7 @@ export interface BackwardReference {
 
 /**
  * Переход состояний ТБП.
+ * @category model
  */
 export interface Transition {
   /** Идентификатор перехода. */
@@ -104,6 +111,7 @@ export interface Transition {
 
 /**
  * Состояние ТБП.
+ * @category model
  */
 export interface State {
   /** Идентификатор состояния. */
@@ -116,6 +124,7 @@ export interface State {
 
 /**
  * Дочерний ТБП.
+ * @category model
  */
 export interface ChildClass {
   /** Короткое имя дочернего ТБП. */
@@ -124,6 +133,7 @@ export interface ChildClass {
 
 /**
  * Описание ТБП (класса).
+ * @category model
  */
 export interface Class {
   /** Короткое имя ТБП. */
@@ -156,10 +166,14 @@ export interface Class {
   groupId?: string;
 }
 
+/**
+ * @category model
+ */
 export type BaseClassID = "STRUCTURE";
 
 /**
  * Группа справочников.
+ * @category model
  */
 export interface GuidesGroup {
   /** Идентификатор группы. */
@@ -174,6 +188,7 @@ export interface GuidesGroup {
 
 /**
  * Описание операции.
+ * @category model
  */
 export interface Method {
   /** Идентификатор операции. */
@@ -182,7 +197,7 @@ export interface Method {
   name: string;
   /** Короткое имя. */
   shortName: string;
-  /** Тип операции (C, G, M, R, S, Y, O). */
+  /** Тип операции. */
   type: MethodType;
   /** Идентификатор класса формы. */
   formClassId: string;
@@ -216,11 +231,14 @@ export interface Method {
  * `Y` — деструктор.
  * `O` — выбор.
  * `P` — печать.
+ *
+ * @category model
  */
 export type MethodType = "C" | "G" | "M" | "R" | "S" | "Y" | "O" | "P";
 
 /**
  * Описание входного параметра операции.
+ * @category model
  */
 export interface MethodParameter {
   /** Короткое имя параметра. */
@@ -246,24 +264,29 @@ export interface MethodParameter {
 /**
  * Тип ссылки.
  *
- * `D` — default.
- * `T` — table of.
- * `R` — ref
+ * `D` — `default`.
+ * `T` — `table of`.
+ * `R` — `ref`.
+ *
+ * @category model
  */
 export type ReferenceType = "D" | "T" | "R";
 
 /**
  * Направление параметра.
  *
- * `I` — in.
- * `D` — default
- * `B` — in out
- * `O` — out
+ * `I` — `in`.
+ * `D` — `default`
+ * `B` — `in out`
+ * `O` — `out`
+ *
+ * @category model
  */
 export type Direction = "D" | "I" | "B" | "O";
 
 /**
  * Описание публичной переменной операции.
+ * @category model
  */
 export interface MethodVariable {
   /** Имя переменной. */
@@ -278,6 +301,7 @@ export interface MethodVariable {
 
 /**
  * Результат выполнения блока `Validate`.
+ * @category model
  */
 export interface Validate {
   /** Отладочный текст. */
@@ -288,6 +312,7 @@ export interface Validate {
 
 /**
  * Состояние элемента на форме.
+ * @category model
  */
 export interface ControlState {
   /** Идентификатор элемента. */
@@ -298,6 +323,7 @@ export interface ControlState {
 
 /**
  * Результат выполнения блока `Execute`.
+ * @category model
  */
 export interface MethodResult {
   /** Результат операции (число, может отсутствовать). */
@@ -308,6 +334,7 @@ export interface MethodResult {
 
 /**
  * Описание элемента формы.
+ * @category model
  */
 export interface Control {
   /** Идентификатор элемента. */
@@ -348,6 +375,7 @@ export interface Control {
 
 /**
  * Тип элемента формы.
+ * @category model
  */
 export type ControlType =
   | "FORM"
@@ -378,6 +406,7 @@ export type ControlType =
 
 /**
  * Описание представления.
+ * @category model
  */
 export interface View {
   /** Идентификатор. */
@@ -416,6 +445,7 @@ export interface View {
 
 /**
  * Описание колонки представления.
+ * @category model
  */
 export interface Column {
   /** Имя колонки. */
@@ -454,6 +484,7 @@ export interface Column {
 
 /**
  * Базовый тип данных колонки.
+ * @category model
  */
 export type ColumnBase =
   | "MEMO"
@@ -469,21 +500,34 @@ export type ColumnBase =
 
 /**
  * Выравнивание.
+ *
+ * - 0-лево
+ * - 1-центр
+ * - 2-право
+ *
+ * @category model
  */
-export type Align = "0" | "1" | "2"; // 0-лево, 1-центр, 2-право
+export type Align = "0" | "1" | "2";
 
 /**
  * Видимость.
+ *
+ * - 0-видимо
+ * - 2-скрыто
+ *
+ * @category model
  */
-export type Invisible = "0" | "2"; // 0-видимо, 2-скрыто
+export type Invisible = "0" | "2";
 
 /**
  * Логирование.
+ * @category model
  */
 export type Logging = "0" | "D";
 
 /**
  * Значение колонки в строке.
+ * @category model
  */
 export interface RowItem {
   /** Имя колонки. */
