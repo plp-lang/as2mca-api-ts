@@ -113,7 +113,7 @@ for (const row of rows) {
 await client.sessionDeinit(sessionId);
 ```
 
-### Пример 2 
+### Пример 2
 
 Добавить свою настройку в `::[FP_TUNE]`, через операцию `::[FP_TUNE].[NEW#AUTO]`
 
@@ -128,7 +128,7 @@ await client.authbasic(USERNAME, PASSWORD);
 const { sessionId } = await client.sessionInit();
 ```
 
-Получаем список всех операций ТБП `::[FP_TUNE]` и находим `ID` операции `[NEW#AUTO]` для последующих запросов: 
+Получаем список всех операций ТБП `::[FP_TUNE]` и находим `ID` операции `[NEW#AUTO]` для последующих запросов:
 
 ```ts
 const classShortName = "FP_TUNE";
@@ -211,7 +211,7 @@ const { value: objectId } = await client.methodExecute(sessionId, {
     { id: "17007820", value: "Тестовая настройка" },
     { id: "17007818", value: "AS2MCA_TEST_CODE" },
     { id: "17007864", value: "BOOLEAN" },
-    { id: "17007835", value: "1" }
+    { id: "17007835", value: "1" },
   ],
 });
 console.log("Была успешно добавлена новая настройка в `::[FP_TUNE]` с `ID` = ", objectId);
@@ -227,26 +227,26 @@ await client.methodValidate(sessionId, {
   info: "%PLPCALL%",
   plpCallParameters: [
     {
-      target: [{ parameter: { methodId, name: "P_GROUP_ID" }}],
-      source: [{ constant: { value: "AS2MCA_TEST_GROUP" }}],
+      target: [{ parameter: { methodId, name: "P_GROUP_ID" } }],
+      source: [{ constant: { value: "AS2MCA_TEST_GROUP" } }],
     },
     {
-      target: [{ parameter: { methodId, name: "P_NAME" }}],
-      source: [{ constant: { value: "Тестовая настройка" }}],
+      target: [{ parameter: { methodId, name: "P_NAME" } }],
+      source: [{ constant: { value: "Тестовая настройка" } }],
     },
     {
-      target: [{ parameter: { methodId, name: "P_CODE" }}],
-      source: [{ constant: { value: "AS2MCA_TEST_CODE" }}],
+      target: [{ parameter: { methodId, name: "P_CODE" } }],
+      source: [{ constant: { value: "AS2MCA_TEST_CODE" } }],
     },
     {
-      target: [{ parameter: { methodId, name: "P_VAL_TYPE" }}],
-      source: [{ constant: { value: "BOOLEAN" }}],
+      target: [{ parameter: { methodId, name: "P_VAL_TYPE" } }],
+      source: [{ constant: { value: "BOOLEAN" } }],
     },
     {
-      target: [{ parameter: { methodId, name: "P_VALUES" }}],
-      source: [{ constant: { value: "45543423508" }}],
+      target: [{ parameter: { methodId, name: "P_VALUES" } }],
+      source: [{ constant: { value: "45543423508" } }],
     },
-  ]
+  ],
 });
 
 // Выполняем операцию, нажатие на кнопку "ОК"

@@ -2,24 +2,24 @@
   "compilerOptions": {
     "lib": ["ESNext", "DOM"],
     "target": "ESNext",
-    "module": "Preserve",
-    "moduleDetection": "force",
-    "jsx": "react-jsx",
-    "allowJs": true,
+    "module": "ESNext",
     "types": ["bun"],
 
     "outDir": "./dist",
 
+    "noEmit": true,
+    "verbatimModuleSyntax": true,
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
-    "noEmit": true,
 
     "strict": true,
+    "declaration": true,
     "skipLibCheck": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": true,
+    "esModuleInterop": true,
     "noImplicitOverride": true,
+    "isolatedDeclarations": true,
+    "noUncheckedIndexedAccess": true,
+    "noFallthroughCasesInSwitch": true,
 
     "noUnusedLocals": true,
     "noUnusedParameters": true,
