@@ -1,9 +1,22 @@
 # HTTP-клиент сервера приложений 2 MCA АБС ЦФТ
 
-<p align="center">
-  <a href="https://github.com/plp-lang/as2mca-api-ts"><img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" style="margin-right: 15px;"></a>
-  <a href="https://github.com/plp-lang/as2mca-api-rs"><img src="https://img.shields.io/badge/Rust-000000?style=flat-square&logo=rust&logoColor=white" alt="Rust"></a>
-</p>
+<h4 align="center">
+  <a href="https://www.npmjs.com/package/as2mca-api">
+      <img src="https://img.shields.io/badge/npm-v0.1.0-red?logo=npm" alt="npm" />
+  </a>
+  <a href="https://github.com/plp-lang/as2mca-api-ts">
+      <img src="https://img.shields.io/badge/GitHub-repo-3178C6?logo=typescript" alt="TypeScript Source" />
+  </a>
+  <a href="https://crates.io/crates/as2mca-api">
+    <img src="https://img.shields.io/badge/crates.io-v0.1.0-orange?logo=hack-the-box&logoColor=ea7233" alt="Rust Crate" />
+  </a>
+  <a href="https://github.com/plp-lang/as2mca-api-rs">
+    <img src="https://img.shields.io/badge/GitHub-repo-dea584?logo=rust" alt="Rust Source" />
+  </a>
+  <a href="https://github.com/plp-lang/as2mca-api-rs/blob/master/LICENSE">
+    <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT license" />
+  </a>
+</h4>
 
 Неофициальная, свободная асинхронная Typescript-библиотека, предоставляющая типизированный клиент для взаимодействия с API сервера приложений Платформы 2 MCA АБС ЦФТ в том числе для режима эмуляции Платформы 1.
 Библиотека позволяет обращаться к серверу приложений аналогично клиенту «ЦФТ - Навигатор», программно реализуя схожее поведение: от управления сессиями и аутентификации до работы с выборками представлений и вызова операций.
@@ -29,6 +42,11 @@
 >
 > Использование этого проекта в продуктовых контурах банков или в нарушение лицензионных соглашений и политик безопасности «ЦФТ» осуществляется исключительно на ваш страх и риск.
 > Автор не несет ответственности за любые прямые или косвенные последствия использования этой библиотеки.
+
+## Полезные ссылки
+
+- Библиотека на [npmjs.com](https://www.npmjs.com/package/as2mca-api)
+- Альтернативная реализация на **Rust**: [crates.io](https://crates.io/crates/as2mca-api) | [source](https://github.com/plp-lang/as2mca-api-rs)
 
 ## Основные возможности
 
