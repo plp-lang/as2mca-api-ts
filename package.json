@@ -4,9 +4,16 @@
   "description": "Aplication Server 2MCA API HTTP Client",
   "keywords": [
     "2mca",
+    "abs",
     "api",
+    "async",
     "cbs",
-    "client"
+    "cft",
+    "client",
+    "http",
+    "node",
+    "sdk",
+    "typescript"
   ],
   "homepage": "https://github.com/plp-lang/as2mca-api-ts",
   "bugs": {
