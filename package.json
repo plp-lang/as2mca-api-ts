@@ -27,7 +27,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/plp-lang/as2mca-api-ts.git"
+    "url": "git+https://github.com/plp-lang/as2mca-api-ts.git"
   },
   "publisher": "Falldot",
   "files": [
@@ -58,7 +58,8 @@
     "fmt:fix": "oxfmt",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix --fix-suggestions",
-    "upgrade": "bunx npm-check-updates -u"
+    "upgrade": "bunx npm-check-updates -u",
+    "release": "bun run lint && bun run fmt && bun run build && npm publish"
   },
   "dependencies": {
     "fast-xml-builder": "^1.3.0",
