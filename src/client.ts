@@ -1153,7 +1153,7 @@ export class Client {
    * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async methodValidateDefault(sessionId: string, params: MethodValidateDefault): Promise<Validate> {
-    const { "@DebugText": debugText, ControlsState } = await this.api("Validate", {
+    const { "@DebugText": debugText, "@ObjectID": objectId, ControlsState } = await this.api("Validate", {
       MethodValidateDefault: {
         "@SessionID": sessionId,
         "@MethodID": params.methodId,
@@ -1171,6 +1171,7 @@ export class Client {
     });
     return {
       debugText,
+      objectId,
       controlsStates: normalizeArray(ControlsState).map((v) => ({ id: v["@ID"], value: v["@Value"] })),
     };
   }
@@ -1191,7 +1192,7 @@ export class Client {
    * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async methodValidate(sessionId: string, params: MethodValidate): Promise<Validate> {
-    const { "@DebugText": debugText, ControlsState } = await this.api("Validate", {
+    const { "@DebugText": debugText, "@ObjectID": objectId, ControlsState } = await this.api("Validate", {
       MethodValidate: {
         "@SessionID": sessionId,
         "@MethodID": params.methodId,
@@ -1213,6 +1214,7 @@ export class Client {
     });
     return {
       debugText,
+      objectId,
       controlsStates: normalizeArray(ControlsState).map((v) => ({ id: v["@ID"], value: v["@Value"] })),
     };
   }

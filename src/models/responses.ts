@@ -305,7 +305,9 @@ export interface MethodVariable {
  */
 export interface Validate {
   /** Отладочный текст. */
-  debugText: string;
+  debugText?: string;
+  /** ID объекта */
+  objectId?: string;
   /** Состояния элементов. */
   controlsStates: ControlState[];
 }

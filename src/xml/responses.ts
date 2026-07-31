@@ -598,7 +598,9 @@ export interface Controls {
  */
 export interface Validate {
   /** Отладочный текст. */
-  "@DebugText": string;
+  "@DebugText"?: string;
+  /** ID объекта */
+  "@ObjectID"?: string;
   /** Состояния элементов (может быть один или несколько). */
   ControlsState?: ControlsState | ControlsState[];
 }
