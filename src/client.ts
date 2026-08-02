@@ -1369,7 +1369,7 @@ export class Client {
         "@ClassID": params.classId,
         "@Hint": params.hint ?? "FIRST_ROWS",
         "@AllowTimestampMilliseconds": params.allowTimestampMilliseconds ?? true,
-        "@RowsLimit": params.rowsLimit,
+        "@RowsLimit": params.rowsLimit ?? 10,
         AdditionalFilterBind: params.additionalFilterBindClause
           ? { "@Clause": params.additionalFilterBindClause }
           : undefined,
