@@ -421,7 +421,7 @@ export class Client {
    * @category System
    * @param sessionId - Идентификатор сессии.
    * @returns Объект {@link SystemContextInfo}.
-   * 
+   *
    * @example
    * ```typescript
    * const system = await client.systemContextInfoGet(sessionId);
@@ -442,7 +442,7 @@ export class Client {
     return {
       systemDate: system["@SystemDate"],
       systemInfo: system["@SystemInfo"],
-      systemName: system["@SystemName"]
+      systemName: system["@SystemName"],
     };
   }
 
@@ -1185,7 +1185,11 @@ export class Client {
    * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async methodValidateDefault(sessionId: string, params: MethodValidateDefault): Promise<Validate> {
-    const { "@DebugText": debugText, "@ObjectID": objectId, ControlsState } = await this.api("Validate", {
+    const {
+      "@DebugText": debugText,
+      "@ObjectID": objectId,
+      ControlsState,
+    } = await this.api("Validate", {
       MethodValidateDefault: {
         "@SessionID": sessionId,
         "@MethodID": params.methodId,
@@ -1224,7 +1228,11 @@ export class Client {
    * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async methodValidate(sessionId: string, params: MethodValidate): Promise<Validate> {
-    const { "@DebugText": debugText, "@ObjectID": objectId, ControlsState } = await this.api("Validate", {
+    const {
+      "@DebugText": debugText,
+      "@ObjectID": objectId,
+      ControlsState,
+    } = await this.api("Validate", {
       MethodValidate: {
         "@SessionID": sessionId,
         "@MethodID": params.methodId,
