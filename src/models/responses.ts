@@ -52,6 +52,19 @@ export interface CoreInfo {
 }
 
 /**
+ * Информация о системе.
+ * @category model
+ */
+export interface SystemContextInfo {
+  /** Системная дата */
+  systemDate: string;
+  /** Системное имя */
+  systemName: string;
+  /** Дополнительная информация */
+  systemInfo: string;
+}
+
+/**
  * Cистемная настройка (ключ-значение).
  * @category model
  */

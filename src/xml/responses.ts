@@ -22,6 +22,7 @@ export type ResponseBody =
   | { ProtocolInfo: ProtocolInfo }
   | { ServerInfo: ServerInfo }
   | { CoreInfo: CoreInfo }
+  | { SystemContextInfo: SystemContextInfo }
   | { Settings: Settings }
   | { Setting: Setting }
   | { NovoAllowedCheckResult: NovoAllowedCheckResult }
@@ -210,6 +211,19 @@ export interface CoreInfo {
   "@ASVersion": string;
   /** Дата сборки сервера приложений. */
   "@ASWARDate": string;
+}
+
+/**
+ * Информация о системе.
+ * @category XML
+ */
+export interface SystemContextInfo {
+  /** Системная дата */
+  "@SystemDate": string;
+  /** Системное имя */
+  "@SystemName": string;
+  /** Дополнительная информация */
+  "@SystemInfo": string;
 }
 
 /**

@@ -22,6 +22,7 @@ export type RequestBody =
   | { ProtocolInfoGet: ProtocolInfoGet }
   | { SystemServerVersionGet: SystemServerVersionGet }
   | { SystemCoreInfoGet: SystemCoreInfoGet }
+  | { SystemContextInfoGet: SystemContextInfoGet }
   | { SystemSettingsGet: SystemSettingsGet }
   | { SystemSettingGet: SystemSettingGet }
   | { NovoAllowedCheck: NovoAllowedCheck }
@@ -187,6 +188,15 @@ export interface SystemServerVersionGet {
  * @category XML
  */
 export interface SystemCoreInfoGet {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+}
+
+/**
+ * Запрос информации о системе.
+ * @category XML
+ */
+export interface SystemContextInfoGet {
   /** Идентификатор сессии. */
   "@SessionID": string;
 }

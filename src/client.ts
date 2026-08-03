@@ -35,6 +35,7 @@ import type {
   ViewDataGetCancelable,
   Object,
   Control,
+  SystemContextInfo,
 } from "./models";
 import type { xml } from ".";
 
@@ -411,6 +412,37 @@ export class Client {
       revision: core["@Revision"],
       asVersion: core["@ASVersion"],
       asWarDate: core["@ASWARDate"],
+    };
+  }
+
+  /**
+   * Возвращает информацию о системы.
+   *
+   * @category System
+   * @param sessionId - Идентификатор сессии.
+   * @returns Объект {@link SystemContextInfo}.
+   * 
+   * @example
+   * ```typescript
+   * const system = await client.systemContextInfoGet(sessionId);
+   * console.log("System date: ", system.systemDate);
+   * ```
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
+   */
+  public async systemContextInfoGet(sessionId: string): Promise<SystemContextInfo> {
+    const system = await this.api("SystemContextInfo", {
+      SystemContextInfoGet: { "@SessionID": sessionId },
+    });
+    return {
+      systemDate: system["@SystemDate"],
+      systemInfo: system["@SystemInfo"],
+      systemName: system["@SystemName"]
     };
   }
 

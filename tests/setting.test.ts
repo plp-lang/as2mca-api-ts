@@ -18,6 +18,28 @@ describe("Информация о системе", () => {
     expect(version).toBeString();
   });
 
+  test("systemCoreInfoGet", async () => {
+    const { client, sessionId } = ctx;
+
+    const core = await client.systemCoreInfoGet(sessionId);
+    expect(core.auditor).toBeString();
+    expect(core.owner).toBeString();
+    expect(core.version).toBeString();
+    expect(core.build).toBeString();
+    expect(core.revision).toBeString();
+    expect(core.asVersion).toBeString();
+    expect(core.asWarDate).toBeString();
+  });
+
+  test("systemContextInfoGet", async () => {
+    const { client, sessionId } = ctx;
+
+    const system = await client.systemContextInfoGet(sessionId);
+    expect(system.systemDate).toBeString();
+    expect(system.systemInfo).toBeString();
+    expect(system.systemName).toBeString();
+  });
+
   test("systemSettingsGet", async () => {
     const { client, sessionId } = ctx;
 
