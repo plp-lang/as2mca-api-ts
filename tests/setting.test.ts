@@ -78,4 +78,81 @@ describe("Информация о системе", () => {
     const isEnabled = await client.systemOptionEnabledCheck(sessionId, "NAV_SKIN_INTERFACE");
     expect(isEnabled).toBeTrue();
   });
+
+  test("systemInfoGet", async () => {
+    const { client, sessionId } = ctx;
+
+    const value = await client.systemInfoGet(sessionId, "SYS_NAME");
+    expect(value).toBeString();
+  });
+
+  test("systemLimitGet", async () => {
+    const { client, sessionId } = ctx;
+
+    const value = await client.systemLimitGet(sessionId, "SYS_NAME");
+    expect(value).toBeString();
+  });
+
+  test("systemContextGet", async () => {
+    const { client, sessionId } = ctx;
+
+    const value1 = await client.systemContextGet(sessionId, "IBS_USER", "SYS_VERSION");
+    expect(value1).toBeString();
+    const value2 = await client.systemContextGet(sessionId, "IBS_USER", "USER_CONTEXT");
+    expect(value2).toBeString();
+    const value3 = await client.systemContextGet(sessionId, "IBS_USER", "USER_LOCK_OPEN");
+    expect(value3).toBeString();
+    const value4 = await client.systemContextGet(sessionId, "IBS_USER", "SYS_BUILD_DATE");
+    expect(value4).toBeString();
+  });
+
+  test("systemApplicationNameGet", async () => {
+    const { client, sessionId } = ctx;
+
+    const name = await client.systemApplicationNameGet(sessionId);
+    expect(name).toBeString();
+  });
+
+  test("systemHelpSystemInfoGet", async () => {
+    const { client, sessionId } = ctx;
+
+    const count = await client.systemHelpSystemInfoGet(sessionId);
+    expect(count).toBeNumber();
+  });
+
+  test("embeddedInteractionAvailableCheck", async () => {
+    const { client, sessionId } = ctx;
+
+    const is_check = await client.embeddedInteractionAvailableCheck(sessionId);
+    expect(is_check).toBeBoolean();
+  });
+
+  test("embeddedInteractionRequiredCheck", async () => {
+    const { client, sessionId } = ctx;
+
+    const is_check = await client.embeddedInteractionRequiredCheck(sessionId);
+    expect(is_check).toBeBoolean();
+  });
+
+  test("embeddedInteractionGetResource", async () => {
+    const { client, sessionId } = ctx;
+
+    const url1 = await client.embeddedInteractionGetResource(sessionId);
+    expect(url1).toBeString();
+    const url2 = await client.embeddedInteractionGetResource(sessionId, "STATUS");
+    expect(url2).toBeString();
+  });
+
+  test("contextInformationAvailableCheck", async () => {
+    const { client, sessionId } = ctx;
+
+    const is_check = await client.contextInformationAvailableCheck(sessionId);
+    expect(is_check).toBeBoolean();
+  });
+
+  test("embeddedInteractionPost", async () => {
+    const { client, sessionId } = ctx;
+
+    await client.embeddedInteractionPost(sessionId);
+  });
 });

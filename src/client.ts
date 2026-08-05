@@ -555,6 +555,75 @@ export class Client {
     return normalizeBool(result["@Enabled"]);
   }
 
+  public async systemInfoGet(sessionId: string, parameterName: string): Promise<string> {
+    const { "@Value": value } = await this.api("SystemInfo", {
+      SystemInfoGet: { "@SessionID": sessionId, "@ParameterName": parameterName },
+    });
+    return value;
+  }
+
+  public async systemLimitGet(sessionId: string, limitName: string): Promise<string> {
+    const { "@Value": value } = await this.api("Limit", {
+      SystemLimitGet: { "@SessionID": sessionId, "@LimitName": limitName },
+    });
+    return value;
+  }
+
+  public async systemContextGet(sessionId: string, namespace: string, attribute_name: string): Promise<string> {
+    const { "@Value": value } = await this.api("Attribute", {
+      SystemContextGet: { "@SessionID": sessionId, "@Namespace": namespace, "@AttributeName": attribute_name },
+    });
+    return value;
+  }
+
+  public async systemApplicationNameGet(sessionId: string): Promise<string> {
+    const { "@Name": name } = await this.api("Application", {
+      SystemApplicationNameGet: { "@SessionID": sessionId },
+    });
+    return name;
+  }
+
+  public async systemHelpSystemInfoGet(sessionId: string): Promise<number> {
+    const { "@ItemsCount": count } = await this.api("HelpSystemInfo", {
+      SystemHelpSystemInfoGet: { "@SessionID": sessionId },
+    });
+    return Number(count);
+  }
+
+  public async embeddedInteractionAvailableCheck(sessionId: string): Promise<boolean> {
+    const { "@Value": value } = await this.api("CheckResult", {
+      EmbeddedInteractionAvailableCheck: { "@SessionID": sessionId },
+    });
+    return normalizeBool(value);
+  }
+
+  public async embeddedInteractionRequiredCheck(sessionId: string): Promise<boolean> {
+    const { "@Value": value } = await this.api("CheckResult", {
+      EmbeddedInteractionRequiredCheck: { "@SessionID": sessionId },
+    });
+    return normalizeBool(value);
+  }
+
+  public async embeddedInteractionGetResource(sessionId: string, error_response_type?: string): Promise<string> {
+    const { "@URL": url } = await this.api("StreamData", {
+      EmbeddedInteractionGetResource: { "@SessionID": sessionId, "@ErrorResponseType": error_response_type },
+    });
+    return url;
+  }
+
+  public async contextInformationAvailableCheck(sessionId: string): Promise<boolean> {
+    const { "@Value": value } = await this.api("CheckResult", {
+      ContextInformationAvailableCheck: { "@SessionID": sessionId },
+    });
+    return normalizeBool(value);
+  }
+
+  public async embeddedInteractionPost(sessionId: string, request?: string): Promise<void> {
+    await this.api("Done", {
+      EmbeddedInteractionPost: { "@SessionID": sessionId, "@Request": request },
+    });
+  }
+
   //====================================================================================================================
   // Отладка
   //====================================================================================================================

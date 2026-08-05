@@ -29,6 +29,12 @@ export type ResponseBody =
   | { Setting: Setting }
   | { NovoAllowedCheckResult: NovoAllowedCheckResult }
   | { OptionInfo: OptionInfo }
+  | { SystemInfo: SystemInfo }
+  | { Limit: Limit }
+  | { Attribute: Attribute }
+  | { Application: Application }
+  | { HelpSystemInfo: HelpSystemInfo }
+  | { StreamData: StreamData }
   | { User: UserInfo }
   | { User: UserPrivileged }
   | { UserProfileProperty: UserProfileProperty }
@@ -264,6 +270,60 @@ export interface NovoAllowedCheckResult {
 export interface OptionInfo {
   /** true, если опция включена. */
   "@Enabled": string;
+}
+
+/**
+ * TODO: ???
+ * @category XML
+ */
+export interface SystemInfo {
+  /** Значение */
+  "@Value": string;
+}
+
+/**
+ * TODO: ???
+ * @category XML
+ */
+export interface Limit {
+  /** Значение */
+  "@Value": string;
+}
+
+/**
+ * TODO: ???
+ * @category XML
+ */
+export interface Attribute {
+  /** Значение */
+  "@Value": string;
+}
+
+/**
+ * TODO: ???
+ * @category XML
+ */
+export interface Application {
+  /** Наименование */
+  "@Name": string;
+}
+
+/**
+ * TODO: ???
+ * @category XML
+ */
+export interface HelpSystemInfo {
+  /** Кол-во */
+  "@ItemsCount": string;
+}
+
+/**
+ * TODO: ???
+ * @category XML
+ */
+export interface StreamData {
+  /** Путь */
+  "@URL": string;
 }
 
 //======================================================================================================================

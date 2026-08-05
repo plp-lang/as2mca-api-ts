@@ -27,6 +27,16 @@ export type RequestBody =
   | { SystemSettingGet: SystemSettingGet }
   | { NovoAllowedCheck: NovoAllowedCheck }
   | { SystemOptionEnabledCheck: SystemOptionEnabledCheck }
+  | { SystemInfoGet: SystemInfoGet }
+  | { SystemLimitGet: SystemLimitGet }
+  | { SystemContextGet: SystemContextGet }
+  | { SystemApplicationNameGet: SystemApplicationNameGet }
+  | { SystemHelpSystemInfoGet: SystemHelpSystemInfoGet }
+  | { EmbeddedInteractionAvailableCheck: EmbeddedInteractionAvailableCheck }
+  | { EmbeddedInteractionRequiredCheck: EmbeddedInteractionRequiredCheck }
+  | { EmbeddedInteractionGetResource: EmbeddedInteractionGetResource }
+  | { ContextInformationAvailableCheck: ContextInformationAvailableCheck }
+  | { EmbeddedInteractionPost: EmbeddedInteractionPost }
   | { NetworkInformationSet: NetworkInformationSet }
   | { SystemNetAddressSet: SystemNetAddressSet }
   | { UserInfoGet: UserInfoGet }
@@ -239,6 +249,108 @@ export interface SystemOptionEnabledCheck {
   "@SessionID": string;
   /** Имя опции (например, `"NAV_SKIN_INTERFACE"`). */
   "@OptionName": string;
+}
+
+/**
+ * TODO: ???
+ * @category XML
+ */
+export interface SystemInfoGet {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+  /** Имя параметра (например, `"SYS_NAME"`). */
+  "@ParameterName": string;
+}
+
+/**
+ * TODO: ???
+ * @category XML
+ */
+export interface SystemLimitGet {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+  /** Имя лимита (например, `"SYS_NAME"`). */
+  "@LimitName": string;
+}
+
+/**
+ * TODO: ???
+ * @category XML
+ */
+export interface SystemContextGet {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+  /** Именное пространство атрибута (например, `"SYS_NAME"`). */
+  "@Namespace": string;
+  /** Имя атрибута (например, `"SYS_VERSION"`). */
+  "@AttributeName": string;
+}
+
+/**
+ * TODO: ???
+ * @category XML
+ */
+export interface SystemApplicationNameGet {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+}
+
+/**
+ * TODO: ???
+ * @category XML
+ */
+export interface SystemHelpSystemInfoGet {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+}
+
+/**
+ * TODO: ???
+ * @category XML
+ */
+export interface EmbeddedInteractionAvailableCheck {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+}
+
+/**
+ * TODO: ???
+ * @category XML
+ */
+export interface EmbeddedInteractionRequiredCheck {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+}
+
+/**
+ * TODO: ???
+ * @category XML
+ */
+export interface EmbeddedInteractionGetResource {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+  /** Тип ошибки ресурса. */
+  "@ErrorResponseType"?: string;
+}
+
+/**
+ * TODO: ???
+ * @category XML
+ */
+export interface ContextInformationAvailableCheck {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+}
+
+/**
+ * TODO: ???
+ * @category XML
+ */
+export interface EmbeddedInteractionPost {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+  /** Наименование события запроса. */
+  "@Request"?: string;
 }
 
 //======================================================================================================================
