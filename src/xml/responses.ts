@@ -1,3 +1,5 @@
+import type { ControlsStates } from "./requests";
+
 /**
  * Базовая обертка XML-ответа от сервера.
  * @category XML
@@ -616,18 +618,7 @@ export interface Validate {
   /** ID объекта */
   "@ObjectID"?: string;
   /** Состояния элементов (может быть один или несколько). */
-  ControlsState?: ControlsState | ControlsState[];
-}
-
-/**
- * Состояние элемента на форме.
- * @category XML
- */
-export interface ControlsState {
-  /** Идентификатор элемента. */
-  "@ID": string;
-  /** Значение элемента. */
-  "@Value": string;
+  ControlsStates?: ControlsStates;
 }
 
 /**
@@ -638,7 +629,7 @@ export interface MethodResult {
   /** Результат операции (число, может отсутствовать). */
   "@Value"?: string;
   /** Состояния элементов (может быть один или несколько). */
-  ControlsState?: ControlsState | ControlsState[];
+  ControlsStates?: ControlsStates;
 }
 
 /**

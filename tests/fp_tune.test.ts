@@ -72,10 +72,11 @@ describe("Создать и удалить экземпляр ::[FP_TUNE]", () =
     const frameId = (await client.methodBegin(sessionId, METHOD_CREATE_ID)) as string;
     expect(frameId).toBeString();
 
-    await client.methodValidateDefault(sessionId, {
+    const { controlsStates: ctrlsvd } = await client.methodValidateDefault(sessionId, {
       classId: CLASS_SHORT_NAME,
       methodId: METHOD_CREATE_ID,
     });
+    expect(ctrlsvd.length).toBeGreaterThan(1);
 
     await client.methodValidate(sessionId, {
       methodId: METHOD_CREATE_ID,
@@ -107,9 +108,12 @@ describe("Создать и удалить экземпляр ::[FP_TUNE]", () =
       controlsStates: [{ id: "17007835", value: "1" }],
     });
 
-    const { value: objectId } = await client.methodExecute(sessionId, { methodId: METHOD_CREATE_ID });
+    const { value: objectId, controlsStates: ctrlme } = await client.methodExecute(sessionId, {
+      methodId: METHOD_CREATE_ID,
+    });
     expect(objectId).toBeString();
     OBJECT_ID = objectId as string;
+    expect(ctrlme.length).toBeGreaterThan(1);
 
     const prevFrameId = await client.methodEnd(sessionId, frameId);
     expect(prevFrameId).toBeUndefined();

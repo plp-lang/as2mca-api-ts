@@ -1188,7 +1188,7 @@ export class Client {
     const {
       "@DebugText": debugText,
       "@ObjectID": objectId,
-      ControlsState,
+      ControlsStates,
     } = await this.api("Validate", {
       MethodValidateDefault: {
         "@SessionID": sessionId,
@@ -1208,7 +1208,7 @@ export class Client {
     return {
       debugText,
       objectId,
-      controlsStates: normalizeArray(ControlsState).map((v) => ({ id: v["@ID"], value: v["@Value"] })),
+      controlsStates: normalizeArray(ControlsStates?.ControlState).map((v) => ({ id: v["@ID"], value: v["@Value"] })),
     };
   }
 
@@ -1231,7 +1231,7 @@ export class Client {
     const {
       "@DebugText": debugText,
       "@ObjectID": objectId,
-      ControlsState,
+      ControlsStates,
     } = await this.api("Validate", {
       MethodValidate: {
         "@SessionID": sessionId,
@@ -1255,7 +1255,7 @@ export class Client {
     return {
       debugText,
       objectId,
-      controlsStates: normalizeArray(ControlsState).map((v) => ({ id: v["@ID"], value: v["@Value"] })),
+      controlsStates: normalizeArray(ControlsStates?.ControlState).map((v) => ({ id: v["@ID"], value: v["@Value"] })),
     };
   }
 
@@ -1275,7 +1275,7 @@ export class Client {
    * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
   public async methodExecute(sessionId: string, params: MethodExecute): Promise<MethodResult> {
-    const { "@Value": value, ControlsState } = await this.api("Result", {
+    const { "@Value": value, ControlsStates } = await this.api("Result", {
       MethodExecute: {
         "@SessionID": sessionId,
         "@MethodID": params.methodId,
@@ -1294,7 +1294,7 @@ export class Client {
     });
     return {
       value,
-      controlsStates: normalizeArray(ControlsState).map((v) => ({ id: v["@ID"], value: v["@Value"] })),
+      controlsStates: normalizeArray(ControlsStates?.ControlState).map((v) => ({ id: v["@ID"], value: v["@Value"] })),
     };
   }
 
