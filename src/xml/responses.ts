@@ -273,56 +273,50 @@ export interface OptionInfo {
 }
 
 /**
- * TODO: ???
+ * Значение системного параметра.
  * @category XML
  */
 export interface SystemInfo {
-  /** Значение */
   "@Value": string;
 }
 
 /**
- * TODO: ???
+ * Значение системного ограничения (лимита).
  * @category XML
  */
 export interface Limit {
-  /** Значение */
   "@Value": string;
 }
 
 /**
- * TODO: ???
+ * Значение атрибута системного контекста.
  * @category XML
  */
 export interface Attribute {
-  /** Значение */
   "@Value": string;
 }
 
 /**
- * TODO: ???
+ * Имя приложения
  * @category XML
  */
 export interface Application {
-  /** Наименование */
   "@Name": string;
 }
 
 /**
- * TODO: ???
+ * Количество элементов в справочной системе.
  * @category XML
  */
 export interface HelpSystemInfo {
-  /** Кол-во */
   "@ItemsCount": string;
 }
 
 /**
- * TODO: ???
+ * URL-адрес ресурса WebView модуля.
  * @category XML
  */
 export interface StreamData {
-  /** Путь */
   "@URL": string;
 }
 

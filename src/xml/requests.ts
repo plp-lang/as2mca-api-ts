@@ -252,7 +252,7 @@ export interface SystemOptionEnabledCheck {
 }
 
 /**
- * TODO: ???
+ * Запрос значения системного параметра
  * @category XML
  */
 export interface SystemInfoGet {
@@ -263,7 +263,7 @@ export interface SystemInfoGet {
 }
 
 /**
- * TODO: ???
+ * Запрос значения системного ограничения (лимита).
  * @category XML
  */
 export interface SystemLimitGet {
@@ -274,7 +274,7 @@ export interface SystemLimitGet {
 }
 
 /**
- * TODO: ???
+ * Запрос значения атрибута системного контекста.
  * @category XML
  */
 export interface SystemContextGet {
@@ -287,7 +287,7 @@ export interface SystemContextGet {
 }
 
 /**
- * TODO: ???
+ * Запрос имени текущего приложения
  * @category XML
  */
 export interface SystemApplicationNameGet {
@@ -296,7 +296,16 @@ export interface SystemApplicationNameGet {
 }
 
 /**
- * TODO: ???
+ * Запрос на доступность контекстной информации.
+ * @category XML
+ */
+export interface ContextInformationAvailableCheck {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+}
+
+/**
+ * Запрос количества элементов в справочной системе.
  * @category XML
  */
 export interface SystemHelpSystemInfoGet {
@@ -305,7 +314,7 @@ export interface SystemHelpSystemInfoGet {
 }
 
 /**
- * TODO: ???
+ * Запрос доступности встроенного в "ЦФТ - Нафигатор" WebView модуля.
  * @category XML
  */
 export interface EmbeddedInteractionAvailableCheck {
@@ -314,7 +323,7 @@ export interface EmbeddedInteractionAvailableCheck {
 }
 
 /**
- * TODO: ???
+ * Запрос на требование WebView модуля в текущем контексте.
  * @category XML
  */
 export interface EmbeddedInteractionRequiredCheck {
@@ -323,7 +332,7 @@ export interface EmbeddedInteractionRequiredCheck {
 }
 
 /**
- * TODO: ???
+ * Запрос URL-адреса ресурса WebView модуля.
  * @category XML
  */
 export interface EmbeddedInteractionGetResource {
@@ -334,16 +343,7 @@ export interface EmbeddedInteractionGetResource {
 }
 
 /**
- * TODO: ???
- * @category XML
- */
-export interface ContextInformationAvailableCheck {
-  /** Идентификатор сессии. */
-  "@SessionID": string;
-}
-
-/**
- * TODO: ???
+ * Отправка лога события WebView модуля на сервер.
  * @category XML
  */
 export interface EmbeddedInteractionPost {

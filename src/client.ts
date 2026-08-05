@@ -555,6 +555,27 @@ export class Client {
     return normalizeBool(result["@Enabled"]);
   }
 
+  /**
+   * Возвращает значение указанного системного параметра.
+   *
+   * @category System
+   * @param sessionId - Идентификатор сессии.
+   * @param parameterName - Имя параметра (например, `"SYS_NAME"`).
+   * @returns Значение параметра в виде строки.
+   *
+   * @example
+   * ```typescript
+   * const sysName = await client.systemInfoGet(sessionId, "SYS_NAME");
+   * console.log("System name:", sysName);
+   * ```
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
+   */
   public async systemInfoGet(sessionId: string, parameterName: string): Promise<string> {
     const { "@Value": value } = await this.api("SystemInfo", {
       SystemInfoGet: { "@SessionID": sessionId, "@ParameterName": parameterName },
@@ -562,6 +583,27 @@ export class Client {
     return value;
   }
 
+  /**
+   * Получает значение системного ограничения (лимита) по его имени.
+   *
+   * @category System
+   * @param sessionId - Идентификатор сессии.
+   * @param limitName - Имя лимита (например, `"SYS_NAME"`).
+   * @returns Текущее значение лимита в виде строки.
+   *
+   * @example
+   * ```typescript
+   * const sysName = await client.systemLimitGet(sessionId, "SYS_NAME");
+   * console.log("System name:", sysName);
+   * ```
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
+   */
   public async systemLimitGet(sessionId: string, limitName: string): Promise<string> {
     const { "@Value": value } = await this.api("Limit", {
       SystemLimitGet: { "@SessionID": sessionId, "@LimitName": limitName },
@@ -569,6 +611,28 @@ export class Client {
     return value;
   }
 
+  /**
+   * Возвращает значение атрибута системного контекста из указанного пространства имён.
+   *
+   * @category System
+   * @param sessionId - Идентификатор сессии.
+   * @param namespace - Пространство имён (например, `"SYS_NAME"`).
+   * @param attribute_name - Имя атрибута (например, `"SYS_VERSION"`).
+   * @returns Значение атрибута в виде строки.
+   *
+   * @example
+   * ```typescript
+   * const version = await client.systemContextGet(sessionId, "SYS_NAME", "SYS_VERSION");
+   * console.log("System version:", version);
+   * ```
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
+   */
   public async systemContextGet(sessionId: string, namespace: string, attribute_name: string): Promise<string> {
     const { "@Value": value } = await this.api("Attribute", {
       SystemContextGet: { "@SessionID": sessionId, "@Namespace": namespace, "@AttributeName": attribute_name },
@@ -576,6 +640,26 @@ export class Client {
     return value;
   }
 
+  /**
+   * Возвращает имя текущего приложения.
+   *
+   * @category System
+   * @param sessionId - Идентификатор сессии.
+   * @returns Имя приложения.
+   *
+   * @example
+   * ```typescript
+   * const appName = await client.systemApplicationNameGet(sessionId);
+   * console.log("Application name:", appName);
+   * ```
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
+   */
   public async systemApplicationNameGet(sessionId: string): Promise<string> {
     const { "@Name": name } = await this.api("Application", {
       SystemApplicationNameGet: { "@SessionID": sessionId },
@@ -583,34 +667,28 @@ export class Client {
     return name;
   }
 
-  public async systemHelpSystemInfoGet(sessionId: string): Promise<number> {
-    const { "@ItemsCount": count } = await this.api("HelpSystemInfo", {
-      SystemHelpSystemInfoGet: { "@SessionID": sessionId },
-    });
-    return Number(count);
-  }
-
-  public async embeddedInteractionAvailableCheck(sessionId: string): Promise<boolean> {
-    const { "@Value": value } = await this.api("CheckResult", {
-      EmbeddedInteractionAvailableCheck: { "@SessionID": sessionId },
-    });
-    return normalizeBool(value);
-  }
-
-  public async embeddedInteractionRequiredCheck(sessionId: string): Promise<boolean> {
-    const { "@Value": value } = await this.api("CheckResult", {
-      EmbeddedInteractionRequiredCheck: { "@SessionID": sessionId },
-    });
-    return normalizeBool(value);
-  }
-
-  public async embeddedInteractionGetResource(sessionId: string, error_response_type?: string): Promise<string> {
-    const { "@URL": url } = await this.api("StreamData", {
-      EmbeddedInteractionGetResource: { "@SessionID": sessionId, "@ErrorResponseType": error_response_type },
-    });
-    return url;
-  }
-
+  /**
+   * Проверяет, доступна ли контекстная информация.
+   *
+   * @category System
+   * @param sessionId - Идентификатор сессии.
+   * @returns `true`, если контекстная информация доступна.
+   *
+   * @example
+   * ```typescript
+   * const ctxAvailable = await client.contextInformationAvailableCheck(sessionId);
+   * if (ctxAvailable) {
+   *   // запросить контекстную информацию
+   * }
+   * ```
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
+   */
   public async contextInformationAvailableCheck(sessionId: string): Promise<boolean> {
     const { "@Value": value } = await this.api("CheckResult", {
       ContextInformationAvailableCheck: { "@SessionID": sessionId },
@@ -618,6 +696,140 @@ export class Client {
     return normalizeBool(value);
   }
 
+  /**
+   * Возвращает количество элементов в справочной системе.
+   *
+   * @category System
+   * @param sessionId - Идентификатор сессии.
+   * @returns Количество элементов (целое число).
+   *
+   * @example
+   * ```typescript
+   * const count = await client.systemHelpSystemInfoGet(sessionId);
+   * console.log("Help items count:", count);
+   * ```
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
+   */
+  public async systemHelpSystemInfoGet(sessionId: string): Promise<number> {
+    const { "@ItemsCount": count } = await this.api("HelpSystemInfo", {
+      SystemHelpSystemInfoGet: { "@SessionID": sessionId },
+    });
+    return Number(count);
+  }
+
+  /**
+   * Проверяет, доступно ли встроенный в "ЦФТ - Нафигатор" WebView модуль.
+   *
+   * @category System
+   * @param sessionId - Идентификатор сессии.
+   * @returns `true`, если доступно.
+   *
+   * @example
+   * ```typescript
+   * const available = await client.embeddedInteractionAvailableCheck(sessionId);
+   * if (available) {
+   *   // использовать
+   * }
+   * ```
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
+   */
+  public async embeddedInteractionAvailableCheck(sessionId: string): Promise<boolean> {
+    const { "@Value": value } = await this.api("CheckResult", {
+      EmbeddedInteractionAvailableCheck: { "@SessionID": sessionId },
+    });
+    return normalizeBool(value);
+  }
+
+  /**
+   * Проверяет, требуется ли встроенный в "ЦФТ - Нафигатор" WebView модуль в текущем контексте.
+   *
+   * @category System
+   * @param sessionId - Идентификатор сессии.
+   * @returns `true`, если обязательно.
+   *
+   * @example
+   * ```typescript
+   * const required = await client.embeddedInteractionRequiredCheck(sessionId);
+   * if (required) {
+   *   // показать интерфейс
+   * }
+   * ```
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
+   */
+  public async embeddedInteractionRequiredCheck(sessionId: string): Promise<boolean> {
+    const { "@Value": value } = await this.api("CheckResult", {
+      EmbeddedInteractionRequiredCheck: { "@SessionID": sessionId },
+    });
+    return normalizeBool(value);
+  }
+
+  /**
+   * Получает URL-адрес ресурса WebView модуля.
+   *
+   * @category System
+   * @param sessionId - Идентификатор сессии.
+   * @param error_response_type - (опционально) Тип ответа при возникновении ошибки.
+   * @returns Строка с относительным URL-адресом ресурса.
+   *
+   * @example
+   * ```typescript
+   * const url = await client.embeddedInteractionGetResource(sessionId);
+   * console.log("Embedded resource URL:", url);
+   * ```
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
+   */
+  public async embeddedInteractionGetResource(sessionId: string, error_response_type?: string): Promise<string> {
+    const { "@URL": url } = await this.api("StreamData", {
+      EmbeddedInteractionGetResource: { "@SessionID": sessionId, "@ErrorResponseType": error_response_type },
+    });
+    return url;
+  }
+
+  /**
+   * Отправляет лог указаного события WebView модуля на сервер.
+   *
+   * @category System
+   * @param sessionId - Идентификатор сессии.
+   * @param request - (опционально) тип события.
+   * @returns Promise, который разрешается после успешной отправки.
+   *
+   * @example
+   * ```typescript
+   * await client.embeddedInteractionPost(sessionId, "Exit");
+   * console.log("Embedded interaction posted.");
+   * ```
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
+   */
   public async embeddedInteractionPost(sessionId: string, request?: string): Promise<void> {
     await this.api("Done", {
       EmbeddedInteractionPost: { "@SessionID": sessionId, "@Request": request },
