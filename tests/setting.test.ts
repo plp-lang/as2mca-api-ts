@@ -82,8 +82,12 @@ describe("Информация о системе", () => {
   test("systemInfoGet", async () => {
     const { client, sessionId } = ctx;
 
-    const value = await client.systemInfoGet(sessionId, "SYS_NAME");
-    expect(value).toBeString();
+    const value1 = await client.systemInfoGet(sessionId, "SYS_NAME");
+    expect(value1).toBeString();
+    const value2 = await client.systemInfoGet(sessionId, "NOVO.MINIMUM_VERSION");
+    expect(value2).toBeString();
+    const value3 = await client.systemInfoGet(sessionId, "UNKNOWN");
+    expect(value3).toBeUndefined();
   });
 
   test("systemLimitGet", async () => {
@@ -104,6 +108,8 @@ describe("Информация о системе", () => {
     expect(value3).toBeString();
     const value4 = await client.systemContextGet(sessionId, "IBS_USER", "SYS_BUILD_DATE");
     expect(value4).toBeString();
+    const value5 = await client.systemContextGet(sessionId, "UNKNOWN", "UNKNOWN");
+    expect(value5).toBeUndefined();
   });
 
   test("systemApplicationNameGet", async () => {
@@ -111,6 +117,13 @@ describe("Информация о системе", () => {
 
     const name = await client.systemApplicationNameGet(sessionId);
     expect(name).toBeString();
+  });
+
+  test("contextInformationAvailableCheck", async () => {
+    const { client, sessionId } = ctx;
+
+    const is_check = await client.contextInformationAvailableCheck(sessionId);
+    expect(is_check).toBeBoolean();
   });
 
   test("systemHelpSystemInfoGet", async () => {
@@ -141,13 +154,6 @@ describe("Информация о системе", () => {
     expect(url1).toBeString();
     const url2 = await client.embeddedInteractionGetResource(sessionId, "STATUS");
     expect(url2).toBeString();
-  });
-
-  test("contextInformationAvailableCheck", async () => {
-    const { client, sessionId } = ctx;
-
-    const is_check = await client.contextInformationAvailableCheck(sessionId);
-    expect(is_check).toBeBoolean();
   });
 
   test("embeddedInteractionPost", async () => {

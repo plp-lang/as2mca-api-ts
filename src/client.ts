@@ -561,7 +561,7 @@ export class Client {
    * @category System
    * @param sessionId - Идентификатор сессии.
    * @param parameterName - Имя параметра (например, `"SYS_NAME"`).
-   * @returns Значение параметра в виде строки.
+   * @returns Значение параметра в виде строки или `undefined` в случаи отсутствии параметра.
    *
    * @example
    * ```typescript
@@ -576,11 +576,11 @@ export class Client {
    * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
    * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
-  public async systemInfoGet(sessionId: string, parameterName: string): Promise<string> {
+  public async systemInfoGet(sessionId: string, parameterName: string): Promise<string | undefined> {
     const { "@Value": value } = await this.api("SystemInfo", {
       SystemInfoGet: { "@SessionID": sessionId, "@ParameterName": parameterName },
     });
-    return value;
+    return normalizeString(value);
   }
 
   /**
@@ -598,7 +598,7 @@ export class Client {
    * ```
    * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
    * Возможные ошибки:
-   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна или лимит не найден
    * - {@link HttpError}: При сетевых проблемах
    * - {@link XmlSerializeError}: При ошибке сериализации запроса
    * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
@@ -618,7 +618,7 @@ export class Client {
    * @param sessionId - Идентификатор сессии.
    * @param namespace - Пространство имён (например, `"SYS_NAME"`).
    * @param attribute_name - Имя атрибута (например, `"SYS_VERSION"`).
-   * @returns Значение атрибута в виде строки.
+   * @returns Значение атрибута в виде строки или `undefined` в случаи отсутствии атрибута.
    *
    * @example
    * ```typescript
@@ -633,11 +633,15 @@ export class Client {
    * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
    * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
-  public async systemContextGet(sessionId: string, namespace: string, attribute_name: string): Promise<string> {
+  public async systemContextGet(
+    sessionId: string,
+    namespace: string,
+    attribute_name: string,
+  ): Promise<string | undefined> {
     const { "@Value": value } = await this.api("Attribute", {
       SystemContextGet: { "@SessionID": sessionId, "@Namespace": namespace, "@AttributeName": attribute_name },
     });
-    return value;
+    return normalizeString(value);
   }
 
   /**
@@ -645,7 +649,7 @@ export class Client {
    *
    * @category System
    * @param sessionId - Идентификатор сессии.
-   * @returns Имя приложения.
+   * @returns Имя приложения, например `"ЦФТ-Банк Каталог Приложений"`.
    *
    * @example
    * ```typescript
@@ -698,6 +702,11 @@ export class Client {
 
   /**
    * Возвращает количество элементов в справочной системе.
+   * 
+   * На серверной стороне (Oracle) это аналогично запросу:
+   * ```sql
+   * select count(*) from IBS.VW_CRIT_HELPSYSTEM;
+   * ```
    *
    * @category System
    * @param sessionId - Идентификатор сессии.
@@ -819,7 +828,7 @@ export class Client {
    *
    * @example
    * ```typescript
-   * await client.embeddedInteractionPost(sessionId, "Exit");
+   * await client.embeddedInteractionPost(sessionId, "ExitApplication");
    * console.log("Embedded interaction posted.");
    * ```
    * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
