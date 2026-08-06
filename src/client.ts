@@ -762,7 +762,7 @@ export class Client {
   }
 
   /**
-   * Проверяет, требуется ли встроенный в "ЦФТ - Нафигатор" WebView модуль в текущем контексте.
+   * Проверяет, требуется ли встроенный в «ЦФТ – Навигатор» WebView-модуль в текущем контексте.
    *
    * @category System
    * @param sessionId - Идентификатор сессии.
@@ -791,7 +791,7 @@ export class Client {
   }
 
   /**
-   * Получает URL-адрес ресурса WebView модуля.
+   * Получает URL-адрес ресурса WebView-модуля.
    *
    * @category System
    * @param sessionId - Идентификатор сессии.
@@ -819,11 +819,11 @@ export class Client {
   }
 
   /**
-   * Отправляет лог указаного события WebView модуля на сервер.
+   * Отправляет лог указанного события WebView-модуля на сервер.
    *
    * @category System
    * @param sessionId - Идентификатор сессии.
-   * @param request - (опционально) тип события.
+   * @param request - Тип события (опционально), например `"ExitApplication"`.
    * @returns Promise, который разрешается после успешной отправки.
    *
    * @example
@@ -1911,7 +1911,8 @@ const normalizeArray = <T>(value: T | T[] | undefined): T[] => {
  */
 const normalizeBoolOrUndefined = (value: string | undefined): boolean | undefined => {
   if (value === undefined) return undefined;
-  return value === "true" || value === "1";
+  const v = value.toLocaleUpperCase()
+  return v === "TRUE" || v === "1";
 };
 
 /**
@@ -1919,7 +1920,8 @@ const normalizeBoolOrUndefined = (value: string | undefined): boolean | undefine
  */
 const normalizeBool = (value: string | undefined): boolean => {
   if (value === undefined) return false;
-  return value === "true" || value === "1";
+  const v = value.toLocaleUpperCase()
+  return v === "TRUE" || v === "1";
 };
 
 /**
