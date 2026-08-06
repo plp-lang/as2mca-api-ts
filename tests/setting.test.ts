@@ -123,7 +123,7 @@ describe("Информация о системе", () => {
     const { client, sessionId } = ctx;
 
     const is_check = await client.contextInformationAvailableCheck(sessionId);
-    expect(is_check).toBeBoolean();
+    expect(is_check).toBeString();
   });
 
   test("systemHelpSystemInfoGet", async () => {
@@ -137,14 +137,14 @@ describe("Информация о системе", () => {
     const { client, sessionId } = ctx;
 
     const is_check = await client.embeddedInteractionAvailableCheck(sessionId);
-    expect(is_check).toBeBoolean();
+    expect(is_check).toBeString();
   });
 
   test("embeddedInteractionRequiredCheck", async () => {
     const { client, sessionId } = ctx;
 
     const is_check = await client.embeddedInteractionRequiredCheck(sessionId);
-    expect(is_check).toBeBoolean();
+    expect(is_check).toBeString();
   });
 
   test("embeddedInteractionGetResource", async () => {

@@ -452,7 +452,14 @@ export class Client {
    * @category System
    * @param sessionId - Идентификатор сессии.
    * @returns Массив настроек {@link Setting}.
-   *
+   * 
+   * @example
+   * ```typescript
+   * const settings = await client.systemSettingsGet(sessionId)
+   * for (const setting of settings) {
+   *   console.log(setting.name, ' = ', setting.value)
+   * }
+   * ```
    * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
    * Возможные ошибки:
    * - {@link ApiError}: Если сессия уже неактивна или невалидна
@@ -475,7 +482,14 @@ export class Client {
    * @param sessionId - Идентификатор сессии.
    * @param name - Имя настройки (например, "SHOW_SYSTEM_MENU").
    * @returns - Значение или undefined, если настройка не найдена или пуста.
-   *
+   * 
+   * @example
+   * ```typescript
+   * const isShowSystemMenu = await client.systemSettingGet(sessionId, "SHOW_SYSTEM_MENU");
+   * if (isShowSystemMenu) {
+   *     // ...
+   * }
+   * ```
    * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
    * Возможные ошибки:
    * - {@link ApiError}: Если сессия уже неактивна или невалидна
@@ -496,7 +510,12 @@ export class Client {
    *
    * @category System
    * @returns Строка, например `"/platform2mca/authbasic"`.
-   *
+   * 
+   * @example
+   * ```typescript
+   * const url = await client.authenticationUrlGet();
+   * console.log("Authentication Url:", url);
+   * ```
    * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
    * Возможные ошибки:
    * - {@link ApiError}: Если сессия уже неактивна или невалидна
@@ -516,7 +535,12 @@ export class Client {
    * @category System
    * @param sessionId - Идентификатор сессии.
    * @returns true, если `NOVO` доступен.
-   *
+   * 
+   * @example
+   * ```typescript
+   * const is_novo = await client.novoAllowedCheck(sessionId);
+   * console.log("NOVO allowed:", is_novo);
+   * ```
    * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
    * Возможные ошибки:
    * - {@link ApiError}: Если сессия уже неактивна или невалидна
@@ -539,7 +563,12 @@ export class Client {
    * @param sessionId - Идентификатор сессии.
    * @param optionName - Имя опции (например, `"NAV_SKIN_INTERFACE"`).
    * @returns `true`, если опция включена.
-   *
+   * 
+   * @example
+   * ```typescript
+   * const is_nav_skin = await client.systemOptionEnabledCheck(sessionId, "NAV_SKIN_INTERFACE");
+   * console.log("Nav skin interface:", is_nav_skin);
+   * ```
    * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
    * Возможные ошибки:
    * - {@link ApiError}: Если сессия уже неактивна или невалидна
@@ -649,7 +678,7 @@ export class Client {
    *
    * @category System
    * @param sessionId - Идентификатор сессии.
-   * @returns Имя приложения, например `"ЦФТ-Банк Каталог Приложений"`.
+   * @returns Имя приложения, например `"ЦФТ-Банк Каталог Приложений"`, `"CFT_BANK_2MCA"`.
    *
    * @example
    * ```typescript
@@ -676,12 +705,14 @@ export class Client {
    *
    * @category System
    * @param sessionId - Идентификатор сессии.
-   * @returns `true`, если контекстная информация доступна.
+   * @returns Возможные ответы: `"1"`, `"0"` или `"Контекстное информирование недоступно."`
    *
    * @example
    * ```typescript
-   * const ctxAvailable = await client.contextInformationAvailableCheck(sessionId);
-   * if (ctxAvailable) {
+   * import { normalizeBool } from 'as2mca-api';
+   * 
+   * const isAvailable = await client.contextInformationAvailableCheck(sessionId);
+   * if (normalizeBool(isAvailable)) {
    *   // запросить контекстную информацию
    * }
    * ```
@@ -693,11 +724,11 @@ export class Client {
    * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
    * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
-  public async contextInformationAvailableCheck(sessionId: string): Promise<boolean> {
+  public async contextInformationAvailableCheck(sessionId: string): Promise<string> {
     const { "@Value": value } = await this.api("CheckResult", {
       ContextInformationAvailableCheck: { "@SessionID": sessionId },
     });
-    return normalizeBool(value);
+    return value;
   }
 
   /**
@@ -719,7 +750,7 @@ export class Client {
    * ```
    * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
    * Возможные ошибки:
-   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна или если справка не установлена
    * - {@link HttpError}: При сетевых проблемах
    * - {@link XmlSerializeError}: При ошибке сериализации запроса
    * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
@@ -733,16 +764,18 @@ export class Client {
   }
 
   /**
-   * Проверяет, доступно ли встроенный в "ЦФТ - Нафигатор" WebView модуль.
+   * Проверяет, доступен ли встроенный в «ЦФТ – Навигатор» WebView-модуль.
    *
    * @category System
    * @param sessionId - Идентификатор сессии.
-   * @returns `true`, если доступно.
+   * @returns Возможные ответы: `"1"`, `"0"`.
    *
    * @example
    * ```typescript
-   * const available = await client.embeddedInteractionAvailableCheck(sessionId);
-   * if (available) {
+   * import { normalizeBool } from 'as2mca-api';
+   * 
+   * const isAvailable = await client.embeddedInteractionAvailableCheck(sessionId);
+   * if (normalizeBool(isAvailable)) {
    *   // использовать
    * }
    * ```
@@ -754,11 +787,11 @@ export class Client {
    * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
    * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
-  public async embeddedInteractionAvailableCheck(sessionId: string): Promise<boolean> {
+  public async embeddedInteractionAvailableCheck(sessionId: string): Promise<string> {
     const { "@Value": value } = await this.api("CheckResult", {
       EmbeddedInteractionAvailableCheck: { "@SessionID": sessionId },
     });
-    return normalizeBool(value);
+    return value;
   }
 
   /**
@@ -766,12 +799,14 @@ export class Client {
    *
    * @category System
    * @param sessionId - Идентификатор сессии.
-   * @returns `true`, если обязательно.
+   * @returns Возможные ответы: `"1"`, `"0"`.
    *
    * @example
    * ```typescript
-   * const required = await client.embeddedInteractionRequiredCheck(sessionId);
-   * if (required) {
+   * import { normalizeBool } from 'as2mca-api';
+   * 
+   * const isRequired = await client.embeddedInteractionRequiredCheck(sessionId);
+   * if (normalizeBool(isRequired)) {
    *   // показать интерфейс
    * }
    * ```
@@ -783,11 +818,11 @@ export class Client {
    * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
    * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
-  public async embeddedInteractionRequiredCheck(sessionId: string): Promise<boolean> {
+  public async embeddedInteractionRequiredCheck(sessionId: string): Promise<string> {
     const { "@Value": value } = await this.api("CheckResult", {
       EmbeddedInteractionRequiredCheck: { "@SessionID": sessionId },
     });
-    return normalizeBool(value);
+    return value;
   }
 
   /**
@@ -796,7 +831,7 @@ export class Client {
    * @category System
    * @param sessionId - Идентификатор сессии.
    * @param error_response_type - (опционально) Тип ответа при возникновении ошибки.
-   * @returns Строка с относительным URL-адресом ресурса.
+   * @returns Строка с относительным URL-адресом ресурса, например `"/platform2mca/sde/EISclob?proxy=xxx"`.
    *
    * @example
    * ```typescript
@@ -1901,7 +1936,7 @@ export class Client {
  * @param value - Значение (один элемент, массив или `undefined`).
  * @returns Массив элементов (пустой, если `value = undefined`).
  */
-const normalizeArray = <T>(value: T | T[] | undefined): T[] => {
+export const normalizeArray = <T>(value: T | T[] | undefined): T[] => {
   if (value === undefined) return [];
   return Array.isArray(value) ? value : [value];
 };
@@ -1909,7 +1944,7 @@ const normalizeArray = <T>(value: T | T[] | undefined): T[] => {
 /**
  * Нормализует значение, которое может быть строкой `"true"` или `"1"`, в `boolean`, или может отсутствовать.
  */
-const normalizeBoolOrUndefined = (value: string | undefined): boolean | undefined => {
+export const normalizeBoolOrUndefined = (value: string | undefined): boolean | undefined => {
   if (value === undefined) return undefined;
   const v = value.toLocaleUpperCase()
   return v === "TRUE" || v === "1";
@@ -1918,7 +1953,7 @@ const normalizeBoolOrUndefined = (value: string | undefined): boolean | undefine
 /**
  * Нормализует значение, которое может быть строкой `"true"`` или `"1"``, в `boolean`.
  */
-const normalizeBool = (value: string | undefined): boolean => {
+export const normalizeBool = (value: string | undefined): boolean => {
   if (value === undefined) return false;
   const v = value.toLocaleUpperCase()
   return v === "TRUE" || v === "1";
@@ -1927,7 +1962,7 @@ const normalizeBool = (value: string | undefined): boolean => {
 /**
  * Нормализует значение строки, которое может отсутствовать или быть пустым.
  */
-const normalizeString = (value: string | undefined): string | undefined => {
+export const normalizeString = (value: string | undefined): string | undefined => {
   if (value === undefined) return undefined;
   return value.length > 0 ? value : undefined;
 };
