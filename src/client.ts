@@ -1486,7 +1486,7 @@ export class Client {
       tabIndex: v["@TabIndex"],
       position: v["@Position"],
       validateName: v["@ValidateName"],
-      parentId: v["@ParentID"],
+      parentId: normalizeString(v["@ParentID"]),
       classId: v["@ClassID"],
       depend: v["@Depend"],
       properties: v["@Properties"],
