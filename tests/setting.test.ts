@@ -159,6 +159,14 @@ describe("Информация о системе", () => {
   test("embeddedInteractionPost", async () => {
     const { client, sessionId } = ctx;
 
-    await client.embeddedInteractionPost(sessionId);
+    await client.embeddedInteractionPost(sessionId, "ExitApplication");
+  });
+
+  
+  test("embeddedInteractionGet", async () => {
+    const { client, sessionId } = ctx;
+
+    const res = await client.embeddedInteractionGet(sessionId, "VER");
+    expect(res).toBeString();
   });
 });

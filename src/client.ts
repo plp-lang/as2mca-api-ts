@@ -854,11 +854,11 @@ export class Client {
   }
 
   /**
-   * Отправляет лог указанного события WebView-модуля на сервер.
+   * Отправляет сообщения по типу запроса WebView-модулю.
    *
    * @category System
    * @param sessionId - Идентификатор сессии.
-   * @param request - Тип события (опционально), например `"ExitApplication"`.
+   * @param request - Тип запроса, например `"ExitApplication"`.
    * @returns Promise, который разрешается после успешной отправки.
    *
    * @example
@@ -874,12 +874,40 @@ export class Client {
    * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
    * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
    */
-  public async embeddedInteractionPost(sessionId: string, request?: string): Promise<void> {
+  public async embeddedInteractionPost(sessionId: string, request: string): Promise<void> {
     await this.api("Done", {
       EmbeddedInteractionPost: { "@SessionID": sessionId, "@Request": request },
     });
   }
 
+  /**
+   * Получить значение сообщения по типу запроса из WebView-модуля.
+   *
+   * @category System
+   * @param sessionId - Идентификатор сессии.
+   * @param request - Тип запроса, например `"VER"`.
+   * @returns JSON объект, как строка или `"NO REQUEST"`.
+   *
+   * @example
+   * ```typescript
+   * const json = await client.embeddedInteractionGet(sessionId, "VER");
+   * console.log("Result: ", json); // {"version":"28.07.2026 13:25:24","reloaded":"0"}
+   * ```
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
+   */
+  public async embeddedInteractionGet(sessionId: string, request: string): Promise<string> {
+    const { "@Value": value } = await this.api("CheckResult", {
+      EmbeddedInteractionGet: { "@SessionID": sessionId, "@Request": request },
+    });
+    return value
+  }
+  
   //====================================================================================================================
   // Отладка
   //====================================================================================================================

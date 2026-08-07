@@ -37,6 +37,7 @@ export type RequestBody =
   | { EmbeddedInteractionGetResource: EmbeddedInteractionGetResource }
   | { ContextInformationAvailableCheck: ContextInformationAvailableCheck }
   | { EmbeddedInteractionPost: EmbeddedInteractionPost }
+  | { EmbeddedInteractionGet: EmbeddedInteractionGet }
   | { NetworkInformationSet: NetworkInformationSet }
   | { SystemNetAddressSet: SystemNetAddressSet }
   | { UserInfoGet: UserInfoGet }
@@ -343,10 +344,21 @@ export interface EmbeddedInteractionGetResource {
 }
 
 /**
- * Отправка лога события WebView модуля на сервер.
+ * Отправка сообщения в WebView-модуль.
  * @category XML
  */
 export interface EmbeddedInteractionPost {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+  /** Наименование события запроса. */
+  "@Request"?: string;
+}
+
+/**
+ * Получние сообщение из WebView-модуля.
+ * @category XML
+ */
+export interface EmbeddedInteractionGet {
   /** Идентификатор сессии. */
   "@SessionID": string;
   /** Наименование события запроса. */
