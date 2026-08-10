@@ -81,14 +81,14 @@ describe("Представления и колонки", () => {
         "STATE",
       ]);
       expect(v.isSizeable).toBeBoolean();
-      expect(v.isInvisible).toBeOneOf(["0", "2"]);
+      expect(v.isInvisible).toBeOneOf(["0", "1", "2"]);
       expect(v.abilityPerformOperation).toBeBoolean();
       expect(typeof v.isCellStyle).toBeOneOf(["boolean", "undefined"]);
       expect(typeof v.isEditable).toBeOneOf(["boolean", "undefined"]);
       expect(typeof v.referenceId).toBeOneOf(["string", "undefined"]);
       expect(typeof v.targetClassId).toBeOneOf(["string", "undefined"]);
       expect(typeof v.referenceType).toBeOneOf(["string", "undefined"]);
-      expect(v.logging).toBeOneOf([undefined, "0", "D"]);
+      expect(v.logging).toBeOneOf([undefined, "0", "1", "D"]);
     });
   });
 });

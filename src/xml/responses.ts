@@ -29,6 +29,12 @@ export type ResponseBody =
   | { Setting: Setting }
   | { NovoAllowedCheckResult: NovoAllowedCheckResult }
   | { OptionInfo: OptionInfo }
+  | { SystemInfo: SystemInfo }
+  | { Limit: Limit }
+  | { Attribute: Attribute }
+  | { Application: Application }
+  | { HelpSystemInfo: HelpSystemInfo }
+  | { StreamData: StreamData }
   | { User: UserInfo }
   | { User: UserPrivileged }
   | { UserProfileProperty: UserProfileProperty }
@@ -264,6 +270,54 @@ export interface NovoAllowedCheckResult {
 export interface OptionInfo {
   /** true, если опция включена. */
   "@Enabled": string;
+}
+
+/**
+ * Значение системного параметра.
+ * @category XML
+ */
+export interface SystemInfo {
+  "@Value": string;
+}
+
+/**
+ * Значение системного ограничения (лимита).
+ * @category XML
+ */
+export interface Limit {
+  "@Value": string;
+}
+
+/**
+ * Значение атрибута системного контекста.
+ * @category XML
+ */
+export interface Attribute {
+  "@Value": string;
+}
+
+/**
+ * Имя приложения
+ * @category XML
+ */
+export interface Application {
+  "@Name": string;
+}
+
+/**
+ * Количество элементов в справочной системе.
+ * @category XML
+ */
+export interface HelpSystemInfo {
+  "@ItemsCount": string;
+}
+
+/**
+ * URL-адрес ресурса WebView модуля.
+ * @category XML
+ */
+export interface StreamData {
+  "@URL": string;
 }
 
 //======================================================================================================================
@@ -567,8 +621,8 @@ export interface Control {
   "@Position": string;
   /** Имя для валидации. */
   "@ValidateName": string;
-  /** Идентификатор родительского элемента (может отсутствовать). */
-  "@ParentID"?: string;
+  /** Идентификатор родительского элемента (может приходить как пустая строка). */
+  "@ParentID": string;
   /** ТБП значения (опционально). */
   "@ClassID"?: string;
   /** Зависимость (опционально). */

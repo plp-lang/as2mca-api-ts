@@ -453,6 +453,13 @@ export class Client {
    * @param sessionId - Идентификатор сессии.
    * @returns Массив настроек {@link Setting}.
    *
+   * @example
+   * ```typescript
+   * const settings = await client.systemSettingsGet(sessionId)
+   * for (const setting of settings) {
+   *   console.log(setting.name, ' = ', setting.value)
+   * }
+   * ```
    * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
    * Возможные ошибки:
    * - {@link ApiError}: Если сессия уже неактивна или невалидна
@@ -476,6 +483,13 @@ export class Client {
    * @param name - Имя настройки (например, "SHOW_SYSTEM_MENU").
    * @returns - Значение или undefined, если настройка не найдена или пуста.
    *
+   * @example
+   * ```typescript
+   * const isShowSystemMenu = await client.systemSettingGet(sessionId, "SHOW_SYSTEM_MENU");
+   * if (isShowSystemMenu) {
+   *     // ...
+   * }
+   * ```
    * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
    * Возможные ошибки:
    * - {@link ApiError}: Если сессия уже неактивна или невалидна
@@ -497,6 +511,11 @@ export class Client {
    * @category System
    * @returns Строка, например `"/platform2mca/authbasic"`.
    *
+   * @example
+   * ```typescript
+   * const url = await client.authenticationUrlGet();
+   * console.log("Authentication Url:", url);
+   * ```
    * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
    * Возможные ошибки:
    * - {@link ApiError}: Если сессия уже неактивна или невалидна
@@ -517,6 +536,11 @@ export class Client {
    * @param sessionId - Идентификатор сессии.
    * @returns true, если `NOVO` доступен.
    *
+   * @example
+   * ```typescript
+   * const is_novo = await client.novoAllowedCheck(sessionId);
+   * console.log("NOVO allowed:", is_novo);
+   * ```
    * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
    * Возможные ошибки:
    * - {@link ApiError}: Если сессия уже неактивна или невалидна
@@ -540,6 +564,11 @@ export class Client {
    * @param optionName - Имя опции (например, `"NAV_SKIN_INTERFACE"`).
    * @returns `true`, если опция включена.
    *
+   * @example
+   * ```typescript
+   * const is_nav_skin = await client.systemOptionEnabledCheck(sessionId, "NAV_SKIN_INTERFACE");
+   * console.log("Nav skin interface:", is_nav_skin);
+   * ```
    * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
    * Возможные ошибки:
    * - {@link ApiError}: Если сессия уже неактивна или невалидна
@@ -553,6 +582,330 @@ export class Client {
       SystemOptionEnabledCheck: { "@SessionID": sessionId, "@OptionName": optionName },
     });
     return normalizeBool(result["@Enabled"]);
+  }
+
+  /**
+   * Возвращает значение указанного системного параметра.
+   *
+   * @category System
+   * @param sessionId - Идентификатор сессии.
+   * @param parameterName - Имя параметра (например, `"SYS_NAME"`).
+   * @returns Значение параметра в виде строки или `undefined` в случаи отсутствии параметра.
+   *
+   * @example
+   * ```typescript
+   * const sysName = await client.systemInfoGet(sessionId, "SYS_NAME");
+   * console.log("System name:", sysName);
+   * ```
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
+   */
+  public async systemInfoGet(sessionId: string, parameterName: string): Promise<string | undefined> {
+    const { "@Value": value } = await this.api("SystemInfo", {
+      SystemInfoGet: { "@SessionID": sessionId, "@ParameterName": parameterName },
+    });
+    return normalizeString(value);
+  }
+
+  /**
+   * Получает значение системного ограничения (лимита) по его имени.
+   *
+   * @category System
+   * @param sessionId - Идентификатор сессии.
+   * @param limitName - Имя лимита (например, `"SYS_NAME"`).
+   * @returns Текущее значение лимита в виде строки.
+   *
+   * @example
+   * ```typescript
+   * const sysName = await client.systemLimitGet(sessionId, "SYS_NAME");
+   * console.log("System name:", sysName);
+   * ```
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна или лимит не найден
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
+   */
+  public async systemLimitGet(sessionId: string, limitName: string): Promise<string> {
+    const { "@Value": value } = await this.api("Limit", {
+      SystemLimitGet: { "@SessionID": sessionId, "@LimitName": limitName },
+    });
+    return value;
+  }
+
+  /**
+   * Возвращает значение атрибута системного контекста из указанного пространства имён.
+   *
+   * @category System
+   * @param sessionId - Идентификатор сессии.
+   * @param namespace - Пространство имён (например, `"SYS_NAME"`).
+   * @param attribute_name - Имя атрибута (например, `"SYS_VERSION"`).
+   * @returns Значение атрибута в виде строки или `undefined` в случаи отсутствии атрибута.
+   *
+   * @example
+   * ```typescript
+   * const version = await client.systemContextGet(sessionId, "SYS_NAME", "SYS_VERSION");
+   * console.log("System version:", version);
+   * ```
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
+   */
+  public async systemContextGet(
+    sessionId: string,
+    namespace: string,
+    attribute_name: string,
+  ): Promise<string | undefined> {
+    const { "@Value": value } = await this.api("Attribute", {
+      SystemContextGet: { "@SessionID": sessionId, "@Namespace": namespace, "@AttributeName": attribute_name },
+    });
+    return normalizeString(value);
+  }
+
+  /**
+   * Возвращает имя текущего приложения.
+   *
+   * @category System
+   * @param sessionId - Идентификатор сессии.
+   * @returns Имя приложения, например `"ЦФТ-Банк Каталог Приложений"`, `"CFT_BANK_2MCA"`.
+   *
+   * @example
+   * ```typescript
+   * const appName = await client.systemApplicationNameGet(sessionId);
+   * console.log("Application name:", appName);
+   * ```
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
+   */
+  public async systemApplicationNameGet(sessionId: string): Promise<string> {
+    const { "@Name": name } = await this.api("Application", {
+      SystemApplicationNameGet: { "@SessionID": sessionId },
+    });
+    return name;
+  }
+
+  /**
+   * Проверяет, доступна ли контекстная информация.
+   *
+   * @category System
+   * @param sessionId - Идентификатор сессии.
+   * @returns Возможные ответы: `"1"`, `"0"` или `"Контекстное информирование недоступно."`
+   *
+   * @example
+   * ```typescript
+   * import { normalizeBool } from 'as2mca-api';
+   *
+   * const isAvailable = await client.contextInformationAvailableCheck(sessionId);
+   * if (normalizeBool(isAvailable)) {
+   *   // запросить контекстную информацию
+   * }
+   * ```
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
+   */
+  public async contextInformationAvailableCheck(sessionId: string): Promise<string> {
+    const { "@Value": value } = await this.api("CheckResult", {
+      ContextInformationAvailableCheck: { "@SessionID": sessionId },
+    });
+    return value;
+  }
+
+  /**
+   * Возвращает количество элементов в справочной системе.
+   *
+   * На серверной стороне (Oracle) это аналогично запросу:
+   * ```sql
+   * select count(*) from IBS.VW_CRIT_HELPSYSTEM;
+   * ```
+   *
+   * @category System
+   * @param sessionId - Идентификатор сессии.
+   * @returns Количество элементов (целое число).
+   *
+   * @example
+   * ```typescript
+   * const count = await client.systemHelpSystemInfoGet(sessionId);
+   * console.log("Help items count:", count);
+   * ```
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна или если справка не установлена
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
+   */
+  public async systemHelpSystemInfoGet(sessionId: string): Promise<number> {
+    const { "@ItemsCount": count } = await this.api("HelpSystemInfo", {
+      SystemHelpSystemInfoGet: { "@SessionID": sessionId },
+    });
+    return Number(count);
+  }
+
+  /**
+   * Проверяет, доступен ли встроенный в «ЦФТ – Навигатор» WebView-модуль.
+   *
+   * @category System
+   * @param sessionId - Идентификатор сессии.
+   * @returns Возможные ответы: `"1"`, `"0"`.
+   *
+   * @example
+   * ```typescript
+   * import { normalizeBool } from 'as2mca-api';
+   *
+   * const isAvailable = await client.embeddedInteractionAvailableCheck(sessionId);
+   * if (normalizeBool(isAvailable)) {
+   *   // использовать
+   * }
+   * ```
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
+   */
+  public async embeddedInteractionAvailableCheck(sessionId: string): Promise<string> {
+    const { "@Value": value } = await this.api("CheckResult", {
+      EmbeddedInteractionAvailableCheck: { "@SessionID": sessionId },
+    });
+    return value;
+  }
+
+  /**
+   * Проверяет, требуется ли встроенный в «ЦФТ – Навигатор» WebView-модуль в текущем контексте.
+   *
+   * @category System
+   * @param sessionId - Идентификатор сессии.
+   * @returns Возможные ответы: `"1"`, `"0"`.
+   *
+   * @example
+   * ```typescript
+   * import { normalizeBool } from 'as2mca-api';
+   *
+   * const isRequired = await client.embeddedInteractionRequiredCheck(sessionId);
+   * if (normalizeBool(isRequired)) {
+   *   // показать интерфейс
+   * }
+   * ```
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
+   */
+  public async embeddedInteractionRequiredCheck(sessionId: string): Promise<string> {
+    const { "@Value": value } = await this.api("CheckResult", {
+      EmbeddedInteractionRequiredCheck: { "@SessionID": sessionId },
+    });
+    return value;
+  }
+
+  /**
+   * Получает URL-адрес ресурса WebView-модуля.
+   *
+   * @category System
+   * @param sessionId - Идентификатор сессии.
+   * @param error_response_type - (опционально) Тип ответа при возникновении ошибки.
+   * @returns Строка с относительным URL-адресом ресурса, например `"/platform2mca/sde/EISclob?proxy=xxx"`.
+   *
+   * @example
+   * ```typescript
+   * const url = await client.embeddedInteractionGetResource(sessionId);
+   * console.log("Embedded resource URL:", url);
+   * ```
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
+   */
+  public async embeddedInteractionGetResource(sessionId: string, error_response_type?: string): Promise<string> {
+    const { "@URL": url } = await this.api("StreamData", {
+      EmbeddedInteractionGetResource: { "@SessionID": sessionId, "@ErrorResponseType": error_response_type },
+    });
+    return url;
+  }
+
+  /**
+   * Отправляет сообщения по типу запроса WebView-модулю.
+   *
+   * @category System
+   * @param sessionId - Идентификатор сессии.
+   * @param request - Тип запроса, например `"ExitApplication"`.
+   * @returns Promise, который разрешается после успешной отправки.
+   *
+   * @example
+   * ```typescript
+   * await client.embeddedInteractionPost(sessionId, "ExitApplication");
+   * console.log("Embedded interaction posted.");
+   * ```
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
+   */
+  public async embeddedInteractionPost(sessionId: string, request: string): Promise<void> {
+    await this.api("Done", {
+      EmbeddedInteractionPost: { "@SessionID": sessionId, "@Request": request },
+    });
+  }
+
+  /**
+   * Получить значение сообщения по типу запроса из WebView-модуля.
+   *
+   * @category System
+   * @param sessionId - Идентификатор сессии.
+   * @param request - Тип запроса, например `"VER"`.
+   * @returns JSON объект, как строка или `"NO REQUEST"`.
+   *
+   * @example
+   * ```typescript
+   * const json = await client.embeddedInteractionGet(sessionId, "VER");
+   * console.log("Result: ", json); // {"version":"28.07.2026 13:25:24","reloaded":"0"}
+   * ```
+   * @throws {ApiError|HttpError|XmlSerializeError|XmlDeserializeError|UnexpectedResponseError}
+   * Возможные ошибки:
+   * - {@link ApiError}: Если сессия уже неактивна или невалидна
+   * - {@link HttpError}: При сетевых проблемах
+   * - {@link XmlSerializeError}: При ошибке сериализации запроса
+   * - {@link XmlDeserializeError}: Если ответ не удалось разобрать
+   * - {@link UnexpectedResponseError}: Если структура ответа не соответствует ожидаемой
+   */
+  public async embeddedInteractionGet(sessionId: string, request: string): Promise<string> {
+    const { "@Value": value } = await this.api("CheckResult", {
+      EmbeddedInteractionGet: { "@SessionID": sessionId, "@Request": request },
+    });
+    return value;
   }
 
   //====================================================================================================================
@@ -1161,7 +1514,7 @@ export class Client {
       tabIndex: v["@TabIndex"],
       position: v["@Position"],
       validateName: v["@ValidateName"],
-      parentId: v["@ParentID"],
+      parentId: normalizeString(v["@ParentID"]),
       classId: v["@ClassID"],
       depend: v["@Depend"],
       properties: v["@Properties"],
@@ -1611,7 +1964,7 @@ export class Client {
  * @param value - Значение (один элемент, массив или `undefined`).
  * @returns Массив элементов (пустой, если `value = undefined`).
  */
-const normalizeArray = <T>(value: T | T[] | undefined): T[] => {
+export const normalizeArray = <T>(value: T | T[] | undefined): T[] => {
   if (value === undefined) return [];
   return Array.isArray(value) ? value : [value];
 };
@@ -1619,23 +1972,25 @@ const normalizeArray = <T>(value: T | T[] | undefined): T[] => {
 /**
  * Нормализует значение, которое может быть строкой `"true"` или `"1"`, в `boolean`, или может отсутствовать.
  */
-const normalizeBoolOrUndefined = (value: string | undefined): boolean | undefined => {
+export const normalizeBoolOrUndefined = (value: string | undefined): boolean | undefined => {
   if (value === undefined) return undefined;
-  return value === "true" || value === "1";
+  const v = value.toLocaleUpperCase();
+  return v === "TRUE" || v === "1";
 };
 
 /**
  * Нормализует значение, которое может быть строкой `"true"`` или `"1"``, в `boolean`.
  */
-const normalizeBool = (value: string | undefined): boolean => {
+export const normalizeBool = (value: string | undefined): boolean => {
   if (value === undefined) return false;
-  return value === "true" || value === "1";
+  const v = value.toLocaleUpperCase();
+  return v === "TRUE" || v === "1";
 };
 
 /**
  * Нормализует значение строки, которое может отсутствовать или быть пустым.
  */
-const normalizeString = (value: string | undefined): string | undefined => {
+export const normalizeString = (value: string | undefined): string | undefined => {
   if (value === undefined) return undefined;
   return value.length > 0 ? value : undefined;
 };

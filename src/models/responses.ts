@@ -527,18 +527,19 @@ export type Align = "0" | "1" | "2";
 /**
  * Видимость.
  *
- * - 0-видимо
- * - 2-скрыто
+ * - 0 - Visible
+ * - 1 - Connection
+ * - 2 - Invisible
  *
  * @category model
  */
-export type Invisible = "0" | "2";
+export type Invisible = "0" | "1" | "2";
 
 /**
  * Логирование.
  * @category model
  */
-export type Logging = "0" | "D";
+export type Logging = "0" | "1" | "D";
 
 /**
  * Значение колонки в строке.

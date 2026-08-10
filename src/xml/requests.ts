@@ -27,6 +27,17 @@ export type RequestBody =
   | { SystemSettingGet: SystemSettingGet }
   | { NovoAllowedCheck: NovoAllowedCheck }
   | { SystemOptionEnabledCheck: SystemOptionEnabledCheck }
+  | { SystemInfoGet: SystemInfoGet }
+  | { SystemLimitGet: SystemLimitGet }
+  | { SystemContextGet: SystemContextGet }
+  | { SystemApplicationNameGet: SystemApplicationNameGet }
+  | { SystemHelpSystemInfoGet: SystemHelpSystemInfoGet }
+  | { EmbeddedInteractionAvailableCheck: EmbeddedInteractionAvailableCheck }
+  | { EmbeddedInteractionRequiredCheck: EmbeddedInteractionRequiredCheck }
+  | { EmbeddedInteractionGetResource: EmbeddedInteractionGetResource }
+  | { ContextInformationAvailableCheck: ContextInformationAvailableCheck }
+  | { EmbeddedInteractionPost: EmbeddedInteractionPost }
+  | { EmbeddedInteractionGet: EmbeddedInteractionGet }
   | { NetworkInformationSet: NetworkInformationSet }
   | { SystemNetAddressSet: SystemNetAddressSet }
   | { UserInfoGet: UserInfoGet }
@@ -239,6 +250,119 @@ export interface SystemOptionEnabledCheck {
   "@SessionID": string;
   /** Имя опции (например, `"NAV_SKIN_INTERFACE"`). */
   "@OptionName": string;
+}
+
+/**
+ * Запрос значения системного параметра
+ * @category XML
+ */
+export interface SystemInfoGet {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+  /** Имя параметра (например, `"SYS_NAME"`). */
+  "@ParameterName": string;
+}
+
+/**
+ * Запрос значения системного ограничения (лимита).
+ * @category XML
+ */
+export interface SystemLimitGet {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+  /** Имя лимита (например, `"SYS_NAME"`). */
+  "@LimitName": string;
+}
+
+/**
+ * Запрос значения атрибута системного контекста.
+ * @category XML
+ */
+export interface SystemContextGet {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+  /** Именное пространство атрибута (например, `"SYS_NAME"`). */
+  "@Namespace": string;
+  /** Имя атрибута (например, `"SYS_VERSION"`). */
+  "@AttributeName": string;
+}
+
+/**
+ * Запрос имени текущего приложения
+ * @category XML
+ */
+export interface SystemApplicationNameGet {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+}
+
+/**
+ * Запрос на доступность контекстной информации.
+ * @category XML
+ */
+export interface ContextInformationAvailableCheck {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+}
+
+/**
+ * Запрос количества элементов в справочной системе.
+ * @category XML
+ */
+export interface SystemHelpSystemInfoGet {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+}
+
+/**
+ * Запрос доступности встроенного в "ЦФТ - Нафигатор" WebView модуля.
+ * @category XML
+ */
+export interface EmbeddedInteractionAvailableCheck {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+}
+
+/**
+ * Запрос на требование WebView модуля в текущем контексте.
+ * @category XML
+ */
+export interface EmbeddedInteractionRequiredCheck {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+}
+
+/**
+ * Запрос URL-адреса ресурса WebView модуля.
+ * @category XML
+ */
+export interface EmbeddedInteractionGetResource {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+  /** Тип ошибки ресурса. */
+  "@ErrorResponseType"?: string;
+}
+
+/**
+ * Отправка сообщения в WebView-модуль.
+ * @category XML
+ */
+export interface EmbeddedInteractionPost {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+  /** Наименование события запроса. */
+  "@Request"?: string;
+}
+
+/**
+ * Получние сообщение из WebView-модуля.
+ * @category XML
+ */
+export interface EmbeddedInteractionGet {
+  /** Идентификатор сессии. */
+  "@SessionID": string;
+  /** Наименование события запроса. */
+  "@Request"?: string;
 }
 
 //======================================================================================================================
