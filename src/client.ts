@@ -452,7 +452,7 @@ export class Client {
    * @category System
    * @param sessionId - Идентификатор сессии.
    * @returns Массив настроек {@link Setting}.
-   * 
+   *
    * @example
    * ```typescript
    * const settings = await client.systemSettingsGet(sessionId)
@@ -482,7 +482,7 @@ export class Client {
    * @param sessionId - Идентификатор сессии.
    * @param name - Имя настройки (например, "SHOW_SYSTEM_MENU").
    * @returns - Значение или undefined, если настройка не найдена или пуста.
-   * 
+   *
    * @example
    * ```typescript
    * const isShowSystemMenu = await client.systemSettingGet(sessionId, "SHOW_SYSTEM_MENU");
@@ -510,7 +510,7 @@ export class Client {
    *
    * @category System
    * @returns Строка, например `"/platform2mca/authbasic"`.
-   * 
+   *
    * @example
    * ```typescript
    * const url = await client.authenticationUrlGet();
@@ -535,7 +535,7 @@ export class Client {
    * @category System
    * @param sessionId - Идентификатор сессии.
    * @returns true, если `NOVO` доступен.
-   * 
+   *
    * @example
    * ```typescript
    * const is_novo = await client.novoAllowedCheck(sessionId);
@@ -563,7 +563,7 @@ export class Client {
    * @param sessionId - Идентификатор сессии.
    * @param optionName - Имя опции (например, `"NAV_SKIN_INTERFACE"`).
    * @returns `true`, если опция включена.
-   * 
+   *
    * @example
    * ```typescript
    * const is_nav_skin = await client.systemOptionEnabledCheck(sessionId, "NAV_SKIN_INTERFACE");
@@ -710,7 +710,7 @@ export class Client {
    * @example
    * ```typescript
    * import { normalizeBool } from 'as2mca-api';
-   * 
+   *
    * const isAvailable = await client.contextInformationAvailableCheck(sessionId);
    * if (normalizeBool(isAvailable)) {
    *   // запросить контекстную информацию
@@ -733,7 +733,7 @@ export class Client {
 
   /**
    * Возвращает количество элементов в справочной системе.
-   * 
+   *
    * На серверной стороне (Oracle) это аналогично запросу:
    * ```sql
    * select count(*) from IBS.VW_CRIT_HELPSYSTEM;
@@ -773,7 +773,7 @@ export class Client {
    * @example
    * ```typescript
    * import { normalizeBool } from 'as2mca-api';
-   * 
+   *
    * const isAvailable = await client.embeddedInteractionAvailableCheck(sessionId);
    * if (normalizeBool(isAvailable)) {
    *   // использовать
@@ -804,7 +804,7 @@ export class Client {
    * @example
    * ```typescript
    * import { normalizeBool } from 'as2mca-api';
-   * 
+   *
    * const isRequired = await client.embeddedInteractionRequiredCheck(sessionId);
    * if (normalizeBool(isRequired)) {
    *   // показать интерфейс
@@ -905,9 +905,9 @@ export class Client {
     const { "@Value": value } = await this.api("CheckResult", {
       EmbeddedInteractionGet: { "@SessionID": sessionId, "@Request": request },
     });
-    return value
+    return value;
   }
-  
+
   //====================================================================================================================
   // Отладка
   //====================================================================================================================
@@ -1974,7 +1974,7 @@ export const normalizeArray = <T>(value: T | T[] | undefined): T[] => {
  */
 export const normalizeBoolOrUndefined = (value: string | undefined): boolean | undefined => {
   if (value === undefined) return undefined;
-  const v = value.toLocaleUpperCase()
+  const v = value.toLocaleUpperCase();
   return v === "TRUE" || v === "1";
 };
 
@@ -1983,7 +1983,7 @@ export const normalizeBoolOrUndefined = (value: string | undefined): boolean | u
  */
 export const normalizeBool = (value: string | undefined): boolean => {
   if (value === undefined) return false;
-  const v = value.toLocaleUpperCase()
+  const v = value.toLocaleUpperCase();
   return v === "TRUE" || v === "1";
 };
 

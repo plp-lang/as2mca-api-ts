@@ -162,7 +162,6 @@ describe("Информация о системе", () => {
     await client.embeddedInteractionPost(sessionId, "ExitApplication");
   });
 
-  
   test("embeddedInteractionGet", async () => {
     const { client, sessionId } = ctx;
 

@@ -14,9 +14,9 @@ const client = new Client(URL);
 await client.authbasic(USERNAME, PASSWORD);
 const { sessionId } = await client.sessionInit();
 
-const settings = await client.systemSettingsGet(sessionId)
+const settings = await client.systemSettingsGet(sessionId);
 for (const setting of settings) {
-  console.log(setting.name, ' = ', setting.value)
+  console.log(setting.name, " = ", setting.value);
 }
 
 // Завершаем сессию
