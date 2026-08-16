@@ -175,6 +175,8 @@ export interface ViewDataGetCancelable {
   allowTimestampMilliseconds?: boolean;
   /** Лимит строк (опционально). */
   rowsLimit?: number;
+  /** Сортировка по колонке (опционально, например, `"C_2 ASC"`). */
+  orderBy?: string;
   /** Дополнительный фильтр (опционально). */
   additionalFilterBindClause?: string;
   /** Фильтр по объекту (опционально). */

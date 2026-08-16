@@ -801,6 +801,8 @@ export interface ViewDataGetCancelable {
   "@AllowTimestampMilliseconds": boolean;
   /** Лимит строк (опционально). */
   "@RowsLimit"?: number;
+  /** Сортировка по колонке (опционально, например, `"C_2 ASC"`). */
+  "@OrderBy"?: string;
   /** Дополнительный фильтр (опционально). */
   AdditionalFilterBind?: AdditionalFilterBind;
   /** Фильтр по объекту (опционально). */

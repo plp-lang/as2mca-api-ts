@@ -42,6 +42,7 @@ describe("Создать и удалить экземпляр ::[FP_TUNE]", () =
     const data = await client.viewDataGetCancelable(sessionId, {
       classId: CLASS_SHORT_NAME,
       viewShortName: VIEW_SHORT_NAME,
+      orderBy: "C_2",
       userFilter: { and: [{ caseInsensitiveFilter: { columnName: "C_2", operator: "=", value: TEST_OBJECT_VALUE } }] },
     });
 

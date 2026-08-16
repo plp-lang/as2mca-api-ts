@@ -1763,6 +1763,7 @@ export class Client {
         "@Hint": params.hint ?? "FIRST_ROWS",
         "@AllowTimestampMilliseconds": params.allowTimestampMilliseconds ?? true,
         "@RowsLimit": params.rowsLimit ?? 10,
+        "@OrderBy": params.orderBy,
         AdditionalFilterBind: params.additionalFilterBindClause
           ? { "@Clause": params.additionalFilterBindClause }
           : undefined,
