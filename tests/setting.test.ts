@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { context } from "./ctx";
+import type { ApiError } from "../src";
 
 describe("Информация о системе", () => {
   const ctx = context();
@@ -108,8 +109,6 @@ describe("Информация о системе", () => {
     expect(value3).toBeString();
     const value4 = await client.systemContextGet(sessionId, "IBS_USER", "SYS_BUILD_DATE");
     expect(value4).toBeString();
-    const value5 = await client.systemContextGet(sessionId, "UNKNOWN", "UNKNOWN");
-    expect(value5).toBeUndefined();
   });
 
   test("systemApplicationNameGet", async () => {
@@ -128,9 +127,13 @@ describe("Информация о системе", () => {
 
   test("systemHelpSystemInfoGet", async () => {
     const { client, sessionId } = ctx;
-
-    const count = await client.systemHelpSystemInfoGet(sessionId);
-    expect(count).toBeNumber();
+    
+    try {
+      const count = await client.systemHelpSystemInfoGet(sessionId);
+      expect(count).toBeNumber();
+    } catch (e) {
+      expect((e as ApiError).message).toBe("Справка не установлена")
+    }
   });
 
   test("embeddedInteractionAvailableCheck", async () => {

@@ -13,7 +13,7 @@ export class HttpError extends Error {
    * @param options - Дополнительные параметры ошибки.
    */
   constructor(message: string, code: number, url?: string, options?: ErrorOptions) {
-    super(`HTTP request failed, code: ${code}, message ${message}, url ${url}`, options);
+    super(message, options);
     this.name = this.constructor.name;
     this.code = code;
     this.url = url;
@@ -36,7 +36,7 @@ export class ApiError extends Error {
    * @param details - Дополнительная информация (ServerErrorInfo/@Text).
    */
   constructor(message: string, details: string) {
-    super(`API request failed, message: ${message}, details: ${details}`);
+    super(message);
     this.name = this.constructor.name;
     this.details = details;
     Object.setPrototypeOf(this, new.target.prototype);
