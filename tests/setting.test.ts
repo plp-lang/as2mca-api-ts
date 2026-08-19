@@ -127,12 +127,12 @@ describe("Информация о системе", () => {
 
   test("systemHelpSystemInfoGet", async () => {
     const { client, sessionId } = ctx;
-    
+
     try {
       const count = await client.systemHelpSystemInfoGet(sessionId);
       expect(count).toBeNumber();
     } catch (e) {
-      expect((e as ApiError).message).toBe("Справка не установлена")
+      expect((e as ApiError).message).toBe("Справка не установлена");
     }
   });
 
