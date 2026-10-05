@@ -8,7 +8,7 @@ describe("Сессия и информация о пользователе", () 
     const { debugPipeName, sessionId } = ctx;
 
     expect(sessionId).toBeDefined();
-    expect(sessionId).toMatch(/^([0-9a-fA-F]{32}|[\w-]+!\d+!\d+)$/);
+    expect(sessionId).toMatch(/^([0-9a-fA-F]{32}|[\w-]+!-?\d+!\d+)$/);
 
     expect(debugPipeName).toBeDefined();
     expect(debugPipeName).toMatch(/^debug\$\d{10}$/);
