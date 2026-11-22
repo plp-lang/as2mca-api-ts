@@ -46,7 +46,7 @@ export class TestHttpAdapter implements HttpAdapter {
   }
 }
 
-export function context() {
+export function context(): Context {
   let ctx: Context = {} as Context;
 
   beforeAll(async () => {
