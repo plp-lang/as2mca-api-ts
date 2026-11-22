@@ -53,10 +53,8 @@
   },
   "scripts": {
     "dev": "bunup --watch",
-    "build": "bun update && bun run check && bun run lint:fix && bun run fmt:fix && bun test && bun bunup",
+    "build": "bun update && bun run check && bun run lint:fix && bun fmt && bun test && bun bunup",
     "check": "bun check",
-    "fmt": "bun fmt --check",
-    "fmt:fix": "bun fmt",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix --fix-suggestions",
     "upgrade": "bun update --latest",
