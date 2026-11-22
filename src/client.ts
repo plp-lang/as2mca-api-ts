@@ -1843,13 +1843,15 @@ export class Client {
     attributeNamePrefix: "@",
     parseTagValue: false,
     parseAttributeValue: false,
+    processEntities: true,
+    htmlEntities: true
   });
 
   private readonly builder = new XMLBuilder({
     ignoreAttributes: false,
     attributeNamePrefix: "@",
     suppressEmptyNode: true,
-    processEntities: false,
+    processEntities: true,
     suppressBooleanAttributes: false,
     format: false,
   });

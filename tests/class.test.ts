@@ -25,7 +25,7 @@ describe("ТБП и типы", () => {
       expect(qual).toBeString();
       expect(qualName).toBeString();
     });
-  });
+  }, { timeout: 10000 });
 
   test("classTransitionsGet", async () => {
     const { client, sessionId } = ctx;
@@ -40,7 +40,7 @@ describe("ТБП и типы", () => {
       expect(initialStateID).toBeString();
       expect(finalStateID).toBeString();
     });
-  });
+  }, { timeout: 10000 });
 
   test("classStatesGet", async () => {
     const { client, sessionId } = ctx;

@@ -69,3 +69,97 @@ export function context(): Context {
 
   return ctx;
 }
+
+export const NEW_FP_TUNE = async (ctx: Context, value: string): Promise<string | undefined> => {
+  const classId = "FP_TUNE";
+  const shortName = "NEW#AUTO";
+
+  const { client, sessionId } = ctx;
+
+  const methods = await client.classMethodsGet(sessionId, classId);
+  const methodId = methods.find((v) => v.shortName === shortName)?.id;
+  if (methodId === undefined) {
+    return undefined;
+  }
+
+  const frameId = await client.methodBegin(sessionId, methodId);
+  if (frameId === undefined) {
+    return undefined;
+  }
+
+  await client.methodValidateDefault(sessionId, {
+    classId,
+    methodId,
+  });
+
+  await client.methodValidate(sessionId, {
+    methodId,
+    info: "%PARAM%.P_CODE",
+    controlsStates: [{ id: "17007818", value }],
+  });
+
+  await client.methodValidate(sessionId, {
+    methodId,
+    info: "%PARAM%.P_NAME",
+    controlsStates: [{ id: "17007820", value }],
+  });
+
+  await client.methodValidate(sessionId, {
+    methodId,
+    info: "%PARAM%.P_GROUP_ID",
+    controlsStates: [{ id: "17007839", value }],
+  });
+
+  await client.methodValidate(sessionId, {
+    methodId,
+    info: "%VAR%.V_VAL_TYPE.0",
+    controlsStates: [{ id: "17007844", value: "4" }],
+  });
+
+  await client.methodValidate(sessionId, {
+    methodId,
+    info: "%VAR%.V_VAL_BOOL.0",
+    controlsStates: [{ id: "17007835", value: "1" }],
+  });
+
+  const { value: objectId } = await client.methodExecute(sessionId, {
+    methodId,
+  });
+
+  await client.methodEnd(sessionId, frameId);
+  
+  return objectId;
+};
+
+export const DELETE_FP_TUNE = async (ctx: Context, id: string): Promise<string | undefined> => {
+  const classId = "FP_TUNE";
+  const shortName = "DELETE#AUTO";
+
+  const { client, sessionId } = ctx;
+
+  const methods = await client.classMethodsGet(sessionId, classId);
+  const methodId = methods.find((v) => v.shortName === shortName)?.id;
+  if (methodId === undefined) {
+    return undefined;
+  }
+
+  const frameId = await client.methodBegin(sessionId, methodId);
+  if (frameId === undefined) {
+    return undefined;
+  }
+
+  await client.methodValidateDefault(sessionId, {
+    classId,
+    methodId,
+    objectId: [id],
+  });
+  
+  let { value } = await client.methodExecute(sessionId, {
+    methodId,
+  });
+
+  await client.methodEnd(sessionId, frameId);
+
+  return value
+};
+
