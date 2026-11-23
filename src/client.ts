@@ -1,5 +1,5 @@
-import { XMLParser } from "fast-xml-parser";
-import XMLBuilder from "fast-xml-builder";
+import { XMLParser, type X2jOptions } from "fast-xml-parser";
+import Builder, { type XmlBuilderOptions, type XMLBuilder } from "fast-xml-builder";
 
 import { ApiError, HttpError, UnexpectedResponseError, XmlDeserializeError, XmlSerializeError } from "./error";
 
@@ -49,6 +49,8 @@ import type { xml } from ".";
  */
 export class Client {
   private readonly httpAdapter: HttpAdapter;
+  private readonly xmlParser: XMLParser;
+  private readonly xmlBuilder: XMLBuilder;
 
   /**
    * Базовый конструктор, с {@link HttpAdapter} по умолчанию {@link FetchHttpAdapter}.
@@ -56,8 +58,12 @@ export class Client {
   constructor(
     private readonly baseUrl: string,
     httpAdapter?: HttpAdapter,
+    xmlParserOptions?: X2jOptions,
+    xmlBuilderOptions?: XmlBuilderOptions,
   ) {
     this.httpAdapter = httpAdapter ?? new FetchHttpAdapter();
+    this.xmlParser = new XMLParser(xmlParserOptions ?? XMLParserDefaultOptions);
+    this.xmlBuilder = new Builder(xmlBuilderOptions ?? XMLBuilderDefaultOptions);
   }
 
   //====================================================================================================================
@@ -1838,24 +1844,6 @@ export class Client {
   // Private
   //====================================================================================================================
 
-  private readonly parser = new XMLParser({
-    ignoreAttributes: false,
-    attributeNamePrefix: "@",
-    parseTagValue: false,
-    parseAttributeValue: false,
-    processEntities: true,
-    htmlEntities: true
-  });
-
-  private readonly builder = new XMLBuilder({
-    ignoreAttributes: false,
-    attributeNamePrefix: "@",
-    suppressEmptyNode: true,
-    processEntities: true,
-    suppressBooleanAttributes: false,
-    format: false,
-  });
-
   /**
    * Универсальный метод для выполнения API-запроса.
    *
@@ -1925,7 +1913,7 @@ export class Client {
    */
   private serialization(obj: xml.RequestBody): string {
     try {
-      return this.builder.build({
+      return this.xmlBuilder.build({
         "?xml": {
           "@version": "1.0",
           "@encoding": "UTF-8",
@@ -1950,7 +1938,7 @@ export class Client {
    */
   private deserialization(text: string): xml.ResponseBody {
     try {
-      const xml = this.parser.parse(text) as xml.Response;
+      const xml = this.xmlParser.parse(text) as xml.Response;
       if (!xml?.Response) {
         throw new Error("Missing <Response> tag");
       }
@@ -1959,6 +1947,30 @@ export class Client {
       throw new XmlDeserializeError((cause as Error).message, { cause });
     }
   }
+}
+
+/**
+ * Опции для XMLParser по умолчанию.
+ */
+export const XMLParserDefaultOptions = {
+  ignoreAttributes: false,
+  attributeNamePrefix: "@",
+  parseTagValue: false,
+  parseAttributeValue: false,
+  processEntities: true,
+  htmlEntities: true
+}
+
+/**
+ * Опции для XMLBuilder по умолчанию.
+ */
+export const XMLBuilderDefaultOptions = {
+  ignoreAttributes: false,
+  attributeNamePrefix: "@",
+  suppressEmptyNode: true,
+  processEntities: true,
+  suppressBooleanAttributes: false,
+  format: false,
 }
 
 /**
