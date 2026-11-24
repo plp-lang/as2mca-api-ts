@@ -1958,8 +1958,8 @@ export const XMLParserDefaultOptions = {
   parseTagValue: false,
   parseAttributeValue: false,
   processEntities: true,
-  htmlEntities: true
-}
+  htmlEntities: true,
+};
 
 /**
  * Опции для XMLBuilder по умолчанию.
@@ -1971,7 +1971,7 @@ export const XMLBuilderDefaultOptions = {
   processEntities: true,
   suppressBooleanAttributes: false,
   format: false,
-}
+};
 
 /**
  * Нормализует значение, которое может быть одним элементом или массивом, в массив.

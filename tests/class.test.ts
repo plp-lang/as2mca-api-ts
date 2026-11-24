@@ -13,34 +13,42 @@ describe("ТБП и типы", () => {
     expect(typeof archiveKey).toBeOneOf(["undefined", "string"]);
   });
 
-  test("objectBackwardReferencesGet", async () => {
-    const { client, sessionId } = ctx;
+  test(
+    "objectBackwardReferencesGet",
+    async () => {
+      const { client, sessionId } = ctx;
 
-    const refs = await client.objectBackwardReferencesGet(sessionId, 8_935_328, "USER");
-    expect(refs).toBeArray();
-    expect(refs.length).toBeGreaterThan(0);
-    refs.forEach(({ classId, className, qual, qualName }): void => {
-      expect(classId).toBeString();
-      expect(className).toBeString();
-      expect(qual).toBeString();
-      expect(qualName).toBeString();
-    });
-  }, { timeout: 10000 });
+      const refs = await client.objectBackwardReferencesGet(sessionId, 8_935_328, "USER");
+      expect(refs).toBeArray();
+      expect(refs.length).toBeGreaterThan(0);
+      refs.forEach(({ classId, className, qual, qualName }): void => {
+        expect(classId).toBeString();
+        expect(className).toBeString();
+        expect(qual).toBeString();
+        expect(qualName).toBeString();
+      });
+    },
+    { timeout: 10000 },
+  );
 
-  test("classTransitionsGet", async () => {
-    const { client, sessionId } = ctx;
+  test(
+    "classTransitionsGet",
+    async () => {
+      const { client, sessionId } = ctx;
 
-    const trans = await client.classTransitionsGet(sessionId, "VZ_CARDS");
-    expect(trans).toBeArray();
-    expect(trans.length).toBeGreaterThan(1);
-    trans.forEach(({ id, name, methodShortName, initialStateID, finalStateID }): void => {
-      expect(id).toBeString();
-      expect(name).toBeString();
-      expect(typeof methodShortName).toBeOneOf(["string", "undefined"]);
-      expect(initialStateID).toBeString();
-      expect(finalStateID).toBeString();
-    });
-  }, { timeout: 10000 });
+      const trans = await client.classTransitionsGet(sessionId, "VZ_CARDS");
+      expect(trans).toBeArray();
+      expect(trans.length).toBeGreaterThan(1);
+      trans.forEach(({ id, name, methodShortName, initialStateID, finalStateID }): void => {
+        expect(id).toBeString();
+        expect(name).toBeString();
+        expect(typeof methodShortName).toBeOneOf(["string", "undefined"]);
+        expect(initialStateID).toBeString();
+        expect(finalStateID).toBeString();
+      });
+    },
+    { timeout: 10000 },
+  );
 
   test("classStatesGet", async () => {
     const { client, sessionId } = ctx;

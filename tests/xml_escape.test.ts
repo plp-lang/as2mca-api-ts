@@ -7,7 +7,7 @@ describe.each(TEST_OBJECT_VALUES)("Экранирование символа: `$
   const ctx = context();
 
   test("Создания тестового экземпляра в FP_TUNE", async () => {
-    const id = await NEW_FP_TUNE(ctx, `TEST_${sign}_DATA`) as string;
+    const id = (await NEW_FP_TUNE(ctx, `TEST_${sign}_DATA`)) as string;
     expect(id).toBeString();
     const value = await DELETE_FP_TUNE(ctx, id);
     expect(value).toBeString();

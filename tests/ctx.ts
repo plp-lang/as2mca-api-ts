@@ -127,7 +127,7 @@ export const NEW_FP_TUNE = async (ctx: Context, value: string): Promise<string |
   });
 
   await client.methodEnd(sessionId, frameId);
-  
+
   return objectId;
 };
 
@@ -153,13 +153,12 @@ export const DELETE_FP_TUNE = async (ctx: Context, id: string): Promise<string |
     methodId,
     objectId: [id],
   });
-  
+
   let { value } = await client.methodExecute(sessionId, {
     methodId,
   });
 
   await client.methodEnd(sessionId, frameId);
 
-  return value
+  return value;
 };
-
