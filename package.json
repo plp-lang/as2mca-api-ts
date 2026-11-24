@@ -1,6 +1,6 @@
 {
   "name": "as2mca-api",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Aplication Server 2MCA API HTTP Client",
   "keywords": [
     "2mca",
